@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Profile, User, StudyListing, StudySession, Message } from '../types/types';
 import { supabase } from '../lib/supabase';
 
-// ⚠️ ВАЖНО: Замените на ваши данные из Supabase Dashboard
 
 type Page = 'auth' | 'home' | 'create-listing' | 'listing-detail' | 'session';
 
