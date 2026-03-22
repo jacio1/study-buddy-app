@@ -2,14 +2,20 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { ArrowLeft, Send } from 'lucide-react';
+import { ArrowLeft, Send, MessageCircle, StickyNote, Timer, ListChecks } from 'lucide-react';
 import { Message, Profile, StudySession, User } from '@/src/types/types';
 import { supabase } from '@/src/lib/supabase';
 import { Header } from '@/src/components/layout/Header';
 import { Button } from '@/src/components/ui/button';
 import { VoiceChat } from '@/src/components/layout/VoiceChat';
+import { cn } from '@/src/lib/utils';
 import { ChatMessage } from '@/src/components/layout/ChatMessage';
 import { Input } from '@/src/components/ui/input';
+import { SharedNotes } from '@/src/components/layout/SharedNotes';
+import { PomodoroTimer } from '@/src/components/layout/PomodoroTimer';
+import { TodoList } from '@/src/components/layout/TodoList';
+
+type ToolTab = 'notes' | 'pomodoro' | 'todos';
 
 export default function SessionPage() {
   const router = useRouter();
@@ -21,6 +27,7 @@ export default function SessionPage() {
   const [session, setSession] = useState<StudySession | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
+  const [activeToolTab, setActiveToolTab] = useState<ToolTab>('notes');
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -137,13 +144,19 @@ export default function SessionPage() {
     );
   }
 
+  const toolTabs = [
+    { id: 'notes' as ToolTab, label: 'Заметки', icon: StickyNote },
+    { id: 'pomodoro' as ToolTab, label: 'Помодоро', icon: Timer },
+    { id: 'todos' as ToolTab, label: 'Задачи', icon: ListChecks }
+  ];
+
   return (
     <div className="min-h-screen bg-[#1B1B1C] flex flex-col">
       <Header user={user} profile={profile} />
 
-      <main className="flex-1 container mx-auto px-4 py-8 flex flex-col max-w-5xl">
+      <main className="flex-1 container mx-auto px-4 py-8 flex flex-col">
         {/* Session header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
               <Button
@@ -166,52 +179,102 @@ export default function SessionPage() {
           <VoiceChat sessionId={sessionId} user={user} />
         </div>
 
-        {/* Chat area */}
-        <div className="flex-1 bg-gray-900 rounded-lg border border-gray-800 flex flex-col overflow-hidden">
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-6 space-y-2">
-            {messages.length === 0 ? (
-              <div className="flex items-center justify-center h-full">
-                <p className="text-gray-500">
-                  Начните общение с вашим напарником! 💬
-                </p>
+        {/* Desktop: Two columns | Mobile: Tabs */}
+        <div className="flex-1 flex flex-col lg:flex-row gap-6 min-h-0">
+          {/* Left column: Chat (always visible on desktop) */}
+          <div className="flex-1 lg:flex-[1.2] bg-gray-900 rounded-lg border border-gray-800 flex flex-col overflow-hidden">
+            <div className="p-4 border-b border-gray-800 bg-gray-900">
+              <h3 className="text-lg font-semibold text-white">💬 Чат</h3>
+            </div>
+
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-2">
+              {messages.length === 0 ? (
+                <div className="flex items-center justify-center h-full">
+                  <p className="text-gray-500">
+                    Начните общение с вашим напарником! 💬
+                  </p>
+                </div>
+              ) : (
+                <>
+                  {messages.map((msg) => (
+                    <ChatMessage
+                      key={msg.id}
+                      message={msg}
+                      isOwnMessage={msg.user_id === user.id}
+                    />
+                  ))}
+                  <div ref={messagesEndRef} />
+                </>
+              )}
+            </div>
+
+            {/* Input */}
+            <form
+              onSubmit={sendMessage}
+              className="p-4 border-t border-gray-800 bg-gray-900"
+            >
+              <div className="flex gap-2">
+                <Input
+                  type="text"
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  placeholder="Напишите сообщение..."
+                  className="flex-1 bg-gray-800 border-gray-700 text-white placeholder:text-gray-500"
+                />
+                <Button
+                  type="submit"
+                  disabled={!newMessage.trim()}
+                  className="bg-purple-600 hover:bg-purple-700"
+                >
+                  <Send className="h-4 w-4" />
+                </Button>
               </div>
-            ) : (
-              <>
-                {messages.map((msg) => (
-                  <ChatMessage
-                    key={msg.id}
-                    message={msg}
-                    isOwnMessage={msg.user_id === user.id}
-                  />
-                ))}
-                <div ref={messagesEndRef} />
-              </>
-            )}
+            </form>
           </div>
 
-          {/* Input */}
-          <form
-            onSubmit={sendMessage}
-            className="p-4 border-t border-gray-800 bg-gray-900"
-          >
-            <div className="flex gap-2">
-              <Input
-                type="text"
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                placeholder="Напишите сообщение..."
-                className="flex-1 bg-gray-800 border-gray-700 text-white placeholder:text-gray-500"
-              />
-              <Button
-                type="submit"
-                disabled={!newMessage.trim()}
-                className="bg-purple-600 hover:bg-purple-700"
-              >
-                <Send className="h-4 w-4" />
-              </Button>
+          {/* Right column: Tools */}
+          <div className="flex-1 bg-gray-900 rounded-lg border border-gray-800 flex flex-col overflow-hidden">
+            {/* Tool tabs */}
+            <div className="flex gap-2 p-4 border-b border-gray-800 bg-gray-900 overflow-x-auto">
+              {toolTabs.map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveToolTab(tab.id)}
+                    className={cn(
+                      "flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap",
+                      activeToolTab === tab.id
+                        ? "bg-purple-600 text-white shadow-lg shadow-purple-500/30"
+                        : "bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700"
+                    )}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {tab.label}
+                  </button>
+                );
+              })}
             </div>
-          </form>
+
+            {/* Tool content */}
+            <div className="flex-1 overflow-y-auto">
+              {/* Notes */}
+              <div className={cn("p-6 h-full", activeToolTab !== 'notes' && 'hidden')}>
+                <SharedNotes sessionId={sessionId} user={user} />
+              </div>
+
+              {/* Pomodoro */}
+              <div className={cn("p-6 h-full flex items-center justify-center", activeToolTab !== 'pomodoro' && 'hidden')}>
+                <PomodoroTimer />
+              </div>
+
+              {/* Todos */}
+              <div className={cn("p-6 h-full", activeToolTab !== 'todos' && 'hidden')}>
+                <TodoList sessionId={sessionId} user={user} />
+              </div>
+            </div>
+          </div>
         </div>
       </main>
     </div>

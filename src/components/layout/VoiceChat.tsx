@@ -1,23 +1,23 @@
-"use client";
+'use client';
 
-import { useState, useRef, useEffect } from "react";
-import { Phone, PhoneOff, Mic, MicOff } from "lucide-react";
-import { User } from "@/src/types/types";
-import { supabase } from "@/src/lib/supabase";
-import { cn } from "@/src/lib/utils";
-import { Button } from "../ui/button";
+import { useState, useRef, useEffect } from 'react';
+import { Phone, PhoneOff, Mic, MicOff } from 'lucide-react';
+import { User } from '@/src/types/types';
+import { supabase } from '@/src/lib/supabase';
+import { cn } from '@/src/lib/utils';
+import { Button } from '../ui/button';
 
 interface VoiceChatProps {
   sessionId: string;
   user: User;
 }
 
-type CallStatus = "idle" | "calling" | "ringing" | "connected";
+type CallStatus = 'idle' | 'calling' | 'ringing' | 'connected';
 
 export function VoiceChat({ sessionId, user }: VoiceChatProps) {
   const [isInCall, setIsInCall] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [callStatus, setCallStatus] = useState<CallStatus>("idle");
+  const [callStatus, setCallStatus] = useState<CallStatus>('idle');
 
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
@@ -29,28 +29,28 @@ export function VoiceChat({ sessionId, user }: VoiceChatProps) {
     voiceChannelRef.current = voiceChannel;
 
     voiceChannel
-      .on("broadcast", { event: "offer" }, async ({ payload }) => {
+      .on('broadcast', { event: 'offer' }, async ({ payload }) => {
         if (payload.from !== user.id) {
-          setCallStatus("ringing");
+          setCallStatus('ringing');
           setTimeout(() => handleAcceptCall(payload.offer), 500);
         }
       })
-      .on("broadcast", { event: "answer" }, async ({ payload }) => {
+      .on('broadcast', { event: 'answer' }, async ({ payload }) => {
         if (payload.from !== user.id && peerConnectionRef.current) {
           await peerConnectionRef.current.setRemoteDescription(
-            new RTCSessionDescription(payload.answer),
+            new RTCSessionDescription(payload.answer)
           );
-          setCallStatus("connected");
+          setCallStatus('connected');
         }
       })
-      .on("broadcast", { event: "ice-candidate" }, async ({ payload }) => {
+      .on('broadcast', { event: 'ice-candidate' }, async ({ payload }) => {
         if (payload.from !== user.id && peerConnectionRef.current) {
           await peerConnectionRef.current.addIceCandidate(
-            new RTCIceCandidate(payload.candidate),
+            new RTCIceCandidate(payload.candidate)
           );
         }
       })
-      .on("broadcast", { event: "end-call" }, ({ payload }) => {
+      .on('broadcast', { event: 'end-call' }, ({ payload }) => {
         if (payload.from !== user.id) {
           endCall();
         }
@@ -60,7 +60,7 @@ export function VoiceChat({ sessionId, user }: VoiceChatProps) {
     return () => {
       supabase.removeChannel(voiceChannel);
       if (localStreamRef.current) {
-        localStreamRef.current.getTracks().forEach((track) => track.stop());
+        localStreamRef.current.getTracks().forEach(track => track.stop());
       }
       if (peerConnectionRef.current) {
         peerConnectionRef.current.close();
@@ -71,9 +71,9 @@ export function VoiceChat({ sessionId, user }: VoiceChatProps) {
   const createPeerConnection = () => {
     const configuration = {
       iceServers: [
-        { urls: "stun:stun.l.google.com:19302" },
-        { urls: "stun:stun1.l.google.com:19302" },
-      ],
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+      ]
     };
 
     const pc = new RTCPeerConnection(configuration);
@@ -81,9 +81,9 @@ export function VoiceChat({ sessionId, user }: VoiceChatProps) {
     pc.onicecandidate = (event) => {
       if (event.candidate && voiceChannelRef.current) {
         voiceChannelRef.current.send({
-          type: "broadcast",
-          event: "ice-candidate",
-          payload: { candidate: event.candidate, from: user.id },
+          type: 'broadcast',
+          event: 'ice-candidate',
+          payload: { candidate: event.candidate, from: user.id }
         });
       }
     };
@@ -95,12 +95,9 @@ export function VoiceChat({ sessionId, user }: VoiceChatProps) {
     };
 
     pc.onconnectionstatechange = () => {
-      if (pc.connectionState === "connected") {
-        setCallStatus("connected");
-      } else if (
-        pc.connectionState === "disconnected" ||
-        pc.connectionState === "failed"
-      ) {
+      if (pc.connectionState === 'connected') {
+        setCallStatus('connected');
+      } else if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
         endCall();
       }
     };
@@ -110,7 +107,7 @@ export function VoiceChat({ sessionId, user }: VoiceChatProps) {
 
   const startCall = async () => {
     try {
-      setCallStatus("calling");
+      setCallStatus('calling');
 
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       localStreamRef.current = stream;
@@ -118,7 +115,7 @@ export function VoiceChat({ sessionId, user }: VoiceChatProps) {
       const pc = createPeerConnection();
       peerConnectionRef.current = pc;
 
-      stream.getTracks().forEach((track) => {
+      stream.getTracks().forEach(track => {
         pc.addTrack(track, stream);
       });
 
@@ -127,19 +124,17 @@ export function VoiceChat({ sessionId, user }: VoiceChatProps) {
 
       if (voiceChannelRef.current) {
         voiceChannelRef.current.send({
-          type: "broadcast",
-          event: "offer",
-          payload: { offer, from: user.id },
+          type: 'broadcast',
+          event: 'offer',
+          payload: { offer, from: user.id }
         });
       }
 
       setIsInCall(true);
     } catch (error) {
-      console.error("Error starting call:", error);
-      alert(
-        "Не удалось получить доступ к микрофону. Проверьте разрешения браузера.",
-      );
-      setCallStatus("idle");
+      console.error('Error starting call:', error);
+      alert('Не удалось получить доступ к микрофону. Проверьте разрешения браузера.');
+      setCallStatus('idle');
     }
   };
 
@@ -151,7 +146,7 @@ export function VoiceChat({ sessionId, user }: VoiceChatProps) {
       const pc = createPeerConnection();
       peerConnectionRef.current = pc;
 
-      stream.getTracks().forEach((track) => {
+      stream.getTracks().forEach(track => {
         pc.addTrack(track, stream);
       });
 
@@ -161,18 +156,18 @@ export function VoiceChat({ sessionId, user }: VoiceChatProps) {
 
       if (voiceChannelRef.current) {
         voiceChannelRef.current.send({
-          type: "broadcast",
-          event: "answer",
-          payload: { answer, from: user.id },
+          type: 'broadcast',
+          event: 'answer',
+          payload: { answer, from: user.id }
         });
       }
 
       setIsInCall(true);
-      setCallStatus("connected");
+      setCallStatus('connected');
     } catch (error) {
-      console.error("Error accepting call:", error);
-      alert("Не удалось подключиться к звонку");
-      setCallStatus("idle");
+      console.error('Error accepting call:', error);
+      alert('Не удалось подключиться к звонку');
+      setCallStatus('idle');
     }
   };
 
@@ -189,14 +184,14 @@ export function VoiceChat({ sessionId, user }: VoiceChatProps) {
   const endCall = () => {
     if (isInCall && voiceChannelRef.current) {
       voiceChannelRef.current.send({
-        type: "broadcast",
-        event: "end-call",
-        payload: { from: user.id },
+        type: 'broadcast',
+        event: 'end-call',
+        payload: { from: user.id }
       });
     }
 
     if (localStreamRef.current) {
-      localStreamRef.current.getTracks().forEach((track) => track.stop());
+      localStreamRef.current.getTracks().forEach(track => track.stop());
       localStreamRef.current = null;
     }
 
@@ -207,33 +202,26 @@ export function VoiceChat({ sessionId, user }: VoiceChatProps) {
 
     setIsInCall(false);
     setIsMuted(false);
-    setCallStatus("idle");
+    setCallStatus('idle');
   };
 
   return (
     <div className="flex items-center gap-2">
       {/* Call status indicator */}
-      {callStatus !== "idle" && (
-        <div
-          className={cn(
-            "px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2",
-            callStatus === "connected"
-              ? "bg-green-500/20 text-green-400 border border-green-500/30"
-              : "bg-purple-500/20 text-purple-400 border border-purple-500/30",
-          )}
-        >
-          <div
-            className={cn(
-              "w-2 h-2 rounded-full",
-              callStatus === "connected"
-                ? "bg-green-400"
-                : "bg-purple-400 animate-pulse",
-            )}
-          />
-          {callStatus === "calling" && "Вызов..."}
-          {callStatus === "ringing" && "Входящий звонок..."}
-          {callStatus === "connected" &&
-            (isMuted ? "В эфире (без звука)" : "В эфире")}
+      {callStatus !== 'idle' && (
+        <div className={cn(
+          "px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2",
+          callStatus === 'connected' 
+            ? "bg-green-500/20 text-green-400 border border-green-500/30" 
+            : "bg-purple-500/20 text-purple-400 border border-purple-500/30"
+        )}>
+          <div className={cn(
+            "w-2 h-2 rounded-full",
+            callStatus === 'connected' ? "bg-green-400" : "bg-purple-400 animate-pulse"
+          )} />
+          {callStatus === 'calling' && 'Вызов...'}
+          {callStatus === 'ringing' && 'Входящий звонок...'}
+          {callStatus === 'connected' && (isMuted ? 'В эфире (без звука)' : 'В эфире')}
         </div>
       )}
 
@@ -254,17 +242,13 @@ export function VoiceChat({ sessionId, user }: VoiceChatProps) {
             size="icon"
             className={cn(
               "border-gray-700",
-              isMuted
-                ? "bg-red-500/20 hover:bg-red-500/30 text-red-400 border-red-500/50"
-                : "bg-gray-800 hover:bg-gray-700 text-white",
+              isMuted 
+                ? "bg-red-500/20 hover:bg-red-500/30 text-red-400 border-red-500/50" 
+                : "bg-gray-800 hover:bg-gray-700 text-white"
             )}
-            title={isMuted ? "Включить микрофон" : "Выключить микрофон"}
+            title={isMuted ? 'Включить микрофон' : 'Выключить микрофон'}
           >
-            {isMuted ? (
-              <MicOff className="h-4 w-4" />
-            ) : (
-              <Mic className="h-4 w-4" />
-            )}
+            {isMuted ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
           </Button>
 
           <Button
@@ -280,3 +264,4 @@ export function VoiceChat({ sessionId, user }: VoiceChatProps) {
     </div>
   );
 }
+
