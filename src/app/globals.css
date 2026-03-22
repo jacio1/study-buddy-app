@@ -1,13 +1,124 @@
 @import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
 
-:root{
-  --main-bg-dark: #151517;
-  --main-text-dark: #fff;
+@theme {
+  /* Colors */
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  
+  /* Border radius */
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+  
+  /* Animations */
+  --animate-in: in 0.3s ease-out;
+  --animate-slide-in-from-left-2: slide-in-from-left 0.3s ease-out;
+  
+  @keyframes in {
+    0% {
+      transform: translateY(18px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slide-in-from-left {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
 }
 
-body{
+:root {
+  --main-bg-dark: #151517;
+  --main-text-dark: #fff;
+  --background: 210 40% 11%;
+  --foreground: 210 40% 98%;
+  --card: 210 40% 15%;
+  --card-foreground: 210 40% 98%;
+  --popover: 210 40% 15%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 263 70% 50%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 20%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 210 40% 25%;
+  --muted-foreground: 215 20.2% 65.1%;
+  --accent: 210 40% 25%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 210 40% 25%;
+  --input: 210 40% 25%;
+  --ring: 263 70% 50%;
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+  }
+}
+
+/* Custom styles */
+body {
   background-color: var(--main-bg-dark);
   color: var(--main-text-dark);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+ 
+::-webkit-scrollbar-track {
+  background: #1B1B1C;
+}
+ 
+::-webkit-scrollbar-thumb {
+  background: #6B46C1;
+  border-radius: 4px;
+}
+ 
+::-webkit-scrollbar-thumb:hover {
+  background: #7C3AED;
+}
+ 
+/* Animations */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }

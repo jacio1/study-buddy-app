@@ -3,16 +3,16 @@
 import { supabase } from "@/src/lib/supabase";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Button } from "@/src/components/ui/button";
+import { Input } from "@/src/components/ui/input";
+import { Field, FieldGroup, FieldLabel } from "@/src/components/ui/field";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from "@/components/ui/input-group";
+} from "@/src/components/ui/input-group";
 import { EyeClosedIcon, EyeIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/src/lib/utils";
 
 export default function AuthPage() {
   const router = useRouter();
@@ -106,7 +106,9 @@ export default function AuthPage() {
             onClick={() => setIsLogin(false)}
             className={cn(
               "flex-1 p-2.5 h-12 text-lg",
-              !isLogin ? "bg-[#1b1b1c]" : "text-white bg-transparent hover:scale-110",
+              !isLogin
+                ? "bg-[#1b1b1c]"
+                : "text-white bg-transparent hover:scale-110",
             )}
           >
             Регистрация
@@ -127,7 +129,6 @@ export default function AuthPage() {
                     required
                   />
                 </Field>
-                
               </>
             )}
             <Field>
