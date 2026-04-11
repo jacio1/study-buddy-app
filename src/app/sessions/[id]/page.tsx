@@ -1,21 +1,32 @@
-'use client';
+"use client";
 
-import { useEffect, useState, useRef } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { ArrowLeft, Send, MessageCircle, StickyNote, Timer, ListChecks } from 'lucide-react';
-import { Message, Profile, StudySession, User } from '@/src/types/types';
-import { supabase } from '@/src/lib/supabase';
-import { Header } from '@/src/components/layout/Header';
-import { Button } from '@/src/components/ui/button';
-import { VoiceChat } from '@/src/components/layout/VoiceChat';
-import { cn } from '@/src/lib/utils';
-import { ChatMessage } from '@/src/components/layout/ChatMessage';
-import { Input } from '@/src/components/ui/input';
-import { SharedNotes } from '@/src/components/layout/SharedNotes';
-import { PomodoroTimer } from '@/src/components/layout/PomodoroTimer';
-import { TodoList } from '@/src/components/layout/TodoList';
-
-type ToolTab = 'notes' | 'pomodoro' | 'todos';
+import { useEffect, useState, useRef } from "react";
+import { useRouter, useParams } from "next/navigation";
+import {
+  ArrowLeft,
+  Send,
+  MessageCircle,
+  StickyNote,
+  Timer,
+  ListChecks,
+  Pencil,
+} from "lucide-react";
+import { Message, Profile, StudySession, User } from "@/src/types/types";
+import { supabase } from "@/src/lib/supabase";
+import { Header } from "@/src/components/layout/Header";
+import { Button } from "@/src/components/ui/button";
+import { VoiceChat } from "@/src/components/layout/VoiceChat";
+import { cn } from "@/src/lib/utils";
+import { ChatMessage } from "@/src/components/layout/ChatMessage";
+import { Input } from "@/src/components/ui/input";
+import { SharedNotes } from "@/src/components/layout/SharedNotes";
+import { PomodoroTimer } from "@/src/components/layout/PomodoroTimer";
+import { TodoList } from "@/src/components/layout/TodoList";
+import { FolderOpen } from "lucide-react"; // новая иконка
+import { ChatInput } from "@/src/components/layout/ChatInput";
+import { MediaGallery } from "@/src/components/layout/MediaGallery";
+import { SharedWhiteboard } from "@/src/components/layout/SharedWhiteboard";
+type ToolTab = "notes" | "pomodoro" | "todos" | "media" | "whiteboard";
 
 export default function SessionPage() {
   const router = useRouter();
@@ -26,8 +37,8 @@ export default function SessionPage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [session, setSession] = useState<StudySession | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [newMessage, setNewMessage] = useState('');
-  const [activeToolTab, setActiveToolTab] = useState<ToolTab>('notes');
+  const [newMessage, setNewMessage] = useState("");
+  const [activeToolTab, setActiveToolTab] = useState<ToolTab>("notes");
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -39,27 +50,30 @@ export default function SessionPage() {
   useEffect(() => {
     if (session) {
       loadMessages();
-      
+
       // Realtime подписка
       const channel = supabase
         .channel(`session-${sessionId}`)
         .on(
-          'postgres_changes',
+          "postgres_changes",
           {
-            event: 'INSERT',
-            schema: 'public',
-            table: 'session_messages',
-            filter: `session_id=eq.${sessionId}`
+            event: "INSERT",
+            schema: "public",
+            table: "session_messages",
+            filter: `session_id=eq.${sessionId}`,
           },
           async (payload) => {
             const { data: profile } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('id', payload.new.user_id)
+              .from("profiles")
+              .select("*")
+              .eq("id", payload.new.user_id)
               .single();
 
-            setMessages((current) => [...current, { ...payload.new, profiles: profile } as Message]);
-          }
+            setMessages((current) => [
+              ...current,
+              { ...payload.new, profiles: profile } as Message,
+            ]);
+          },
         )
         .subscribe();
 
@@ -71,13 +85,15 @@ export default function SessionPage() {
   }, [session, sessionId]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const checkUser = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     if (!session?.user) {
-      router.push('/auth');
+      router.push("/auth");
       return;
     }
 
@@ -87,9 +103,9 @@ export default function SessionPage() {
 
   const loadProfile = async (userId: string) => {
     const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
       .single();
 
     if (data) setProfile(data);
@@ -97,24 +113,24 @@ export default function SessionPage() {
 
   const loadSession = async () => {
     const { data } = await supabase
-      .from('study_sessions')
-      .select('*, study_listings(*)')
-      .eq('id', sessionId)
+      .from("study_sessions")
+      .select("*, study_listings(*)")
+      .eq("id", sessionId)
       .single();
 
     if (data) {
       setSession(data);
     } else {
-      router.push('/');
+      router.push("/");
     }
   };
 
   const loadMessages = async () => {
     const { data } = await supabase
-      .from('session_messages')
-      .select('*, profiles(*)')
-      .eq('session_id', sessionId)
-      .order('created_at', { ascending: true });
+      .from("session_messages")
+      .select("*, profiles(*)")
+      .eq("session_id", sessionId)
+      .order("created_at", { ascending: true });
 
     if (data) setMessages(data);
   };
@@ -123,16 +139,16 @@ export default function SessionPage() {
     e.preventDefault();
     if (!newMessage.trim() || !user) return;
 
-    const { error } = await supabase
-      .from('session_messages')
-      .insert([{
+    const { error } = await supabase.from("session_messages").insert([
+      {
         session_id: sessionId,
         user_id: user.id,
-        content: newMessage.trim()
-      }]);
+        content: newMessage.trim(),
+      },
+    ]);
 
     if (!error) {
-      setNewMessage('');
+      setNewMessage("");
     }
   };
 
@@ -145,9 +161,12 @@ export default function SessionPage() {
   }
 
   const toolTabs = [
-    { id: 'notes' as ToolTab, label: 'Заметки', icon: StickyNote },
-    { id: 'pomodoro' as ToolTab, label: 'Помодоро', icon: Timer },
-    { id: 'todos' as ToolTab, label: 'Задачи', icon: ListChecks }
+    { id: "notes" as ToolTab, label: "Заметки", icon: StickyNote },
+    { id: "pomodoro" as ToolTab, label: "Помодоро", icon: Timer },
+    { id: "todos" as ToolTab, label: "Задачи", icon: ListChecks },
+    { id: "media" as ToolTab, label: "Медиа", icon: FolderOpen },
+    { id: "whiteboard" as ToolTab, label: "Рисование", icon: Pencil },
+
   ];
 
   return (
@@ -162,7 +181,7 @@ export default function SessionPage() {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => router.push('/')}
+                onClick={() => router.push("/")}
                 className="text-gray-400 hover:text-white"
               >
                 <ArrowLeft className="h-4 w-4" />
@@ -210,27 +229,7 @@ export default function SessionPage() {
             </div>
 
             {/* Input */}
-            <form
-              onSubmit={sendMessage}
-              className="p-4 border-t border-gray-800 bg-gray-900"
-            >
-              <div className="flex gap-2">
-                <Input
-                  type="text"
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  placeholder="Напишите сообщение..."
-                  className="flex-1 bg-gray-800 border-gray-700 text-white placeholder:text-gray-500"
-                />
-                <Button
-                  type="submit"
-                  disabled={!newMessage.trim()}
-                  className="bg-purple-600 hover:bg-purple-700"
-                >
-                  <Send className="h-4 w-4" />
-                </Button>
-              </div>
-            </form>
+            <ChatInput sessionId={sessionId} user={user} />
           </div>
 
           {/* Right column: Tools */}
@@ -247,7 +246,7 @@ export default function SessionPage() {
                       "flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap",
                       activeToolTab === tab.id
                         ? "bg-purple-600 text-white shadow-lg shadow-purple-500/30"
-                        : "bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700"
+                        : "bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700",
                     )}
                   >
                     <Icon className="h-4 w-4" />
@@ -260,18 +259,49 @@ export default function SessionPage() {
             {/* Tool content */}
             <div className="flex-1 overflow-y-auto">
               {/* Notes */}
-              <div className={cn("p-6 h-full", activeToolTab !== 'notes' && 'hidden')}>
+              <div
+                className={cn(
+                  "p-6 h-full",
+                  activeToolTab !== "notes" && "hidden",
+                )}
+              >
                 <SharedNotes sessionId={sessionId} user={user} />
               </div>
 
               {/* Pomodoro */}
-              <div className={cn("p-6 h-full flex items-center justify-center", activeToolTab !== 'pomodoro' && 'hidden')}>
+              <div
+                className={cn(
+                  "p-6 h-full flex items-center justify-center",
+                  activeToolTab !== "pomodoro" && "hidden",
+                )}
+              >
                 <PomodoroTimer />
               </div>
 
               {/* Todos */}
-              <div className={cn("p-6 h-full", activeToolTab !== 'todos' && 'hidden')}>
+              <div
+                className={cn(
+                  "p-6 h-full",
+                  activeToolTab !== "todos" && "hidden",
+                )}
+              >
                 <TodoList sessionId={sessionId} user={user} />
+              </div>
+              <div
+                className={cn(
+                  "p-6 h-full",
+                  activeToolTab !== "media" && "hidden",
+                )}
+              >
+                <MediaGallery sessionId={sessionId} />
+              </div>
+              <div
+                className={cn(
+                  "p-6 h-full",
+                  activeToolTab !== "whiteboard" && "hidden",
+                )}
+              >
+                <SharedWhiteboard sessionId={sessionId} userId={user.id} />
               </div>
             </div>
           </div>

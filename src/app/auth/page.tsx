@@ -42,7 +42,7 @@ export default function AuthPage() {
           email,
           password,
           options: {
-            data: { full_name: fullName },
+            data: { full_name: username },
           },
         });
         if (error) throw error;
