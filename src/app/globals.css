@@ -1,7 +1,6 @@
 @import "tailwindcss";
 
 @theme {
-  /* Colors */
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
@@ -21,40 +20,27 @@
   --color-popover-foreground: hsl(var(--popover-foreground));
   --color-card: hsl(var(--card));
   --color-card-foreground: hsl(var(--card-foreground));
-  
-  /* Border radius */
+
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
-  
-  /* Animations */
+
   --animate-in: in 0.3s ease-out;
   --animate-slide-in-from-left-2: slide-in-from-left 0.3s ease-out;
-  
+
   @keyframes in {
-    0% {
-      transform: translateY(18px);
-      opacity: 0;
-    }
-    100% {
-      transform: translateY(0);
-      opacity: 1;
-    }
+    0%   { transform: translateY(18px); opacity: 0; }
+    100% { transform: translateY(0);    opacity: 1; }
   }
-  
   @keyframes slide-in-from-left {
-    0% {
-      transform: translateX(-100%);
-    }
-    100% {
-      transform: translateX(0);
-    }
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(0); }
   }
 }
 
-:root {
-  --main-bg-dark: #151517;
-  --main-text-dark: #fff;
+/* ─── Dark theme (default) ──────────────────────────────────────────────── */
+:root,
+[data-theme="dark"] {
   --background: 210 40% 11%;
   --foreground: 210 40% 98%;
   --card: 210 40% 15%;
@@ -75,50 +61,117 @@
   --input: 210 40% 25%;
   --ring: 263 70% 50%;
   --radius: 0.5rem;
+
+  /* App-specific tokens */
+  --app-bg:          #151517;
+  --app-surface:     #1B1B1C;
+  --app-card:        #111827;   /* gray-900 */
+  --app-card-hover:  #1a2233;
+  --app-input:       #1f2937;   /* gray-800 */
+  --app-border:      #1f2937;
+  --app-border-soft: #374151;   /* gray-700 */
+  --app-text:        #ffffff;
+  --app-text-muted:  #9ca3af;   /* gray-400 */
+  --app-text-faint:  #6b7280;   /* gray-500 */
+  --app-scrollbar:   #1B1B1C;
 }
 
+/* ─── Light theme ───────────────────────────────────────────────────────── */
+[data-theme="light"] {
+  --background: 250 30% 97%;
+  --foreground: 250 25% 12%;
+  --card: 0 0% 100%;
+  --card-foreground: 250 25% 12%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 250 25% 12%;
+  --primary: 263 70% 50%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 250 20% 94%;
+  --secondary-foreground: 250 25% 12%;
+  --muted: 250 20% 92%;
+  --muted-foreground: 250 10% 45%;
+  --accent: 250 20% 92%;
+  --accent-foreground: 250 25% 12%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 250 20% 88%;
+  --input: 250 20% 88%;
+  --ring: 263 70% 50%;
+
+  /* App-specific tokens — light values */
+  --app-bg:          #f4f3fc;
+  --app-surface:     #ffffff;
+  --app-card:        #ffffff;
+  --app-card-hover:  #f0eeff;
+  --app-input:       #ede9fa;
+  --app-border:      #e2ddf4;
+  --app-border-soft: #d0c9ef;
+  --app-text:        #1a1530;
+  --app-text-muted:  #6b5f8a;
+  --app-text-faint:  #9b90b5;
+  --app-scrollbar:   #e8e4f5;
+}
+
+/* ─── Base styles ───────────────────────────────────────────────────────── */
 @layer base {
-  * {
-    border-color: var(--color-border);
-  }
-  
+  * { border-color: var(--color-border); }
+
   body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
+    background-color: var(--app-bg);
+    color: var(--app-text);
+    transition: background-color 0.25s ease, color 0.25s ease;
   }
 }
 
-/* Custom styles */
-body {
-  background-color: var(--main-bg-dark);
-  color: var(--main-text-dark);
+/* ─── Override hardcoded Tailwind grays via data-theme="light" ──────────── */
+/* This lets existing components respond to the theme without refactoring */
+[data-theme="light"] .bg-\[\#1B1B1C\],
+[data-theme="light"] .bg-\[\#151517\] {
+  background-color: var(--app-bg) !important;
+}
+[data-theme="light"] .bg-gray-950 { background-color: #ede9fa !important; }
+[data-theme="light"] .bg-gray-900 { background-color: #ffffff !important; }
+[data-theme="light"] .bg-gray-800 { background-color: #ede9fa !important; }
+[data-theme="light"] .bg-gray-700 { background-color: #ddd8f5 !important; }
+
+[data-theme="light"] .border-gray-800 { border-color: #e2ddf4 !important; }
+[data-theme="light"] .border-gray-700 { border-color: #d0c9ef !important; }
+
+[data-theme="light"] .text-white  { color: #1a1530 !important; }
+[data-theme="light"] .text-gray-100 { color: #2d2450 !important; }
+[data-theme="light"] .text-gray-200 { color: #3d3466 !important; }
+[data-theme="light"] .text-gray-300 { color: #4d4475 !important; }
+[data-theme="light"] .text-gray-400 { color: #6b5f8a !important; }
+[data-theme="light"] .text-gray-500 { color: #9b90b5 !important; }
+[data-theme="light"] .text-gray-600 { color: #b0a8cc !important; }
+
+[data-theme="light"] .placeholder\:text-gray-500::placeholder { color: #b0a8cc !important; }
+[data-theme="light"] .placeholder\:text-gray-500::-webkit-input-placeholder { color: #b0a8cc !important; }
+
+/* hover variants */
+[data-theme="light"] .hover\:bg-gray-800:hover { background-color: #ede9fa !important; }
+[data-theme="light"] .hover\:bg-gray-700:hover  { background-color: #ddd8f5 !important; }
+[data-theme="light"] .hover\:text-white:hover    { color: #1a1530 !important; }
+
+/* ─── Scrollbar ─────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track   { background: var(--app-scrollbar); }
+::-webkit-scrollbar-thumb   { background: #7c3aed; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #6d28d9; }
+
+/* ─── Smooth transitions on theme switch ────────────────────────────────── */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color;
+  transition-duration: 0.2s;
+  transition-timing-function: ease;
+}
+/* But NOT transitions that conflict with animations */
+.animate-spin, .animate-pulse, [class*="animate-"] {
+  transition: none;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
- 
-::-webkit-scrollbar-track {
-  background: #1B1B1C;
-}
- 
-::-webkit-scrollbar-thumb {
-  background: #6B46C1;
-  border-radius: 4px;
-}
- 
-::-webkit-scrollbar-thumb:hover {
-  background: #7C3AED;
-}
- 
-/* Animations */
+/* ─── Animations ────────────────────────────────────────────────────────── */
 @keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
 }
