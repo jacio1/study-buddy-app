@@ -33,14 +33,9 @@ export interface StudySession {
   creator_id: string;
   partner_id: string;
   initiated_by: string | null;
-  /** pending_confirmation → active → pending_deletion → completed */
-  status: 'pending_confirmation' | 'active' | 'pending_deletion' | 'completed';
+  status: 'pending_confirmation' | 'active' | 'completed';
   created_at: string;
   completed_at: string | null;
-  delete_requested_by: string | null;
-  delete_requested_at: string | null;
-  delete_confirmed_by: string | null;
-  auto_delete_at: string | null;
   study_listings?: StudyListing;
 }
 
@@ -64,6 +59,13 @@ export interface DirectConversation {
   listing_id: string | null;
   created_at: string;
   last_message_at: string;
+  /** Set by listing owner to close conversation (hides from their list) */
+  closed_by: string | null;
+  closed_at: string | null;
+  /** Set by listing owner to block the other user from sending */
+  blocked_by: string | null;
+  blocked_at: string | null;
+  // joined
   listing?: StudyListing;
   other_user?: Profile;
   last_message?: DirectMessage;
@@ -79,4 +81,17 @@ export interface DirectMessage {
   is_read: boolean;
   created_at: string;
   profiles?: Profile;
+}
+
+export interface Notification {
+  id: string;
+  user_id: string;
+  actor_id: string | null;
+  type: 'session_ended' | 'session_invite' | 'session_accepted';
+  title: string;
+  body: string | null;
+  link: string | null;
+  is_read: boolean;
+  created_at: string;
+  actor?: Profile;
 }
