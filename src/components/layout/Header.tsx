@@ -145,31 +145,30 @@ export function Header({ user, profile }: HeaderProps) {
   const isMessages   = pathname?.startsWith('/messages');
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b backdrop-blur"
-      style={{ backgroundColor: 'var(--app-surface)', borderColor: 'var(--app-border)' }}>
+    <header className="sticky top-0 z-50 w-full border-b border-border backdrop-blur bg-card/95">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between gap-4">
 
           {/* Logo */}
           <button onClick={() => router.push('/')}
-            className="text-2xl font-bold text-white hover:opacity-75 transition-opacity flex-shrink-0">
+            className="text-2xl font-bold text-foreground hover:opacity-75 transition-opacity flex-shrink-0">
             StudyMate
           </button>
 
           {/* Search */}
           <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-sm">
             <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input type="text" placeholder="Поиск по предметам..." value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="w-full pl-9 bg-gray-900 border-gray-800 text-white placeholder:text-gray-500 focus:border-purple-500" />
+                className="w-full pl-9 bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary" />
             </div>
           </form>
 
           {/* Right */}
           <div className="flex items-center gap-2">
             <Button onClick={() => router.push('/listings/create')}
-              className="hidden sm:flex bg-purple-600 hover:bg-purple-700 text-white">
+              className="hidden sm:flex">
               <Plus className="h-4 w-4 mr-2" />Создать
             </Button>
 
@@ -177,12 +176,12 @@ export function Header({ user, profile }: HeaderProps) {
             <button onClick={() => router.push('/messages')} title="Сообщения"
               className={cn('relative p-2.5 rounded-xl border transition-all',
                 isMessages
-                  ? 'bg-purple-600/20 border-purple-500/50 text-purple-300'
-                  : 'border-gray-800 bg-gray-900 text-gray-400 hover:text-white hover:border-gray-700'
+                  ? 'bg-primary/20 border-primary/50 text-primary'
+                  : 'border-border bg-card text-muted-foreground hover:text-foreground hover:border-primary/50'
               )}>
               <MessageCircle className="h-4 w-4" />
               {unreadDMs > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] rounded-full bg-purple-600 text-white text-[10px] font-bold flex items-center justify-center px-1 shadow-lg">
+                <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center px-1 shadow-lg">
                   {unreadDMs > 9 ? '9+' : unreadDMs}
                 </span>
               )}
@@ -193,12 +192,12 @@ export function Header({ user, profile }: HeaderProps) {
               <button onClick={() => { setNotifOpen(v => !v); setProfileOpen(false); }}
                 className={cn('relative p-2.5 rounded-xl border transition-all',
                   notifOpen
-                    ? 'bg-amber-500/15 border-amber-500/40 text-amber-400'
-                    : 'border-gray-800 bg-gray-900 text-gray-400 hover:text-white hover:border-gray-700'
+                    ? 'bg-accent/15 border-accent/40 text-accent'
+                    : 'border-border bg-card text-muted-foreground hover:text-foreground hover:border-primary/50'
                 )}>
                 <Bell className="h-4 w-4" />
                 {unreadNotifs > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] rounded-full bg-amber-500 text-white text-[10px] font-bold flex items-center justify-center px-1 shadow-lg animate-pulse">
+                  <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] rounded-full bg-accent text-accent-foreground text-[10px] font-bold flex items-center justify-center px-1 shadow-lg animate-pulse">
                     {unreadNotifs > 9 ? '9+' : unreadNotifs}
                   </span>
                 )}
@@ -206,15 +205,13 @@ export function Header({ user, profile }: HeaderProps) {
 
               {/* Notifications dropdown */}
               {notifOpen && (
-                <div className="absolute right-0 top-full mt-2 w-80 rounded-2xl border shadow-2xl shadow-black/40 overflow-hidden z-50"
-                  style={{ backgroundColor: 'var(--app-surface)', borderColor: 'var(--app-border)' }}>
+                <div className="absolute right-0 top-full mt-2 w-80 rounded-2xl border border-border shadow-2xl shadow-black/40 overflow-hidden z-50 bg-card">
                   {/* Header */}
-                  <div className="flex items-center justify-between px-4 py-3 border-b"
-                    style={{ borderColor: 'var(--app-border)' }}>
-                    <span className="text-sm font-semibold text-white">Уведомления</span>
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+                    <span className="text-sm font-semibold text-foreground">Уведомления</span>
                     {unreadNotifs > 0 && (
                       <button onClick={markAllRead}
-                        className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-white transition-colors">
+                        className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
                         <CheckCheck className="h-3.5 w-3.5" />
                         Прочитать все
                       </button>
@@ -225,37 +222,36 @@ export function Header({ user, profile }: HeaderProps) {
                   <div className="max-h-80 overflow-y-auto">
                     {notifications.length === 0 ? (
                       <div className="flex flex-col items-center py-10 text-center px-4">
-                        <Bell className="h-8 w-8 text-gray-700 mb-3" />
-                        <p className="text-gray-500 text-sm">Нет уведомлений</p>
+                        <Bell className="h-8 w-8 text-muted-foreground/30 mb-3" />
+                        <p className="text-muted-foreground text-sm">Нет уведомлений</p>
                       </div>
                     ) : (
                       notifications.map(notif => (
                         <button key={notif.id}
                           onClick={() => handleNotifClick(notif)}
                           className={cn(
-                            'w-full text-left flex items-start gap-3 px-4 py-3 border-b transition-colors hover:bg-purple-500/5',
-                            !notif.is_read && 'bg-purple-500/5'
-                          )}
-                          style={{ borderColor: 'var(--app-border)' }}>
+                            'w-full text-left flex items-start gap-3 px-4 py-3 border-b border-border transition-colors hover:bg-muted/50',
+                            !notif.is_read && 'bg-primary/5'
+                          )}>
                           {/* Icon or avatar */}
-                          <div className="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-base"
-                            style={{ backgroundColor: 'var(--app-input)' }}>
+                          <div className="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-base bg-muted">
                             {notif.actor?.avatar_url
                               ? <img src={notif.actor.avatar_url} className="w-full h-full rounded-xl object-cover" alt="" />
                               : <span>{notifIcon[notif.type] ?? '🔔'}</span>
                             }
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className={cn('text-sm leading-snug', notif.is_read ? 'text-gray-400' : 'text-white font-medium')}>
+                            <p className={cn('text-sm leading-snug', 
+                              notif.is_read ? 'text-muted-foreground' : 'text-foreground font-medium')}>
                               {notif.title}
                             </p>
                             {notif.body && (
-                              <p className="text-xs text-gray-500 mt-0.5 truncate">{notif.body}</p>
+                              <p className="text-xs text-muted-foreground mt-0.5 truncate">{notif.body}</p>
                             )}
-                            <p className="text-[10px] text-gray-600 mt-1">{timeAgo(notif.created_at)}</p>
+                            <p className="text-[10px] text-muted-foreground/60 mt-1">{timeAgo(notif.created_at)}</p>
                           </div>
                           {!notif.is_read && (
-                            <div className="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0 mt-1.5" />
+                            <div className="w-2 h-2 rounded-full bg-accent flex-shrink-0 mt-1.5" />
                           )}
                         </button>
                       ))
@@ -267,56 +263,55 @@ export function Header({ user, profile }: HeaderProps) {
 
             {/* Theme */}
             <button onClick={toggle}
-              className="p-2.5 rounded-xl border border-gray-800 bg-gray-900 text-gray-400 hover:text-white hover:border-gray-700 transition-all">
+              className="p-2.5 rounded-xl border border-border bg-card text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all">
               {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
 
             {/* Profile dropdown */}
             <div className="relative" ref={profileRef}>
               <button onClick={() => { setProfileOpen(v => !v); setNotifOpen(false); }}
-                className="flex items-center gap-2.5 pl-1 pr-2 py-1 rounded-xl border border-gray-800 hover:border-gray-700 transition-colors"
-                style={{ backgroundColor: 'var(--app-input)' }}>
+                className="flex items-center gap-2.5 pl-1 pr-2 py-1 rounded-xl border border-border hover:border-primary/50 transition-colors bg-muted">
                 {profile?.avatar_url
                   ? <img src={profile.avatar_url} className="w-8 h-8 rounded-lg object-cover flex-shrink-0" alt="" />
-                  : <div className="w-8 h-8 rounded-lg bg-purple-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+                  : <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground text-sm font-bold flex-shrink-0">
                       {profile?.full_name?.[0]?.toUpperCase() ?? <UserIcon className="h-4 w-4" />}
                     </div>
                 }
-                <span className="hidden sm:block text-sm font-medium text-white max-w-[120px] truncate">
+                <span className="hidden sm:block text-sm font-medium text-foreground max-w-[120px] truncate">
                   {profile?.full_name || user.email}
                 </span>
-                <ChevronDown className={cn('h-3.5 w-3.5 text-gray-400 transition-transform hidden sm:block', profileOpen && 'rotate-180')} />
+                <ChevronDown className={cn('h-3.5 w-3.5 text-muted-foreground transition-transform hidden sm:block', 
+                  profileOpen && 'rotate-180')} />
               </button>
 
               {profileOpen && (
-                <div className="absolute right-0 top-full mt-2 w-52 rounded-xl border shadow-2xl shadow-black/30 overflow-hidden z-50"
-                  style={{ backgroundColor: 'var(--app-surface)', borderColor: 'var(--app-border)' }}>
-                  <div className="px-4 py-3 border-b" style={{ borderColor: 'var(--app-border)' }}>
-                    <p className="text-sm font-semibold text-white truncate">{profile?.full_name || 'Пользователь'}</p>
-                    <p className="text-xs text-gray-400 truncate">{user.email}</p>
+                <div className="absolute right-0 top-full mt-2 w-52 rounded-xl border border-border shadow-2xl shadow-black/30 overflow-hidden z-50 bg-card">
+                  <div className="px-4 py-3 border-b border-border">
+                    <p className="text-sm font-semibold text-foreground truncate">{profile?.full_name || 'Пользователь'}</p>
+                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                   </div>
                   <div className="py-1">
                     <button onClick={() => { setProfileOpen(false); router.push('/profile'); }}
-                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-gray-800 transition-colors text-left">
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors text-left">
                       <UserIcon className="h-4 w-4" /> Мой профиль
                     </button>
                     <button onClick={() => { setProfileOpen(false); router.push('/messages'); }}
-                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-gray-800 transition-colors text-left">
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors text-left">
                       <MessageCircle className="h-4 w-4" /> Сообщения
                       {unreadDMs > 0 && (
-                        <span className="ml-auto min-w-[20px] h-5 rounded-full bg-purple-600 text-white text-[10px] font-bold flex items-center justify-center px-1">
+                        <span className="ml-auto min-w-[20px] h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center px-1">
                           {unreadDMs > 9 ? '9+' : unreadDMs}
                         </span>
                       )}
                     </button>
                     <button onClick={() => { setProfileOpen(false); router.push('/listings/create'); }}
-                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-gray-800 transition-colors text-left sm:hidden">
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors text-left sm:hidden">
                       <Plus className="h-4 w-4" /> Создать объявление
                     </button>
                   </div>
-                  <div className="border-t py-1" style={{ borderColor: 'var(--app-border)' }}>
+                  <div className="border-t border-border py-1">
                     <button onClick={handleSignOut}
-                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors text-left">
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-destructive hover:text-destructive hover:bg-destructive/10 transition-colors text-left">
                       <LogOut className="h-4 w-4" /> Выйти
                     </button>
                   </div>
@@ -329,10 +324,10 @@ export function Header({ user, profile }: HeaderProps) {
         {/* Mobile search */}
         <form onSubmit={handleSearch} className="md:hidden pb-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input type="text" placeholder="Поиск по предметам..." value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="w-full pl-9 bg-gray-900 border-gray-800 text-white placeholder:text-gray-500" />
+              className="w-full pl-9 bg-muted border-border text-foreground placeholder:text-muted-foreground" />
           </div>
         </form>
       </div>

@@ -1,8 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --color-border: hsl(var(--border));
-  --color-input: hsl(var(--input));
+  --color-input: hsl(var(--border));
   --color-ring: hsl(var(--ring));
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
@@ -41,80 +40,107 @@
 /* ─── Dark theme (default) ──────────────────────────────────────────────── */
 :root,
 [data-theme="dark"] {
-  --background: 210 40% 11%;
-  --foreground: 210 40% 98%;
-  --card: 210 40% 15%;
+  /* Основные цвета */
+  --background: 222 47% 9%;          /* #0B1121 */
+  --foreground: 210 40% 98%;         /* #F1F5F9 */
+  --card: 217 33% 17%;              /* #1E293B */
   --card-foreground: 210 40% 98%;
-  --popover: 210 40% 15%;
+  --popover: 217 33% 17%;
   --popover-foreground: 210 40% 98%;
-  --primary: 263 70% 50%;
+  
+  /* Primary: #3B82F6 (более яркий синий для темной темы) */
+  --primary: 217 91% 60%;           
   --primary-foreground: 210 40% 98%;
-  --secondary: 210 40% 20%;
+  
+  /* Secondary: #14B8A6 (Мятный) */
+  --secondary: 172 80% 40%;          
   --secondary-foreground: 210 40% 98%;
-  --muted: 210 40% 25%;
-  --muted-foreground: 215 20.2% 65.1%;
-  --accent: 210 40% 25%;
+  
+  --muted: 217 33% 22%;             
+  --muted-foreground: 215 20.2% 75.1%;
+  
+  /* Accent: #F97316 (Оранжевый коллаб) */
+  --accent: 24 95% 53%;              
   --accent-foreground: 210 40% 98%;
-  --destructive: 0 62.8% 30.6%;
+  
+  /* Destructive: #EF4444 (Красный) */
+  --destructive: 0 84% 60%;          
   --destructive-foreground: 210 40% 98%;
-  --border: 210 40% 25%;
-  --input: 210 40% 25%;
-  --ring: 263 70% 50%;
+  
+  /* 🔥 КЛЮЧЕВОЕ: input (фон) и border (граница) РАЗНЫЕ */
+  --border: 217 20% 35%;            /* #4A5468 — граница (ЗАМЕТНАЯ) */
+  
+  --ring: 217 91% 60%;              /* Primary */
   --radius: 0.5rem;
 
   /* App-specific tokens */
-  --app-bg:          #151517;
-  --app-surface:     #1B1B1C;
-  --app-card:        #111827;   /* gray-900 */
-  --app-card-hover:  #1a2233;
-  --app-input:       #1f2937;   /* gray-800 */
-  --app-border:      #1f2937;
-  --app-border-soft: #374151;   /* gray-700 */
-  --app-text:        #ffffff;
-  --app-text-muted:  #9ca3af;   /* gray-400 */
-  --app-text-faint:  #6b7280;   /* gray-500 */
-  --app-scrollbar:   #1B1B1C;
+  --app-bg:          #0B1121;
+  --app-surface:     #1E293B;
+  --app-card:        #1E293B;
+  --app-card-hover:  #2D3A52;
+  --app-input:       #1E293B;
+  --app-border:      #4A5468;
+  --app-border-soft: #5E7393;
+  --app-text:        #F1F5F9;
+  --app-text-muted:  #94A3B8;
+  --app-text-faint:  #64748B;
+  --app-scrollbar:   #1E293B;
 }
 
 /* ─── Light theme ───────────────────────────────────────────────────────── */
 [data-theme="light"] {
-  --background: 250 30% 97%;
-  --foreground: 250 25% 12%;
-  --card: 0 0% 100%;
-  --card-foreground: 250 25% 12%;
+  /* Основные цвета */
+  --background: 210 40% 98%;         /* #F8FAFC */
+  --foreground: 222 47% 11%;         /* #0F172A */
+  --card: 0 0% 100%;                /* #FFFFFF */
+  --card-foreground: 222 47% 11%;
   --popover: 0 0% 100%;
-  --popover-foreground: 250 25% 12%;
-  --primary: 263 70% 50%;
+  --popover-foreground: 222 47% 11%;
+  
+  /* Primary: #2563EB (Умный синий) */
+  --primary: 221 83% 53%;            
   --primary-foreground: 0 0% 100%;
-  --secondary: 250 20% 94%;
-  --secondary-foreground: 250 25% 12%;
-  --muted: 250 20% 92%;
-  --muted-foreground: 250 10% 45%;
-  --accent: 250 20% 92%;
-  --accent-foreground: 250 25% 12%;
-  --destructive: 0 72% 51%;
+  
+  /* Secondary: #0D9488 (Мятный) */
+  --secondary: 173 80% 32%;          
+  --secondary-foreground: 0 0% 100%;
+  
+  --muted: 210 40% 96.1%;           
+  --muted-foreground: 215.4 16.3% 46.9%;
+  
+  /* Accent: #EA580C (Оранжевый коллаб) */
+  --accent: 20 90% 48%;              
+  --accent-foreground: 0 0% 100%;
+  
+  /* Destructive: #DC2626 (Красный) */
+  --destructive: 0 72% 51%;          
   --destructive-foreground: 0 0% 100%;
-  --border: 250 20% 88%;
-  --input: 250 20% 88%;
-  --ring: 263 70% 50%;
+  
+  --input: 0 0% 100%;               /* #FFFFFF — фон инпута */
+  --border: 214.3 31.8% 91.4%;      /* #E2E8F0 — граница */
+  
+  --ring: 221 83% 53%;              /* Primary */
+  --radius: 0.5rem;
 
   /* App-specific tokens — light values */
-  --app-bg:          #f4f3fc;
-  --app-surface:     #ffffff;
-  --app-card:        #ffffff;
-  --app-card-hover:  #f0eeff;
-  --app-input:       #ede9fa;
-  --app-border:      #e2ddf4;
-  --app-border-soft: #d0c9ef;
-  --app-text:        #1a1530;
-  --app-text-muted:  #6b5f8a;
-  --app-text-faint:  #9b90b5;
-  --app-scrollbar:   #e8e4f5;
+  --app-bg:          #F8FAFC;
+  --app-surface:     #FFFFFF;
+  --app-card:        #FFFFFF;
+  --app-card-hover:  #EFF6FF;
+  --app-input:       #FFFFFF;
+  --app-border:      #E2E8F0;
+  --app-border-soft: #CBD5E1;
+  --app-text:        #0F172A;
+  --app-text-muted:  #64748B;
+  --app-text-faint:  #94A3B8;
+  --app-scrollbar:   #F1F5F9;
 }
 
 /* ─── Base styles ───────────────────────────────────────────────────────── */
 @layer base {
-  * { border-color: var(--color-border); }
+  * { 
+    border-color: hsl(var(--border)); 
+  }
 
   body {
     background-color: var(--app-bg);
@@ -123,41 +149,24 @@
   }
 }
 
-/* ─── Override hardcoded Tailwind grays via data-theme="light" ──────────── */
-/* This lets existing components respond to the theme without refactoring */
-[data-theme="light"] .bg-\[\#1B1B1C\],
-[data-theme="light"] .bg-\[\#151517\] {
-  background-color: var(--app-bg) !important;
-}
-[data-theme="light"] .bg-gray-950 { background-color: #ede9fa !important; }
-[data-theme="light"] .bg-gray-900 { background-color: #ffffff !important; }
-[data-theme="light"] .bg-gray-800 { background-color: #ede9fa !important; }
-[data-theme="light"] .bg-gray-700 { background-color: #ddd8f5 !important; }
-
-[data-theme="light"] .border-gray-800 { border-color: #e2ddf4 !important; }
-[data-theme="light"] .border-gray-700 { border-color: #d0c9ef !important; }
-
-[data-theme="light"] .text-white  { color: #1a1530 !important; }
-[data-theme="light"] .text-gray-100 { color: #2d2450 !important; }
-[data-theme="light"] .text-gray-200 { color: #3d3466 !important; }
-[data-theme="light"] .text-gray-300 { color: #4d4475 !important; }
-[data-theme="light"] .text-gray-400 { color: #6b5f8a !important; }
-[data-theme="light"] .text-gray-500 { color: #9b90b5 !important; }
-[data-theme="light"] .text-gray-600 { color: #b0a8cc !important; }
-
-[data-theme="light"] .placeholder\:text-gray-500::placeholder { color: #b0a8cc !important; }
-[data-theme="light"] .placeholder\:text-gray-500::-webkit-input-placeholder { color: #b0a8cc !important; }
-
-/* hover variants */
-[data-theme="light"] .hover\:bg-gray-800:hover { background-color: #ede9fa !important; }
-[data-theme="light"] .hover\:bg-gray-700:hover  { background-color: #ddd8f5 !important; }
-[data-theme="light"] .hover\:text-white:hover    { color: #1a1530 !important; }
-
 /* ─── Scrollbar ─────────────────────────────────────────────────────────── */
-::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track   { background: var(--app-scrollbar); }
-::-webkit-scrollbar-thumb   { background: #7c3aed; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #6d28d9; }
+::-webkit-scrollbar { 
+  width: 4px; 
+  height: 4px; 
+}
+
+::-webkit-scrollbar-track { 
+  background: var(--app-scrollbar); 
+}
+
+::-webkit-scrollbar-thumb { 
+  background: #2563EB; 
+  border-radius: 4px; 
+}
+
+::-webkit-scrollbar-thumb:hover { 
+  background: #1D4ED8; 
+}
 
 /* ─── Smooth transitions on theme switch ────────────────────────────────── */
 *, *::before, *::after {
@@ -165,6 +174,7 @@
   transition-duration: 0.2s;
   transition-timing-function: ease;
 }
+
 /* But NOT transitions that conflict with animations */
 .animate-spin, .animate-pulse, [class*="animate-"] {
   transition: none;
@@ -177,10 +187,10 @@
 }
 
 .hide-scrollbar {
-  -ms-overflow-style: none;  /* IE и Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .hide-scrollbar::-webkit-scrollbar {
-  display: none;  /* Chrome, Safari, Opera */
+  display: none;
 }

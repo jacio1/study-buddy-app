@@ -32,7 +32,8 @@ export function TodoList({ sessionId, user }: TodoListProps) {
 
   useEffect(() => {
     loadTodos();
-    subscribeToTodos();
+    const cleanup = subscribeToTodos();
+    return cleanup;
   }, [sessionId]);
 
   const loadTodos = async () => {
@@ -151,18 +152,18 @@ export function TodoList({ sessionId, user }: TodoListProps) {
   return (
     <div className="flex flex-col h-full">
       <div className="mb-4">
-        <h3 className="text-lg font-semibold text-white mb-2">Список задач</h3>
+        <h3 className="text-lg font-semibold text-foreground mb-2">Список задач</h3>
         
         {/* Progress bar */}
         {totalCount > 0 && (
           <div className="mb-4">
-            <div className="flex items-center justify-between text-sm text-gray-400 mb-2">
+            <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
               <span>Прогресс</span>
               <span>{completedCount} из {totalCount}</span>
             </div>
-            <div className="w-full bg-gray-800 rounded-full h-2">
+            <div className="w-full bg-muted rounded-full h-2">
               <div
-                className="bg-purple-500 h-2 rounded-full transition-all duration-300"
+                className="bg-primary h-2 rounded-full transition-all duration-300"
                 style={{ width: `${progress}%` }}
               />
             </div>
@@ -176,13 +177,12 @@ export function TodoList({ sessionId, user }: TodoListProps) {
             value={newTodo}
             onChange={(e) => setNewTodo(e.target.value)}
             placeholder="Добавить задачу..."
-            className="flex-1 bg-gray-800 border-gray-700 text-white placeholder:text-gray-500"
+            className="flex-1"
           />
           <Button
             type="submit"
             disabled={loading || !newTodo.trim()}
-            size="sm"
-            className="bg-purple-600 hover:bg-purple-700"
+            size="icon"
           >
             <Plus className="h-4 w-4" />
           </Button>
@@ -192,7 +192,7 @@ export function TodoList({ sessionId, user }: TodoListProps) {
       {/* Todo list */}
       <div className="flex-1 overflow-y-auto space-y-2">
         {todos.length === 0 ? (
-          <div className="text-center py-12 text-gray-500">
+          <div className="text-center py-12 text-muted-foreground">
             <CheckCircle2 className="h-12 w-12 mx-auto mb-3 opacity-50" />
             <p>Нет задач. Добавьте первую!</p>
           </div>
@@ -203,14 +203,13 @@ export function TodoList({ sessionId, user }: TodoListProps) {
               className={cn(
                 "flex items-center gap-3 p-3 rounded-lg border transition-all group",
                 todo.completed
-                  ? "bg-gray-900 border-gray-800"
-                  : "bg-gray-800 border-gray-700 hover:border-purple-500/50"
+                  ? "bg-muted/50 border-border"
+                  : "bg-muted border-border hover:border-primary/50"
               )}
             >
               <Checkbox
                 checked={todo.completed}
                 onCheckedChange={() => toggleTodo(todo)}
-                className="border-gray-600"
               />
 
               <div className="flex-1 min-w-0">
@@ -218,14 +217,14 @@ export function TodoList({ sessionId, user }: TodoListProps) {
                   className={cn(
                     "text-sm transition-all",
                     todo.completed
-                      ? "line-through text-gray-500"
-                      : "text-white"
+                      ? "line-through text-muted-foreground"
+                      : "text-foreground"
                   )}
                 >
                   {todo.title}
                 </p>
                 {todo.completed && todo.completed_at && (
-                  <p className="text-xs text-gray-600 mt-1">
+                  <p className="text-xs text-muted-foreground/60 mt-1">
                     Завершено {new Date(todo.completed_at).toLocaleString('ru-RU', {
                       day: 'numeric',
                       month: 'short',
@@ -240,7 +239,7 @@ export function TodoList({ sessionId, user }: TodoListProps) {
                 variant="ghost"
                 size="icon"
                 onClick={() => deleteTodo(todo.id)}
-                className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-red-400 hover:bg-red-500/10"
+                className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive hover:bg-destructive/10"
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -251,8 +250,8 @@ export function TodoList({ sessionId, user }: TodoListProps) {
 
       {/* Stats */}
       {totalCount > 0 && (
-        <div className="mt-4 pt-4 border-t border-gray-800">
-          <div className="flex items-center justify-between text-sm text-gray-400">
+        <div className="mt-4 pt-4 border-t border-border">
+          <div className="flex items-center justify-between text-sm text-muted-foreground">
             <span>✓ {completedCount} завершено</span>
             <span>{totalCount - completedCount} осталось</span>
           </div>

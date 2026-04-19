@@ -4,7 +4,8 @@
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/src/lib/supabase";
 import { cn } from "@/src/lib/utils";
-import { Eraser, Pen, Trash2, Square, Circle, Undo2 } from "lucide-react";
+import { Eraser, Pen, Trash2, Square, Circle, Undo2, Redo2 } from "lucide-react";
+import { Button } from "../ui/button";
 
 type Stroke = {
   id: string;
@@ -38,7 +39,7 @@ export function SharedWhiteboard({ sessionId, userId }: SharedWhiteboardProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
-  const [color, setColor] = useState("#ffffff");
+  const [color, setColor] = useState("#3B82F6"); // primary цвет
   const [size, setSize] = useState(3);
   const [tool, setTool] = useState<"pen" | "eraser" | "rect" | "circle">("pen");
   const [isCanvasReady, setIsCanvasReady] = useState(false);
@@ -48,6 +49,13 @@ export function SharedWhiteboard({ sessionId, userId }: SharedWhiteboardProps) {
   
   const [strokes, setStrokes] = useState<(Stroke | ShapeStroke)[]>([]);
   const [redoStack, setRedoStack] = useState<(Stroke | ShapeStroke)[]>([]);
+
+  // Получаем текущий цвет фона для ластика
+  const getBackgroundColor = () => {
+    if (typeof window === 'undefined') return '#0B1121';
+    const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+    return isDark ? '#0B1121' : '#F8FAFC';
+  };
 
   // Подписка на штрихи других участников
   useEffect(() => {
@@ -68,11 +76,9 @@ export function SharedWhiteboard({ sessionId, userId }: SharedWhiteboardProps) {
           
           // Обработка события очистки
           if (newStroke.type === "clear") {
-            // Очищаем состояние
             setStrokes([]);
             setRedoStack([]);
             
-            // Немедленно очищаем canvas
             const canvas = canvasRef.current;
             const ctx = ctxRef.current;
             if (canvas && ctx && isCanvasReady) {
@@ -155,12 +161,13 @@ export function SharedWhiteboard({ sessionId, userId }: SharedWhiteboardProps) {
     const ctx = ctxRef.current;
     if (!canvas || !ctx) return;
     
+    const bgColor = getBackgroundColor();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
     strokes.forEach(stroke => {
       if ("points" in stroke) {
         const { points, color, size, tool } = stroke;
-        ctx.strokeStyle = tool === "eraser" ? "#1B1B1C" : color;
+        ctx.strokeStyle = tool === "eraser" ? bgColor : color;
         ctx.lineWidth = size;
         ctx.lineCap = "round";
         ctx.lineJoin = "round";
@@ -220,7 +227,7 @@ export function SharedWhiteboard({ sessionId, userId }: SharedWhiteboardProps) {
       
       const ctx = ctxRef.current;
       if (ctx) {
-        ctx.strokeStyle = tool === "eraser" ? "#1B1B1C" : color;
+        ctx.strokeStyle = tool === "eraser" ? getBackgroundColor() : color;
         ctx.lineWidth = size;
         ctx.beginPath();
         ctx.moveTo(x, y);
@@ -238,10 +245,12 @@ export function SharedWhiteboard({ sessionId, userId }: SharedWhiteboardProps) {
     const ctx = ctxRef.current;
     if (!ctx) return;
     
+    const bgColor = getBackgroundColor();
+    
     if ((tool === "pen" || tool === "eraser") && currentStrokeRef.current) {
       currentStrokeRef.current.points.push({ x, y });
       
-      ctx.strokeStyle = tool === "eraser" ? "#1B1B1C" : color;
+      ctx.strokeStyle = tool === "eraser" ? bgColor : color;
       ctx.lineWidth = size;
       ctx.lineTo(x, y);
       ctx.stroke();
@@ -259,7 +268,7 @@ export function SharedWhiteboard({ sessionId, userId }: SharedWhiteboardProps) {
       strokes.forEach(stroke => {
         if ("points" in stroke) {
           const { points, color, size, tool } = stroke;
-          ctx.strokeStyle = tool === "eraser" ? "#1B1B1C" : color;
+          ctx.strokeStyle = tool === "eraser" ? bgColor : color;
           ctx.lineWidth = size;
           
           if (points.length === 0) return;
@@ -363,12 +372,10 @@ export function SharedWhiteboard({ sessionId, userId }: SharedWhiteboardProps) {
     const ctx = ctxRef.current;
     if (!canvas || !ctx || !isCanvasReady) return;
     
-    // Очищаем локально
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     setStrokes([]);
     setRedoStack([]);
     
-    // Отправляем событие очистки всем участникам
     await supabase.from("whiteboard_strokes").insert([
       {
         session_id: sessionId,
@@ -394,76 +401,78 @@ export function SharedWhiteboard({ sessionId, userId }: SharedWhiteboardProps) {
 
   return (
     <div className="flex flex-col h-full gap-4">
-      <div className="flex gap-2 p-2 bg-gray-800 rounded-lg flex-wrap items-center">
-        <button
+      <div className="flex gap-2 p-2 bg-muted rounded-lg flex-wrap items-center">
+        <Button
+          variant={tool === "pen" ? "default" : "ghost"}
+          size="icon"
           onClick={() => setTool("pen")}
-          className={cn("p-2 rounded transition-colors", tool === "pen" && "bg-purple-600")}
           title="Кисть"
         >
           <Pen className="w-5 h-5" />
-        </button>
+        </Button>
         
-        <button
+        <Button
+          variant={tool === "eraser" ? "default" : "ghost"}
+          size="icon"
           onClick={() => setTool("eraser")}
-          className={cn("p-2 rounded transition-colors", tool === "eraser" && "bg-purple-600")}
           title="Ластик"
         >
           <Eraser className="w-5 h-5" />
-        </button>
+        </Button>
         
-        <button
+        <Button
+          variant={tool === "rect" ? "default" : "ghost"}
+          size="icon"
           onClick={() => setTool("rect")}
-          className={cn("p-2 rounded transition-colors", tool === "rect" && "bg-purple-600")}
           title="Прямоугольник"
         >
           <Square className="w-5 h-5" />
-        </button>
+        </Button>
         
-        <button
+        <Button
+          variant={tool === "circle" ? "default" : "ghost"}
+          size="icon"
           onClick={() => setTool("circle")}
-          className={cn("p-2 rounded transition-colors", tool === "circle" && "bg-purple-600")}
           title="Круг"
         >
           <Circle className="w-5 h-5" />
-        </button>
+        </Button>
         
-        <div className="w-px h-6 bg-gray-600 mx-1" />
+        <div className="w-px h-6 bg-border mx-1" />
         
         <input
           type="color"
           value={color}
           onChange={(e) => setColor(e.target.value)}
-          className="w-8 h-8 rounded cursor-pointer bg-transparent"
+          className="w-8 h-8 rounded cursor-pointer bg-transparent border border-border"
           title="Цвет"
         />
         
         <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-400">{size}px</span>
+          <span className="text-xs text-muted-foreground">{size}px</span>
           <input
             type="range"
             min={1}
             max={20}
             value={size}
             onChange={(e) => setSize(Number(e.target.value))}
-            className="w-24"
+            className="w-24 accent-primary"
           />
         </div>
         
-        <div className="w-px h-6 bg-gray-600 mx-1" />
+        <div className="w-px h-6 bg-border mx-1" />
         
-        <button onClick={undo} className="p-2 rounded hover:bg-gray-700" title="Отменить">
+        <Button variant="ghost" size="icon" onClick={undo} title="Отменить">
           <Undo2 className="w-5 h-5" />
-        </button>
+        </Button>
         
-        <button onClick={redo} className="p-2 rounded hover:bg-gray-700" title="Повторить">
-          <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M21 12a9 9 0 0 1-9 9m9-9h-4m4 0-4-4m-9 9H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5" />
-          </svg>
-        </button>
+        <Button variant="ghost" size="icon" onClick={redo} title="Повторить">
+          <Redo2 className="w-5 h-5" />
+        </Button>
         
-        <button onClick={clearCanvas} className="p-2 rounded bg-red-600 hover:bg-red-700" title="Очистить всё">
+        <Button variant="destructive" size="icon" onClick={clearCanvas} title="Очистить всё">
           <Trash2 className="w-5 h-5" />
-        </button>
+        </Button>
       </div>
 
       <canvas
@@ -472,7 +481,7 @@ export function SharedWhiteboard({ sessionId, userId }: SharedWhiteboardProps) {
         onMouseMove={draw}
         onMouseUp={stopDrawing}
         onMouseLeave={stopDrawing}
-        className="bg-gray-800 rounded-lg w-full h-full cursor-crosshair"
+        className="bg-muted rounded-lg w-full h-full cursor-crosshair"
         style={{ minHeight: "500px", width: "100%", height: "calc(100% - 60px)" }}
       />
     </div>

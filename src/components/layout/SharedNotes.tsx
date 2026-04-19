@@ -28,7 +28,8 @@ export function SharedNotes({ sessionId, user }: SharedNotesProps) {
 
   useEffect(() => {
     loadNotes();
-    subscribeToNotes();
+    const cleanup = subscribeToNotes();
+    return cleanup;
   }, [sessionId]);
 
   const loadNotes = async () => {
@@ -107,9 +108,9 @@ export function SharedNotes({ sessionId, user }: SharedNotesProps) {
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-lg font-semibold text-white">Общие заметки</h3>
+          <h3 className="text-lg font-semibold text-foreground">Общие заметки</h3>
           {lastSaved && (
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted-foreground">
               Сохранено: {lastSaved.toLocaleTimeString('ru-RU')}
             </p>
           )}
@@ -118,7 +119,6 @@ export function SharedNotes({ sessionId, user }: SharedNotesProps) {
           onClick={saveNotes}
           disabled={saving}
           size="sm"
-          className="bg-purple-600 hover:bg-purple-700"
         >
           {saving ? (
             <>
@@ -138,10 +138,10 @@ export function SharedNotes({ sessionId, user }: SharedNotesProps) {
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
         placeholder="Записывайте важные моменты, ключевые идеи, формулы..."
-        className="flex-1 resize-none bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 min-h-[300px]"
+        className="flex-1 resize-none min-h-75"
       />
 
-      <p className="text-xs text-gray-500 mt-2">
+      <p className="text-xs text-muted-foreground mt-2">
         💡 Заметки синхронизируются между вами и вашим напарником в реальном времени
       </p>
     </div>

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import {
   ArrowLeft, Calendar, User as UserIcon, BookOpen,
-  Clock, MessageCircle, Users, MapPin, Send,
+  Clock, MessageCircle, MapPin, Send,
 } from 'lucide-react';
 import { Profile, StudyListing, User } from '@/src/types/types';
 import { supabase } from '@/src/lib/supabase';
@@ -118,45 +118,43 @@ export default function ListingDetailPage() {
   };
 
   if (!listing) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--app-bg)' }}>
-      <div className="text-white">Загрузка...</div>
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="text-foreground">Загрузка...</div>
     </div>
   );
 
   const isMyListing = listing.user_id === user?.id;
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'var(--app-bg)' }}>
+    <div className="min-h-screen bg-background">
       <Header user={user} profile={profile} />
 
       <main className="container mx-auto px-4 py-8 max-w-3xl">
-        <Button variant="ghost" onClick={() => router.push('/')} className="mb-6 text-gray-400 hover:text-white">
+        <Button variant="ghost" onClick={() => router.push('/')} className="mb-6">
           <ArrowLeft className="h-4 w-4 mr-2" /> К объявлениям
         </Button>
 
-        <div className="rounded-2xl p-8 border"
-          style={{ backgroundColor: 'var(--app-card)', borderColor: 'var(--app-border)' }}>
+        <div className="rounded-2xl p-8 border border-border bg-card">
 
           {/* Title */}
           <div className="flex justify-between items-start mb-6 gap-4">
-            <h1 className="text-2xl font-bold text-white leading-snug flex-1">{listing.title}</h1>
-            <span className="px-3 py-1.5 rounded-lg text-sm font-medium flex-shrink-0"
-              style={{ backgroundColor: 'var(--app-input)', color: 'var(--app-text-muted)' }}>
+            <h1 className="text-2xl font-bold text-foreground leading-snug flex-1">{listing.title}</h1>
+            <span className="px-3 py-1.5 rounded-lg text-sm font-medium flex-shrink-0 bg-muted text-muted-foreground">
               {levelLabels[listing.level]}
             </span>
           </div>
 
           {/* Author */}
-          <div className="flex items-center gap-4 pb-6 mb-6 border-b" style={{ borderColor: 'var(--app-border)' }}>
+          <div className="flex items-center gap-4 pb-6 mb-6 border-b border-border">
             {listing.profiles?.avatar_url
               ? <img src={listing.profiles.avatar_url} className="w-12 h-12 rounded-2xl object-cover" alt="" />
-              : <div className="w-12 h-12 rounded-2xl bg-purple-600 flex items-center justify-center text-white font-bold text-xl">
+              : <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-primary-foreground font-bold text-xl">
                   {listing.profiles?.full_name?.[0]?.toUpperCase() ?? '?'}
                 </div>
             }
             <div>
-              <p className="text-white font-semibold">{listing.profiles?.full_name}</p>
-              <p className="text-sm text-gray-400 flex items-center gap-1.5">
+              <p className="text-foreground font-semibold">{listing.profiles?.full_name}</p>
+              <p className="text-sm text-muted-foreground flex items-center gap-1.5">
                 <Calendar className="h-3.5 w-3.5" />
                 {new Date(listing.created_at).toLocaleDateString('ru-RU', { year: 'numeric', month: 'long', day: 'numeric' })}
               </p>
@@ -166,25 +164,25 @@ export default function ListingDetailPage() {
           {/* Details */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-6">
             <Info label="Предмет" icon={<BookOpen className="h-4 w-4" />}>
-              <span className="text-purple-400 font-semibold text-lg">{listing.subject}</span>
+              <span className="text-primary font-semibold text-lg">{listing.subject}</span>
             </Info>
             <Info label="Формат" icon={<UserIcon className="h-4 w-4" />}>
-              <span className="text-gray-200">{formatLabels[listing.format ?? 'any']}</span>
+              <span className="text-foreground">{formatLabels[listing.format ?? 'any']}</span>
             </Info>
             {listing.city && (
               <Info label="Город" icon={<MapPin className="h-4 w-4" />}>
-                <span className="text-gray-200">{listing.city}</span>
+                <span className="text-foreground">{listing.city}</span>
               </Info>
             )}
             <Info label="Расписание" icon={<Clock className="h-4 w-4" />}>
-              <span className="text-gray-200">{listing.schedule}</span>
+              <span className="text-foreground">{listing.schedule}</span>
             </Info>
           </div>
 
           {/* Description */}
           <div className="mb-8">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Описание</p>
-            <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">{listing.description}</p>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Описание</p>
+            <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{listing.description}</p>
           </div>
 
           {/* Actions */}
@@ -192,14 +190,14 @@ export default function ListingDetailPage() {
             <>
               {proposed ? (
                 /* Success state after proposing */
-                <div className="rounded-xl p-5 text-center border border-emerald-500/20 bg-emerald-500/8">
-                  <p className="text-emerald-400 font-semibold mb-1">✅ Предложение отправлено!</p>
-                  <p className="text-sm text-gray-400">
+                <div className="rounded-xl p-5 text-center border border-secondary/20 bg-secondary/5">
+                  <p className="text-secondary font-semibold mb-1">✅ Предложение отправлено!</p>
+                  <p className="text-sm text-muted-foreground">
                     Ждите подтверждения от {listing.profiles?.full_name?.split(' ')[0] ?? 'автора'}
                   </p>
                   <button
                     onClick={() => router.push('/messages')}
-                    className="mt-3 text-sm text-purple-400 hover:text-purple-300 underline underline-offset-4">
+                    className="mt-3 text-sm text-primary hover:text-primary/80 underline underline-offset-4">
                     Написать в сообщениях
                   </button>
                 </div>
@@ -209,7 +207,7 @@ export default function ListingDetailPage() {
                   <Button
                     onClick={handleMessage}
                     disabled={loading}
-                    className="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-5 text-base"
+                    className="flex-1 py-5 text-base"
                   >
                     <MessageCircle className="h-5 w-5 mr-2" />
                     Написать сообщение
@@ -220,7 +218,7 @@ export default function ListingDetailPage() {
                     onClick={handleProposeSession}
                     disabled={loading}
                     variant="outline"
-                    className="flex-1 border-gray-700 text-gray-300 hover:text-white hover:bg-gray-800 py-5 text-base"
+                    className="flex-1 py-5 text-base"
                   >
                     <Send className="h-5 w-5 mr-2" />
                     {loading ? 'Отправка...' : 'Предложить сессию'}
@@ -229,14 +227,13 @@ export default function ListingDetailPage() {
               )}
 
               {!proposed && (
-                <p className="text-xs text-gray-600 text-center mt-3">
+                <p className="text-xs text-muted-foreground/60 text-center mt-3">
                   «Предложить сессию» отправит запрос — сессия начнётся только после подтверждения
                 </p>
               )}
             </>
           ) : (
-            <div className="rounded-xl p-4 text-center text-sm"
-              style={{ backgroundColor: 'var(--app-input)', color: 'var(--app-text-muted)' }}>
+            <div className="rounded-xl p-4 text-center text-sm bg-muted text-muted-foreground">
               Это ваше объявление
             </div>
           )}
@@ -249,7 +246,7 @@ export default function ListingDetailPage() {
 function Info({ label, icon, children }: { label: string; icon: React.ReactNode; children: React.ReactNode }) {
   return (
     <div>
-      <div className="flex items-center gap-2 text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">
+      <div className="flex items-center gap-2 text-muted-foreground text-xs font-semibold uppercase tracking-wider mb-1.5">
         {icon}{label}
       </div>
       {children}

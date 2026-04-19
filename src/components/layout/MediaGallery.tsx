@@ -23,22 +23,22 @@ function formatBytes(b: number) {
 
 function FileTypeIcon({ name }: { name: string }) {
   const ext = name.split('.').pop()?.toLowerCase() ?? '';
-  if (ext === 'pdf')                                             return <FileText        className="h-6 w-6 text-red-400"     />;
-  if (['xls','xlsx','csv'].includes(ext))                        return <FileSpreadsheet className="h-6 w-6 text-emerald-400" />;
+  if (ext === 'pdf')                                             return <FileText        className="h-6 w-6 text-destructive"     />;
+  if (['xls','xlsx','csv'].includes(ext))                        return <FileSpreadsheet className="h-6 w-6 text-secondary" />;
   if (['js','ts','py','java','cpp','html','css','json','go','rs'].includes(ext))
-                                                                 return <FileCode        className="h-6 w-6 text-blue-400"    />;
-  if (['zip','rar','7z','tar','gz'].includes(ext))               return <FileArchive     className="h-6 w-6 text-amber-400"   />;
-  return <File className="h-6 w-6 text-gray-400" />;
+                                                                 return <FileCode        className="h-6 w-6 text-primary"    />;
+  if (['zip','rar','7z','tar','gz'].includes(ext))               return <FileArchive     className="h-6 w-6 text-accent"   />;
+  return <File className="h-6 w-6 text-muted-foreground" />;
 }
 
 function extColor(name: string): string {
   const ext = name.split('.').pop()?.toLowerCase() ?? '';
-  if (ext === 'pdf')                              return 'bg-red-500/10     border-red-500/20';
-  if (['xls','xlsx','csv'].includes(ext))         return 'bg-emerald-500/10 border-emerald-500/20';
-  if (['zip','rar','7z','tar','gz'].includes(ext))return 'bg-amber-500/10  border-amber-500/20';
+  if (ext === 'pdf')                              return 'bg-destructive/10 border-destructive/20';
+  if (['xls','xlsx','csv'].includes(ext))         return 'bg-secondary/10 border-secondary/20';
+  if (['zip','rar','7z','tar','gz'].includes(ext))return 'bg-accent/10 border-accent/20';
   if (['js','ts','py','html','css','json','go','rs','java','cpp'].includes(ext))
-                                                  return 'bg-blue-500/10   border-blue-500/20';
-  return 'bg-gray-800 border-gray-700';
+                                                  return 'bg-primary/10 border-primary/20';
+  return 'bg-muted border-border';
 }
 
 export function MediaGallery({ sessionId }: MediaGalleryProps) {
@@ -94,14 +94,14 @@ export function MediaGallery({ sessionId }: MediaGalleryProps) {
           className={cn(
             'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border transition-all',
             tab === 'images'
-              ? 'bg-purple-600/20 border-purple-500/40 text-purple-300'
-              : 'bg-gray-800 border-gray-700 text-gray-400 hover:text-white hover:border-gray-600'
+              ? 'bg-primary/20 border-primary/40 text-primary'
+              : 'bg-muted border-border text-muted-foreground hover:text-foreground hover:border-primary/50'
           )}
         >
           <ImageIcon className="h-4 w-4" />
           Изображения
           {images.length > 0 && (
-            <span className="px-1.5 py-0.5 rounded-full bg-purple-600/30 text-purple-300 text-xs font-bold">
+            <span className="px-1.5 py-0.5 rounded-full bg-primary/30 text-primary text-xs font-bold">
               {images.length}
             </span>
           )}
@@ -112,14 +112,14 @@ export function MediaGallery({ sessionId }: MediaGalleryProps) {
           className={cn(
             'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border transition-all',
             tab === 'files'
-              ? 'bg-purple-600/20 border-purple-500/40 text-purple-300'
-              : 'bg-gray-800 border-gray-700 text-gray-400 hover:text-white hover:border-gray-600'
+              ? 'bg-primary/20 border-primary/40 text-primary'
+              : 'bg-muted border-border text-muted-foreground hover:text-foreground hover:border-primary/50'
           )}
         >
           <FolderOpen className="h-4 w-4" />
           Файлы
           {files.length > 0 && (
-            <span className="px-1.5 py-0.5 rounded-full bg-purple-600/30 text-purple-300 text-xs font-bold">
+            <span className="px-1.5 py-0.5 rounded-full bg-primary/30 text-primary text-xs font-bold">
               {files.length}
             </span>
           )}
@@ -129,7 +129,7 @@ export function MediaGallery({ sessionId }: MediaGalleryProps) {
       {/* Content */}
       {loading ? (
         <div className="flex-1 flex items-center justify-center">
-          <Loader2 className="h-6 w-6 text-purple-400 animate-spin" />
+          <Loader2 className="h-6 w-6 text-primary animate-spin" />
         </div>
 
       ) : tab === 'images' ? (
@@ -142,7 +142,7 @@ export function MediaGallery({ sessionId }: MediaGalleryProps) {
                 <button
                   key={msg.id}
                   onClick={() => setLightbox(msg.image_url!)}
-                  className="group relative aspect-square rounded-xl overflow-hidden border border-gray-800 hover:border-purple-500/50 transition-all"
+                  className="group relative aspect-square rounded-xl overflow-hidden border border-border hover:border-primary/50 transition-all"
                 >
                   <img
                     src={msg.image_url!}
@@ -180,29 +180,29 @@ export function MediaGallery({ sessionId }: MediaGalleryProps) {
                 )}
               >
                 {/* Icon */}
-                <div className="w-11 h-11 rounded-lg bg-gray-800/80 flex items-center justify-center flex-shrink-0 border border-gray-700">
+                <div className="w-11 h-11 rounded-lg bg-muted flex items-center justify-center flex-shrink-0 border border-border">
                   <FileTypeIcon name={msg.file_name ?? ''} />
                 </div>
 
                 {/* Info */}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-white font-medium truncate leading-tight">
+                  <p className="text-sm text-foreground font-medium truncate leading-tight">
                     {msg.file_name ?? 'Файл'}
                   </p>
                   <div className="flex items-center gap-2 mt-0.5">
                     {msg.file_size != null && (
-                      <span className="text-xs text-gray-400">{formatBytes(msg.file_size)}</span>
+                      <span className="text-xs text-muted-foreground">{formatBytes(msg.file_size)}</span>
                     )}
-                    <span className="text-xs text-gray-600">·</span>
-                    <span className="text-xs text-gray-500 truncate">{msg.profiles?.full_name}</span>
-                    <span className="text-xs text-gray-600">·</span>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-muted-foreground/40">·</span>
+                    <span className="text-xs text-muted-foreground truncate">{msg.profiles?.full_name}</span>
+                    <span className="text-xs text-muted-foreground/40">·</span>
+                    <span className="text-xs text-muted-foreground">
                       {new Date(msg.created_at).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })}
                     </span>
                   </div>
                 </div>
 
-                <Download className="h-4 w-4 text-gray-500 flex-shrink-0" />
+                <Download className="h-4 w-4 text-muted-foreground flex-shrink-0" />
               </a>
             ))}
           </div>
@@ -246,9 +246,9 @@ export function MediaGallery({ sessionId }: MediaGalleryProps) {
 function Empty({ icon, text, sub }: { icon: React.ReactNode; text: string; sub: string }) {
   return (
     <div className="flex-1 flex flex-col items-center justify-center text-center py-12">
-      <div className="text-gray-700 mb-3">{icon}</div>
-      <p className="text-gray-400 font-medium">{text}</p>
-      <p className="text-gray-600 text-sm mt-1">{sub}</p>
+      <div className="text-muted-foreground/30 mb-3">{icon}</div>
+      <p className="text-muted-foreground font-medium">{text}</p>
+      <p className="text-muted-foreground/60 text-sm mt-1">{sub}</p>
     </div>
   );
 }

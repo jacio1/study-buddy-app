@@ -9,7 +9,6 @@ import { Header } from '@/src/components/layout/Header';
 import { Button } from '@/src/components/ui/button';
 import { Label } from '@/src/components/ui/label';
 import { Input } from '@/src/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/components/ui/select';
 import { Textarea } from '@/src/components/ui/textarea';
 import { cn } from '@/src/lib/utils';
 import { CATEGORIES } from '@/src/constants/listingConstants';
@@ -67,35 +66,34 @@ export default function CreateListingPage() {
   const set = (key: string, val: string) => setFormData((p) => ({ ...p, [key]: val }));
 
   return (
-    <div className="min-h-screen bg-[#1B1B1C]">
+    <div className="min-h-screen bg-background">
       <Header user={user} profile={profile} />
 
       <main className="container mx-auto px-4 py-8 max-w-2xl">
-        <Button variant="ghost" onClick={() => router.push('/')} className="mb-6 text-gray-400 hover:text-white">
+        <Button variant="ghost" onClick={() => router.push('/')} className="mb-6">
           <ArrowLeft className="h-4 w-4 mr-2" />
           Назад
         </Button>
 
-        <div className="bg-gray-900 rounded-xl p-8 border border-gray-800">
-          <h1 className="text-2xl font-bold text-white mb-1">Создать объявление</h1>
-          <p className="text-gray-400 text-sm mb-8">Расскажите, кого и для чего ищете</p>
+        <div className="bg-card rounded-xl p-8 border border-border">
+          <h1 className="text-2xl font-bold text-foreground mb-1">Создать объявление</h1>
+          <p className="text-muted-foreground text-sm mb-8">Расскажите, кого и для чего ищете</p>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Title */}
             <div className="space-y-2">
-              <Label className="text-white text-sm">Название объявления</Label>
+              <Label className="text-foreground text-sm">Название объявления</Label>
               <Input
                 placeholder="Ищу напарника для изучения React с нуля"
                 value={formData.title}
                 onChange={(e) => set('title', e.target.value)}
                 required
-                className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500"
               />
             </div>
 
             {/* Category */}
             <div className="space-y-2">
-              <Label className="text-white text-sm">Категория</Label>
+              <Label className="text-foreground text-sm">Категория</Label>
               <div className="grid grid-cols-2 gap-2">
                 {CATEGORIES.map((cat) => (
                   <button
@@ -105,8 +103,8 @@ export default function CreateListingPage() {
                     className={cn(
                       'px-3 py-2.5 rounded-lg text-sm text-left border transition-all',
                       formData.category === cat.id
-                        ? 'bg-purple-600/20 border-purple-500/50 text-purple-200'
-                        : 'bg-gray-800 border-gray-700 text-gray-400 hover:text-white hover:border-gray-600'
+                        ? 'bg-primary/20 border-primary/50 text-primary'
+                        : 'bg-muted border-border text-muted-foreground hover:text-foreground hover:border-primary/50'
                     )}
                   >
                     {cat.label}
@@ -117,19 +115,18 @@ export default function CreateListingPage() {
 
             {/* Subject */}
             <div className="space-y-2">
-              <Label className="text-white text-sm">Конкретный предмет / тема</Label>
+              <Label className="text-foreground text-sm">Конкретный предмет / тема</Label>
               <Input
                 placeholder="React, Испанский язык, Линейная алгебра…"
                 value={formData.subject}
                 onChange={(e) => set('subject', e.target.value)}
                 required
-                className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500"
               />
             </div>
 
             {/* Level */}
             <div className="space-y-2">
-              <Label className="text-white text-sm">Ваш уровень</Label>
+              <Label className="text-foreground text-sm">Ваш уровень</Label>
               <div className="grid grid-cols-3 gap-2">
                 {([
                   ['beginner',     '🌱', 'Начинающий'],
@@ -143,8 +140,8 @@ export default function CreateListingPage() {
                     className={cn(
                       'flex flex-col items-center gap-1 py-3 rounded-lg border text-sm font-medium transition-all',
                       formData.level === val
-                        ? 'bg-purple-600/20 border-purple-500/50 text-purple-200'
-                        : 'bg-gray-800 border-gray-700 text-gray-400 hover:text-white hover:border-gray-600'
+                        ? 'bg-primary/20 border-primary/50 text-primary'
+                        : 'bg-muted border-border text-muted-foreground hover:text-foreground hover:border-primary/50'
                     )}
                   >
                     <span className="text-xl">{icon}</span>
@@ -156,7 +153,7 @@ export default function CreateListingPage() {
 
             {/* Format */}
             <div className="space-y-2">
-              <Label className="text-white text-sm">Формат занятий</Label>
+              <Label className="text-foreground text-sm">Формат занятий</Label>
               <div className="grid grid-cols-3 gap-2">
                 {([
                   ['online',  '💻', 'Онлайн'],
@@ -170,8 +167,8 @@ export default function CreateListingPage() {
                     className={cn(
                       'flex flex-col items-center gap-1 py-3 rounded-lg border text-sm font-medium transition-all',
                       formData.format === val
-                        ? 'bg-purple-600/20 border-purple-500/50 text-purple-200'
-                        : 'bg-gray-800 border-gray-700 text-gray-400 hover:text-white hover:border-gray-600'
+                        ? 'bg-primary/20 border-primary/50 text-primary'
+                        : 'bg-muted border-border text-muted-foreground hover:text-foreground hover:border-primary/50'
                     )}
                   >
                     <span className="text-xl">{icon}</span>
@@ -183,51 +180,49 @@ export default function CreateListingPage() {
 
             {/* City (shown always, optional) */}
             <div className="space-y-2">
-              <Label className="text-white text-sm flex items-center gap-2">
-                <MapPin className="h-3.5 w-3.5 text-gray-500" />
+              <Label className="text-foreground text-sm flex items-center gap-2">
+                <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
                 Город
-                <span className="text-gray-500 font-normal text-xs">(необязательно)</span>
+                <span className="text-muted-foreground font-normal text-xs">(необязательно)</span>
               </Label>
               <Input
                 placeholder="Москва, Минск, Берлин…"
                 value={formData.city}
                 onChange={(e) => set('city', e.target.value)}
-                className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500"
               />
-              <p className="text-xs text-gray-600">
+              <p className="text-xs text-muted-foreground/60">
                 Укажите, если ищете кого-то из своего города для встреч офлайн
               </p>
             </div>
 
             {/* Description */}
             <div className="space-y-2">
-              <Label className="text-white text-sm">Описание</Label>
+              <Label className="text-foreground text-sm">Описание</Label>
               <Textarea
                 rows={4}
                 placeholder="Что именно хотите изучить, какие цели, что уже знаете…"
                 value={formData.description}
                 onChange={(e) => set('description', e.target.value)}
                 required
-                className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 resize-none"
+                className="resize-none"
               />
             </div>
 
             {/* Schedule */}
             <div className="space-y-2">
-              <Label className="text-white text-sm">Расписание / доступность</Label>
+              <Label className="text-foreground text-sm">Расписание / доступность</Label>
               <Input
                 placeholder="Вечера по будням, выходные, гибко…"
                 value={formData.schedule}
                 onChange={(e) => set('schedule', e.target.value)}
                 required
-                className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500"
               />
             </div>
 
             <Button
               type="submit"
               disabled={loading}
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white py-5"
+              className="w-full py-5 text-base"
             >
               {loading ? 'Публикация...' : 'Опубликовать объявление'}
             </Button>

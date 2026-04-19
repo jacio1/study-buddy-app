@@ -8,9 +8,9 @@ import { Button } from '../ui/button';
 type TimerMode = 'work' | 'shortBreak' | 'longBreak';
 
 const TIMER_CONFIGS = {
-  work: { duration: 25 * 60, label: 'Работа', color: 'text-purple-400' },
-  shortBreak: { duration: 5 * 60, label: 'Короткий перерыв', color: 'text-green-400' },
-  longBreak: { duration: 15 * 60, label: 'Длинный перерыв', color: 'text-blue-400' }
+  work: { duration: 25 * 60, label: 'Работа', color: 'text-primary' },
+  shortBreak: { duration: 5 * 60, label: 'Короткий перерыв', color: 'text-secondary' },
+  longBreak: { duration: 15 * 60, label: 'Длинный перерыв', color: 'text-accent' }
 };
 
 export function PomodoroTimer() {
@@ -116,13 +116,13 @@ export function PomodoroTimer() {
   return (
     <div className="flex flex-col items-center">
       <div className="mb-6">
-        <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
           <Timer className="h-5 w-5" />
           Помодоро таймер
         </h3>
         
         {/* Mode selector */}
-        <div className="flex gap-2 bg-gray-800 p-1 rounded-lg">
+        <div className="flex gap-2 bg-muted p-1 rounded-lg">
           {(Object.keys(TIMER_CONFIGS) as TimerMode[]).map((m) => (
             <button
               key={m}
@@ -130,8 +130,8 @@ export function PomodoroTimer() {
               className={cn(
                 "px-4 py-2 rounded-md text-sm font-medium transition-colors",
                 mode === m
-                  ? "bg-purple-600 text-white"
-                  : "text-gray-400 hover:text-white hover:bg-gray-700"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-background/50"
               )}
             >
               {TIMER_CONFIGS[m].label}
@@ -151,7 +151,7 @@ export function PomodoroTimer() {
             stroke="currentColor"
             strokeWidth="8"
             fill="none"
-            className="text-gray-800"
+            className="text-muted"
           />
           <circle
             cx="140"
@@ -164,8 +164,8 @@ export function PomodoroTimer() {
             strokeDashoffset={`${2 * Math.PI * 130 * (1 - progress / 100)}`}
             className={cn(
               "transition-all duration-1000",
-              mode === 'work' ? 'text-purple-500' :
-              mode === 'shortBreak' ? 'text-green-500' : 'text-blue-500'
+              mode === 'work' ? 'text-primary' :
+              mode === 'shortBreak' ? 'text-secondary' : 'text-accent'
             )}
             strokeLinecap="round"
           />
@@ -179,7 +179,7 @@ export function PomodoroTimer() {
           )}>
             {formatTime(timeLeft)}
           </div>
-          <div className="text-sm text-gray-400 mt-2">
+          <div className="text-sm text-muted-foreground mt-2">
             {TIMER_CONFIGS[mode].label}
           </div>
         </div>
@@ -193,8 +193,8 @@ export function PomodoroTimer() {
           className={cn(
             "w-32",
             isRunning
-              ? "bg-yellow-600 hover:bg-yellow-700"
-              : "bg-purple-600 hover:bg-purple-700"
+              ? "bg-accent hover:bg-accent/80"
+              : ""
           )}
         >
           {isRunning ? (
@@ -214,17 +214,16 @@ export function PomodoroTimer() {
           onClick={resetTimer}
           size="lg"
           variant="outline"
-          className="border-gray-700 hover:bg-gray-800"
         >
           <RotateCcw className="h-5 w-5" />
         </Button>
       </div>
 
       {/* Stats */}
-      <div className="bg-gray-800 rounded-lg p-4 w-full">
+      <div className="bg-muted rounded-lg p-4 w-full">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-gray-400">Завершено помодоро:</span>
-          <span className="font-semibold text-purple-400 text-lg">
+          <span className="text-muted-foreground">Завершено помодоро:</span>
+          <span className="font-semibold text-primary text-lg">
             {completedPomodoros}
           </span>
         </div>
@@ -235,13 +234,13 @@ export function PomodoroTimer() {
               className={cn(
                 "flex-1 h-2 rounded-full",
                 i < completedPomodoros % 4
-                  ? "bg-purple-500"
-                  : "bg-gray-700"
+                  ? "bg-primary"
+                  : "bg-border"
               )}
             />
           ))}
         </div>
-        <p className="text-xs text-gray-500 mt-2 text-center">
+        <p className="text-xs text-muted-foreground mt-2 text-center">
           {completedPomodoros % 4 === 0 && completedPomodoros > 0
             ? "Время для длинного перерыва!"
             : `${4 - (completedPomodoros % 4)} до длинного перерыва`}

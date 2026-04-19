@@ -6,7 +6,7 @@ import {
   ArrowLeft, StickyNote, Timer, ListChecks, FolderOpen,
   CheckCircle, XCircle, Trash2, Clock, Archive, Loader2,
   Download, File, Menu, X, Paperclip, Image, Send, Mic,
-  ChevronLeft, Users, Volume2, VolumeX,
+  Users, Volume2, VolumeX,
 } from 'lucide-react';
 import { Message, Profile, StudySession, User } from '@/src/types/types';
 import { supabase } from '@/src/lib/supabase';
@@ -19,6 +19,7 @@ import { PomodoroTimer } from '@/src/components/layout/PomodoroTimer';
 import { TodoList } from '@/src/components/layout/TodoList';
 import { MediaGallery } from '@/src/components/layout/MediaGallery';
 import { cn } from '@/src/lib/utils';
+import { ChatInput } from '@/src/components/layout/ChatInput';
 
 type ToolTab = 'notes' | 'pomodoro' | 'todos' | 'media' | 'participants';
 
@@ -67,31 +68,27 @@ function ConfirmBanner({ session, userId, profile, onUpdate }: {
   const iInitiated = session.initiated_by === userId;
 
   if (iInitiated) return (
-    <div className="px-4 py-3 border-b flex items-center gap-2 bg-amber-500/8"
-      style={{ borderColor: 'var(--app-border)' }}>
-      <Clock className="h-4 w-4 text-amber-400 flex-shrink-0" />
-      <p className="text-sm text-amber-300">Ждём подтверждения от второго участника…</p>
+    <div className="px-4 py-3 border-b border-border flex items-center gap-2 bg-accent/5">
+      <Clock className="h-4 w-4 text-accent flex-shrink-0" />
+      <p className="text-sm text-accent/80">Ждём подтверждения от второго участника…</p>
     </div>
   );
 
   return (
-    <div className="px-4 py-3 border-b flex items-center justify-between gap-4 bg-purple-500/8"
-      style={{ borderColor: 'var(--app-border)' }}>
+    <div className="px-4 py-3 border-b border-border flex items-center justify-between gap-4 bg-primary/5">
       <div className="flex items-center gap-2">
-        <CheckCircle className="h-4 w-4 text-purple-400 flex-shrink-0" />
-        <p className="text-sm text-purple-300 font-medium">Вас приглашают в совместную сессию</p>
+        <CheckCircle className="h-4 w-4 text-primary flex-shrink-0" />
+        <p className="text-sm text-primary font-medium">Вас приглашают в совместную сессию</p>
       </div>
       <div className="flex gap-2 flex-shrink-0">
-        <button onClick={accept} disabled={busy}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-xs font-medium transition-colors">
+        <Button onClick={accept} disabled={busy} size="sm">
           {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle className="h-3.5 w-3.5" />}
           Принять
-        </button>
-        <button onClick={decline} disabled={busy}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/15 text-red-400 text-xs border border-red-500/25 hover:bg-red-500/25 transition-colors">
+        </Button>
+        <Button onClick={decline} disabled={busy} variant="destructive" size="sm">
           <XCircle className="h-3.5 w-3.5" />
           Отклонить
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -115,14 +112,14 @@ function ArchiveView({ sessionId }: { sessionId: string }) {
 
   if (loading) return (
     <div className="flex items-center justify-center py-20">
-      <Loader2 className="h-6 w-6 text-purple-400 animate-spin" />
+      <Loader2 className="h-6 w-6 text-primary animate-spin" />
     </div>
   );
 
   if (messages.length === 0) return (
     <div className="flex flex-col items-center py-20 text-center">
-      <Archive className="h-10 w-10 text-gray-700 mb-4" />
-      <p className="text-gray-400">Сообщений нет</p>
+      <Archive className="h-10 w-10 text-muted-foreground/30 mb-4" />
+      <p className="text-muted-foreground">Сообщений нет</p>
     </div>
   );
 
@@ -134,26 +131,25 @@ function ArchiveView({ sessionId }: { sessionId: string }) {
           <div key={msg.id} className={cn('flex mb-2', isOwn ? 'justify-end' : 'justify-start')}>
             <div className={cn(
               'max-w-[72%] rounded-2xl overflow-hidden px-4 py-2.5',
-              isOwn ? 'bg-purple-600/70 text-white rounded-br-sm' : 'rounded-bl-sm',
-            )} style={!isOwn ? { backgroundColor: 'var(--app-input)', color: 'var(--app-text)' } : {}}>
+              isOwn ? 'bg-primary/70 text-primary-foreground rounded-br-sm' : 'bg-muted text-foreground rounded-bl-sm',
+            )}>
               {!isOwn && (
-                <p className="text-xs font-semibold text-purple-400 mb-1 opacity-80">{msg.profiles?.full_name}</p>
+                <p className="text-xs font-semibold text-primary mb-1 opacity-80">{msg.profiles?.full_name}</p>
               )}
               {msg.image_url && (
                 <img src={msg.image_url} className="rounded-xl max-h-64 w-full object-cover mb-2 block" alt="" />
               )}
               {msg.file_url && (
                 <a href={msg.file_url} download={msg.file_name ?? true} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl border mb-2 hover:opacity-80 transition-opacity"
-                  style={{ backgroundColor: 'var(--app-input)', borderColor: 'var(--app-border)' }}>
-                  <File className="h-4 w-4 text-purple-400 flex-shrink-0" />
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border mb-2 hover:opacity-80 transition-opacity bg-background/50">
+                  <File className="h-4 w-4 text-primary flex-shrink-0" />
                   <span className="text-xs truncate flex-1">{msg.file_name}</span>
-                  {msg.file_size && <span className="text-xs text-gray-500">{formatBytes(msg.file_size)}</span>}
-                  <Download className="h-3.5 w-3.5 text-gray-400 flex-shrink-0" />
+                  {msg.file_size && <span className="text-xs text-muted-foreground">{formatBytes(msg.file_size)}</span>}
+                  <Download className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
                 </a>
               )}
               {msg.content && <p className="text-sm leading-relaxed break-words whitespace-pre-wrap">{msg.content}</p>}
-              <p className={cn('text-[10px] mt-1', isOwn ? 'text-purple-200 text-right' : 'text-gray-500')}>
+              <p className={cn('text-[10px] mt-1', isOwn ? 'text-primary-foreground/60 text-right' : 'text-muted-foreground')}>
                 {new Date(msg.created_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
               </p>
             </div>
@@ -217,23 +213,21 @@ function CustomChatInput({ sessionId, user, disabled }: { sessionId: string; use
   };
 
   return (
-    <div className="p-4 border-t flex-shrink-0" style={{ borderColor: 'var(--app-border)' }}>
+    <div className="p-4 border-t border-border flex-shrink-0">
       <div className="flex items-end gap-2">
         {/* Иконки слева */}
         <div className="flex items-center gap-1 flex-shrink-0">
           <button
             onClick={() => imageInputRef.current?.click()}
             disabled={disabled || uploading}
-            className="p-2 rounded-lg hover:bg-gray-700/50 transition-colors disabled:opacity-50"
-            style={{ color: 'var(--app-text-secondary)' }}
+            className="p-2 rounded-lg hover:bg-muted transition-colors disabled:opacity-50 text-muted-foreground hover:text-foreground"
           >
             <Image className="h-5 w-5" />
           </button>
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={disabled || uploading}
-            className="p-2 rounded-lg hover:bg-gray-700/50 transition-colors disabled:opacity-50"
-            style={{ color: 'var(--app-text-secondary)' }}
+            className="p-2 rounded-lg hover:bg-muted transition-colors disabled:opacity-50 text-muted-foreground hover:text-foreground"
           >
             <Paperclip className="h-5 w-5" />
           </button>
@@ -247,28 +241,24 @@ function CustomChatInput({ sessionId, user, disabled }: { sessionId: string; use
             onKeyPress={handleKeyPress}
             placeholder={disabled ? "Чат недоступен" : "Напишите сообщение..."}
             disabled={disabled || uploading}
-            className="w-full px-4 py-2.5 rounded-xl resize-none text-sm min-h-[44px] max-h-32"
-            style={{ 
-              backgroundColor: 'var(--app-input)', 
-              color: 'var(--app-text)',
-              border: '1px solid var(--app-border)'
-            }}
+            className="w-full px-4 py-2.5 rounded-xl resize-none text-sm min-h-[44px] max-h-32 bg-muted border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
             rows={1}
           />
         </div>
 
         {/* Кнопка отправки */}
-        <button
+        <Button
           onClick={() => sendMessage()}
           disabled={!message.trim() || disabled || uploading}
-          className="p-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:hover:bg-purple-600 transition-colors flex-shrink-0"
+          size="icon"
+          className="h-11 w-11 flex-shrink-0"
         >
           {uploading ? (
-            <Loader2 className="h-5 w-5 text-white animate-spin" />
+            <Loader2 className="h-5 w-5 animate-spin" />
           ) : (
-            <Send className="h-5 w-5 text-white" />
+            <Send className="h-5 w-5" />
           )}
-        </button>
+        </Button>
       </div>
       <input
         ref={imageInputRef}
@@ -319,7 +309,7 @@ function ParticipantsPanel({ session, userId }: { session: StudySession; userId:
   if (loading) {
     return (
       <div className="flex justify-center py-8">
-        <Loader2 className="h-5 w-5 text-purple-400 animate-spin" />
+        <Loader2 className="h-5 w-5 text-primary animate-spin" />
       </div>
     );
   }
@@ -327,20 +317,20 @@ function ParticipantsPanel({ session, userId }: { session: StudySession; userId:
   return (
     <div className="space-y-3 p-3">
       {participants.map(participant => (
-        <div key={participant.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-700/30 transition-colors">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-semibold">
+        <div key={participant.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground font-semibold">
             {participant.full_name?.[0]?.toUpperCase() || '?'}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-white truncate">
+            <p className="text-sm font-medium text-foreground truncate">
               {participant.full_name || 'Пользователь'}
             </p>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-muted-foreground">
               {participant.id === userId ? 'Вы' : 'Участник'}
             </p>
           </div>
           {participant.id !== userId && (
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            <div className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
           )}
         </div>
       ))}
@@ -435,8 +425,8 @@ export default function SessionPage() {
   };
 
   if (!session || !user) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--app-bg)' }}>
-      <Loader2 className="h-8 w-8 text-purple-500 animate-spin" />
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <Loader2 className="h-8 w-8 text-primary animate-spin" />
     </div>
   );
 
@@ -452,88 +442,71 @@ export default function SessionPage() {
     { id: 'participants', label: 'Участники',  icon: Users      },
   ];
 
-  const getToolTitle = (tab: ToolTab) => {
-    const titles: Record<ToolTab, string> = {
-      notes: 'Заметки',
-      todos: 'Задачи',
-      pomodoro: 'Помодоро',
-      media: 'Медиа',
-      participants: 'Участники',
-    };
-    return titles[tab];
-  };
-
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--app-bg)' }}>
+    <div className="min-h-screen flex flex-col bg-background">
       <Header user={user} profile={profile} />
 
       <main className="flex-1 container mx-auto px-2 sm:px-4 py-4 sm:py-6 flex flex-col max-w-7xl">
-        {/* Top bar - только название и предмет + кнопка голосового чата */}
+        {/* Top bar */}
         <div className="flex justify-between items-center gap-3 mb-4 sm:mb-5">
           <div className="flex items-center gap-3 flex-1 min-w-0">
-            <Button variant="ghost" size="icon" onClick={() => router.push('/')}
-              className="text-gray-400 hover:text-white flex-shrink-0">
+            <Button variant="ghost" size="icon" onClick={() => router.push('/')}>
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div className="flex-1 min-w-0">
-              <h1 className="text-lg sm:text-xl font-bold text-white truncate">{session.study_listings?.title}</h1>
-              <p className="text-purple-400 text-sm truncate">{session.study_listings?.subject}</p>
+              <h1 className="text-lg sm:text-xl font-bold text-foreground truncate">{session.study_listings?.title}</h1>
+              <p className="text-primary text-sm truncate">{session.study_listings?.subject}</p>
             </div>
           </div>
 
           {/* Кнопка голосового чата справа */}
           {isActive && (
-            <button
+            <Button
+              variant="outline"
               onClick={() => setIsVoiceEnabled(!isVoiceEnabled)}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium text-gray-300 hover:text-white transition-colors flex-shrink-0"
-              style={{ borderColor: 'var(--app-border)', backgroundColor: 'var(--app-input)' }}
+              className="gap-2"
             >
               {isVoiceEnabled ? <Mic className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
               <span>Голосовой чат</span>
-            </button>
+            </Button>
           )}
           
           {/* Mobile tools toggle */}
           {!isArchived && (
-            <button
+            <Button
+              variant="outline"
+              size="icon"
               onClick={() => setShowMobileTools(!showMobileTools)}
-              className="lg:hidden p-2 rounded-xl border flex-shrink-0"
-              style={{ 
-                backgroundColor: 'var(--app-card)', 
-                borderColor: 'var(--app-border)',
-                color: 'var(--app-text)'
-              }}
+              className="lg:hidden"
             >
               {showMobileTools ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </button>
+            </Button>
           )}
         </div>
 
         {/* Статус сессии (ожидает/активна) */}
         {isPending && (
-          <div className="mb-4 rounded-xl overflow-hidden border" style={{ borderColor: 'var(--app-border)' }}>
-            <div className="px-4 py-3 flex items-center gap-2 bg-amber-500/8">
-              <Clock className="h-4 w-4 text-amber-400 flex-shrink-0" />
-              <p className="text-sm text-amber-300">Ожидание подтверждения сессии</p>
+          <div className="mb-4 rounded-xl overflow-hidden border border-border">
+            <div className="px-4 py-3 flex items-center gap-2 bg-accent/5">
+              <Clock className="h-4 w-4 text-accent flex-shrink-0" />
+              <p className="text-sm text-accent/80">Ожидание подтверждения сессии</p>
             </div>
           </div>
         )}
 
         {/* Confirmation banner для приглашения */}
         {isPending && session.initiated_by !== user.id && (
-          <div className="mb-4 rounded-xl overflow-hidden border" style={{ borderColor: 'var(--app-border)' }}>
+          <div className="mb-4 rounded-xl overflow-hidden border border-border">
             <ConfirmBanner session={session} userId={user.id} profile={profile} onUpdate={setSession} />
           </div>
         )}
 
         {/* Main content - 2 колонки: Чат и Инструменты */}
         {isArchived ? (
-          <div className="flex-1 rounded-xl border overflow-hidden flex flex-col"
-            style={{ backgroundColor: 'var(--app-card)', borderColor: 'var(--app-border)' }}>
-            <div className="px-5 py-3 border-b flex items-center gap-2 flex-shrink-0"
-              style={{ borderColor: 'var(--app-border)' }}>
-              <Archive className="h-4 w-4 text-gray-500" />
-              <span className="text-sm font-medium text-gray-400">
+          <div className="flex-1 rounded-xl border border-border overflow-hidden flex flex-col bg-card">
+            <div className="px-5 py-3 border-b border-border flex items-center gap-2 flex-shrink-0">
+              <Archive className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium text-muted-foreground">
                 Архив сессии · {session.completed_at
                   ? new Date(session.completed_at).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
                   : ''}
@@ -543,20 +516,17 @@ export default function SessionPage() {
           </div>
         ) : (
           /* Двухколоночный макет: Чат + Инструменты */
-          <div className="flex-1 rounded-xl border overflow-hidden flex flex-col lg:flex-row"
-            style={{ backgroundColor: 'var(--app-card)', borderColor: 'var(--app-border)' }}>
+          <div className="flex-1 rounded-xl border border-border overflow-hidden flex flex-col lg:flex-row bg-card">
             
             {/* Левая колонка - Чат */}
-            <div className="flex-1 flex flex-col min-h-0 border-b lg:border-b-0 lg:border-r"
-              style={{ borderColor: 'var(--app-border)' }}>
-              <div className="px-4 py-3 border-b flex-shrink-0"
-                style={{ borderColor: 'var(--app-border)' }}>
-                <h3 className="text-base font-semibold text-white">Чат</h3>
+            <div className="flex-1 flex flex-col min-h-0 border-b lg:border-b-0 lg:border-r border-border">
+              <div className="px-4 py-3 border-b border-border flex-shrink-0">
+                <h3 className="text-base font-semibold text-foreground">Чат</h3>
               </div>
               <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-1 hide-scrollbar">
                 {messages.length === 0 ? (
                   <div className="flex items-center justify-center h-full">
-                    <p className="text-gray-500 text-sm text-center">
+                    <p className="text-muted-foreground text-sm text-center">
                       {isPending ? 'Чат откроется после подтверждения сессии' : 'Начните общение! 💬'}
                     </p>
                   </div>
@@ -566,20 +536,18 @@ export default function SessionPage() {
                 <div ref={messagesEndRef} />
               </div>
               {isActive
-                ? <CustomChatInput sessionId={sessionId} user={user} />
-                : <div className="px-4 py-3 border-t text-center text-sm text-gray-500 flex-shrink-0"
-                    style={{ borderColor: 'var(--app-border)' }}>
+                ? <ChatInput sessionId={sessionId} user={user} />
+                : <div className="px-4 py-3 border-t border-border text-center text-sm text-muted-foreground shrink-0">
                     Чат будет доступен после подтверждения сессии обоими участниками
                   </div>
               }
             </div>
 
-            {/* Правая колонка - Инструменты (включая Участников) */}
-            <div className="w-full lg:w-96 flex-shrink-0 flex flex-col">
+            {/* Правая колонка - Инструменты */}
+            <div className="w-full lg:w-96 shrink-0 flex flex-col">
               <div className="flex-1 flex flex-col min-h-0">
-                <div className="px-4 py-3 border-b flex-shrink-0"
-                  style={{ borderColor: 'var(--app-border)' }}>
-                  <h3 className="text-base font-semibold text-white">Инструменты</h3>
+                <div className="px-4 py-3 border-b border-border shrink-0">
+                  <h3 className="text-base font-semibold text-foreground">Инструменты</h3>
                 </div>
                 <div className="flex-1 overflow-y-auto p-3">
                   <div className="space-y-2">
@@ -593,14 +561,14 @@ export default function SessionPage() {
                           disabled={!isActive && tab.id !== 'participants'}
                           className={cn(
                             'flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all w-full',
-                            isActiveTool && 'bg-purple-600/20 border border-purple-500/30',
+                            isActiveTool && 'bg-primary/20 border border-primary/30',
                             (isActive || tab.id === 'participants')
-                              ? 'text-gray-300 hover:text-white hover:bg-gray-700/50'
-                              : 'text-gray-600 cursor-not-allowed opacity-50',
+                              ? 'text-foreground hover:bg-muted'
+                              : 'text-muted-foreground/50 cursor-not-allowed opacity-50',
+                            'bg-muted'
                           )}
-                          style={{ backgroundColor: 'var(--app-input)' }}
                         >
-                          <Icon className={cn('h-5 w-5', isActiveTool ? 'text-purple-400' : 'text-gray-500')} />
+                          <Icon className={cn('h-5 w-5', isActiveTool ? 'text-primary' : 'text-muted-foreground')} />
                           <span className="text-sm flex-1 text-left">{tab.label}</span>
                         </button>
                       );
@@ -609,8 +577,8 @@ export default function SessionPage() {
 
                   {/* Отображение выбранного инструмента */}
                   {activeToolTab && (
-                    <div className="mt-4 pt-4 border-t" style={{ borderColor: 'var(--app-border)' }}>
-                      <div className="text-xs text-gray-500 mb-3">Активный инструмент</div>
+                    <div className="mt-4 pt-4 border-t border-border">
+                      <div className="text-xs text-muted-foreground mb-3">Активный инструмент</div>
                       <div className="max-h-96 overflow-y-auto">
                         {activeToolTab === 'notes' && isActive && (
                           <SharedNotes sessionId={sessionId} user={user} />
@@ -637,15 +605,16 @@ export default function SessionPage() {
 
               {/* Кнопка завершить сессию под инструментами */}
               {isActive && (
-                <div className="border-t p-4 flex-shrink-0" style={{ borderColor: 'var(--app-border)' }}>
-                  <button
+                <div className="border-t border-border p-4 flex-shrink-0">
+                  <Button
+                    variant="destructive"
                     onClick={handleEndSession}
                     disabled={ending}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium text-red-400 border-red-500/25 bg-red-500/8 hover:bg-red-500/15 transition-colors"
+                    className="w-full"
                   >
                     {ending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
                     Завершить сессию
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>

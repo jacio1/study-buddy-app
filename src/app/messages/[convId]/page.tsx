@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import {
-  ArrowLeft, Send, Loader2, BookOpen, Users, Ban, Image, Paperclip,
+  ArrowLeft, Send, Loader2, BookOpen, Users, Ban,
 } from 'lucide-react';
 import { supabase } from '@/src/lib/supabase';
 import {
@@ -12,6 +12,7 @@ import {
 } from '@/src/types/types';
 import { cn } from '@/src/lib/utils';
 import { Header } from '@/src/components/layout/Header';
+import { Button } from '@/src/components/ui/button';
 
 function timeLabel(d: string) {
   return new Date(d).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
@@ -171,9 +172,9 @@ export default function DirectChatPage() {
 
   const sessionBadge = () => {
     if (!session) return null;
-    if (session.status === 'pending_confirmation') return { text: 'ожидает подтверждения', cls: 'text-amber-400 bg-amber-500/10 border-amber-500/20' };
-    if (session.status === 'active')               return { text: 'сессия активна',        cls: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' };
-    if (session.status === 'completed')            return { text: 'сессия завершена',       cls: 'text-gray-400 bg-gray-700/40 border-gray-600/20' };
+    if (session.status === 'pending_confirmation') return { text: 'ожидает подтверждения', cls: 'text-accent bg-accent/10 border-accent/20' };
+    if (session.status === 'active')               return { text: 'сессия активна',        cls: 'text-secondary bg-secondary/10 border-secondary/20' };
+    if (session.status === 'completed')            return { text: 'сессия завершена',       cls: 'text-muted-foreground bg-muted border-border' };
     return null;
   };
   const badge = sessionBadge();
@@ -188,9 +189,9 @@ export default function DirectChatPage() {
         lastDate = date;
         items.push(
           <div key={`sep-${i}`} className="flex items-center gap-3 my-5">
-            <div className="flex-1 h-px" style={{ backgroundColor: 'var(--app-border)' }} />
-            <span className="text-xs text-gray-500 font-medium px-2">{dateSep(msg.created_at)}</span>
-            <div className="flex-1 h-px" style={{ backgroundColor: 'var(--app-border)' }} />
+            <div className="flex-1 h-px bg-border" />
+            <span className="text-xs text-muted-foreground font-medium px-2">{dateSep(msg.created_at)}</span>
+            <div className="flex-1 h-px bg-border" />
           </div>
         );
       }
@@ -207,7 +208,7 @@ export default function DirectChatPage() {
               {isFirst && (
                 otherUser?.avatar_url
                   ? <img src={otherUser.avatar_url} className="w-8 h-8 rounded-full object-cover" alt="" />
-                  : <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white text-sm font-bold">
+                  : <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-bold">
                       {otherUser?.full_name?.[0]?.toUpperCase() ?? '?'}
                     </div>
               )}
@@ -215,18 +216,19 @@ export default function DirectChatPage() {
           )}
           <div className={cn('max-w-[70%]', !isFirst && !isOwn && 'ml-10')}>
             {!isOwn && isFirst && (
-              <p className="text-xs font-semibold text-purple-400 mb-1 ml-1">{otherUser?.full_name}</p>
+              <p className="text-xs font-semibold text-primary mb-1 ml-1">{otherUser?.full_name}</p>
             )}
             <div
               className={cn(
                 'px-4 py-2.5 rounded-2xl text-sm leading-relaxed break-words',
-                isOwn ? 'bg-purple-600 text-white rounded-br-sm' : 'rounded-bl-sm'
+                isOwn 
+                  ? 'bg-primary text-primary-foreground rounded-br-sm' 
+                  : 'bg-muted text-foreground rounded-bl-sm'
               )}
-              style={!isOwn ? { backgroundColor: 'var(--app-input)', color: 'var(--app-text)' } : {}}
             >
               {msg.content}
             </div>
-            <p className={cn('text-[10px] mt-0.5 text-gray-500', isOwn ? 'text-right' : 'text-left ml-1')}>
+            <p className={cn('text-[10px] mt-0.5 text-muted-foreground', isOwn ? 'text-right' : 'text-left ml-1')}>
               {timeLabel(msg.created_at)}
               {isOwn && <span className="ml-1.5">{msg.is_read ? '✓✓' : '✓'}</span>}
             </p>
@@ -236,7 +238,7 @@ export default function DirectChatPage() {
               {isFirst && (
                 profile?.avatar_url
                   ? <img src={profile.avatar_url} className="w-8 h-8 rounded-full object-cover" alt="" />
-                  : <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white text-sm font-bold">
+                  : <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-bold">
                       {profile?.full_name?.[0]?.toUpperCase() ?? user?.email?.[0]?.toUpperCase() ?? '?'}
                     </div>
               )}
@@ -250,42 +252,47 @@ export default function DirectChatPage() {
   };
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--app-bg)' }}>
-      <Loader2 className="h-8 w-8 text-purple-500 animate-spin" />
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <Loader2 className="h-8 w-8 text-primary animate-spin" />
     </div>
   );
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--app-bg)' }}>
+    <div className="min-h-screen flex flex-col bg-background">
       <Header user={user!} profile={profile} />
 
       <main className="flex-1 container mx-auto px-2 sm:px-4 py-4 sm:py-6 flex flex-col max-w-5xl">
         {/* Top bar */}
         <div className="flex items-center gap-3 mb-4 sm:mb-5">
-          <button onClick={() => router.push('/messages')}
-            className="p-2 rounded-xl text-gray-400 hover:text-white hover:bg-gray-800 transition-colors flex-shrink-0">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => router.push('/messages')}
+            className="flex-shrink-0"
+          >
             <ArrowLeft className="h-5 w-5" />
-          </button>
+          </Button>
           
           <div className="flex items-center gap-3 flex-1 min-w-0">
             {otherUser?.avatar_url
               ? <img src={otherUser.avatar_url} alt="avatar"
-                  className={cn('w-10 h-10 sm:w-12 sm:h-12 rounded-xl object-cover flex-shrink-0', currentUserIsBlocker && 'grayscale opacity-70')} />
+                  className={cn('w-10 h-10 sm:w-12 sm:h-12 rounded-xl object-cover flex-shrink-0', 
+                    currentUserIsBlocker && 'grayscale opacity-70')} />
               : <div className={cn(
-                  'w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-white font-bold flex-shrink-0',
-                  currentUserIsBlocker ? 'bg-gray-600' : 'bg-purple-600'
+                  'w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-primary-foreground font-bold flex-shrink-0',
+                  currentUserIsBlocker ? 'bg-muted' : 'bg-primary'
                 )}>
                   {otherUser?.full_name?.[0]?.toUpperCase() ?? '?'}
                 </div>
             }
             
             <div className="min-w-0">
-              <h1 className="font-semibold text-white text-base sm:text-lg truncate">
+              <h1 className="font-semibold text-foreground text-base sm:text-lg truncate">
                 {otherUser?.full_name ?? 'Пользователь'}
               </h1>
               <div className="flex items-center gap-2 flex-wrap mt-0.5">
                 {listing && (
-                  <p className="text-xs sm:text-sm text-purple-400 truncate flex items-center gap-1">
+                  <p className="text-xs sm:text-sm text-primary truncate flex items-center gap-1">
                     <BookOpen className="h-3 w-3 flex-shrink-0" />
                     <span className="truncate">{listing.title}</span>
                   </p>
@@ -296,7 +303,7 @@ export default function DirectChatPage() {
                   </span>
                 )}
                 {currentUserIsBlocker && (
-                  <span className="text-[10px] px-2 py-0.5 rounded-full font-medium text-red-400 bg-red-500/10 border border-red-500/20 flex-shrink-0">
+                  <span className="text-[10px] px-2 py-0.5 rounded-full font-medium text-destructive bg-destructive/10 border border-destructive/20 flex-shrink-0">
                     заблокирован
                   </span>
                 )}
@@ -307,40 +314,40 @@ export default function DirectChatPage() {
           {/* Session button */}
           <div className="flex-shrink-0">
             {listing && !session && (
-              <button onClick={handleStartSession}
-                className="flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-purple-600 hover:bg-purple-700 text-white transition-colors">
+              <Button onClick={handleStartSession} size="sm" className="gap-1.5">
                 <Users className="h-4 w-4" />
                 <span className="hidden sm:inline">Начать сессию</span>
                 <span className="sm:hidden">Сессия</span>
-              </button>
+              </Button>
             )}
             {session && session.status !== 'completed' && (
-              <button onClick={() => router.push(`/sessions/${session.id}`)}
-                className="flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium border border-purple-500/30 bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 transition-colors">
+              <Button 
+                onClick={() => router.push(`/sessions/${session.id}`)} 
+                variant="outline" 
+                size="sm" 
+                className="gap-1.5"
+              >
                 <Users className="h-4 w-4" />
                 <span className="hidden sm:inline">Перейти в сессию</span>
                 <span className="sm:hidden">Сессия</span>
-              </button>
+              </Button>
             )}
             {session && session.status === 'completed' && (
-              <button onClick={handleStartSession}
-                className="flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium border border-purple-500/30 bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 transition-colors">
+              <Button onClick={handleStartSession} variant="outline" size="sm" className="gap-1.5">
                 <Users className="h-4 w-4" />
                 <span className="hidden sm:inline">Новая сессия</span>
                 <span className="sm:hidden">Сессия</span>
-              </button>
+              </Button>
             )}
           </div>
         </div>
 
-        {/* Chat container - стиль как в сессионном чате */}
-        <div className="flex-1 rounded-xl border overflow-hidden flex flex-col"
-          style={{ backgroundColor: 'var(--app-card)', borderColor: 'var(--app-border)' }}>
+        {/* Chat container */}
+        <div className="flex-1 rounded-xl border border-border overflow-hidden flex flex-col bg-card">
           
           {/* Chat header */}
-          <div className="px-4 py-3 border-b flex-shrink-0"
-            style={{ borderColor: 'var(--app-border)' }}>
-            <h3 className="text-base font-semibold text-white">💬 Чат</h3>
+          <div className="px-4 py-3 border-b border-border flex-shrink-0">
+            <h3 className="text-base font-semibold text-foreground">💬 Чат</h3>
           </div>
 
           {/* Messages area */}
@@ -348,8 +355,10 @@ export default function DirectChatPage() {
             {messages.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-center">
                 <div className="text-5xl mb-4">👋</div>
-                <p className="text-gray-400 font-medium">Начните разговор</p>
-                <p className="text-gray-600 text-sm mt-1">Обсудите детали перед тем как начать совместную сессию</p>
+                <p className="text-foreground font-medium">Начните разговор</p>
+                <p className="text-muted-foreground text-sm mt-1">
+                  Обсудите детали перед тем как начать совместную сессию
+                </p>
               </div>
             ) : (
               <>
@@ -359,23 +368,23 @@ export default function DirectChatPage() {
             )}
           </div>
 
-          {/* Input area - стиль как в сессионном чате */}
+          {/* Input area */}
           {isCurrentUserBlocked ? (
-            <div className="p-4 border-t flex-shrink-0" style={{ borderColor: 'var(--app-border)' }}>
+            <div className="p-4 border-t border-border flex-shrink-0">
               <div className="flex flex-col items-center gap-2 text-center py-4">
-                <div className="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center">
-                  <Ban className="h-6 w-6 text-red-400" />
+                <div className="w-12 h-12 rounded-full bg-destructive/10 border border-destructive/20 flex items-center justify-center">
+                  <Ban className="h-6 w-6 text-destructive" />
                 </div>
-                <p className="text-sm font-medium text-gray-300">Вы заблокированы</p>
-                <p className="text-xs text-gray-500">
+                <p className="text-sm font-medium text-foreground">Вы заблокированы</p>
+                <p className="text-xs text-muted-foreground">
                   Владелец объявления ограничил отправку сообщений в этом чате
                 </p>
               </div>
             </div>
           ) : (
-            <div className="p-4 border-t flex-shrink-0" style={{ borderColor: 'var(--app-border)' }}>
+            <div className="p-4 border-t border-border flex-shrink-0">
               {currentUserIsBlocker && (
-                <p className="text-xs text-center text-red-400/70 mb-3">
+                <p className="text-xs text-center text-destructive/70 mb-3">
                   Вы заблокировали этого пользователя — он не может вам написать, но вы можете
                 </p>
               )}
@@ -388,28 +397,23 @@ export default function DirectChatPage() {
                     onChange={e => setText(e.target.value)}
                     onKeyDown={handleKeyDown}
                     placeholder="Напишите сообщение..."
-                    className="w-full px-4 py-3 pr-20 rounded-xl resize-none text-sm min-h-[48px] max-h-32"
-                    style={{ 
-                      backgroundColor: 'var(--app-input)', 
-                      color: 'var(--app-text)',
-                      border: '1px solid var(--app-border)'
-                    }}
+                    className="w-full px-4 py-3 pr-4 rounded-xl resize-none text-sm min-h-[48px] max-h-32 bg-muted border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
                   />
-
                 </div>
-                <button
+                <Button
                   onClick={handleSend}
                   disabled={!text.trim() || sending}
-                  className="p-3 rounded-xl bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:hover:bg-purple-600 transition-colors flex-shrink-0"
+                  size="icon"
+                  className="h-12 w-12 flex-shrink-0"
                 >
                   {sending ? (
-                    <Loader2 className="h-5 w-5 text-white animate-spin" />
+                    <Loader2 className="h-5 w-5 animate-spin" />
                   ) : (
-                    <Send className="h-5 w-5 text-white" />
+                    <Send className="h-5 w-5" />
                   )}
-                </button>
+                </Button>
               </div>
-              <p className="text-center text-[10px] text-gray-500 mt-2">
+              <p className="text-center text-[10px] text-muted-foreground mt-2">
                 Enter — отправить · Shift+Enter — новая строка
               </p>
             </div>

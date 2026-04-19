@@ -212,12 +212,12 @@ export function VoiceChat({ sessionId, user }: VoiceChatProps) {
         <div className={cn(
           "px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2",
           callStatus === 'connected' 
-            ? "bg-green-500/20 text-green-400 border border-green-500/30" 
-            : "bg-purple-500/20 text-purple-400 border border-purple-500/30"
+            ? "bg-secondary/20 text-secondary border border-secondary/30" 
+            : "bg-primary/20 text-primary border border-primary/30"
         )}>
           <div className={cn(
             "w-2 h-2 rounded-full",
-            callStatus === 'connected' ? "bg-green-400" : "bg-purple-400 animate-pulse"
+            callStatus === 'connected' ? "bg-secondary" : "bg-primary animate-pulse"
           )} />
           {callStatus === 'calling' && 'Вызов...'}
           {callStatus === 'ringing' && 'Входящий звонок...'}
@@ -227,10 +227,7 @@ export function VoiceChat({ sessionId, user }: VoiceChatProps) {
 
       {/* Controls */}
       {!isInCall ? (
-        <Button
-          onClick={startCall}
-          className="bg-purple-600 hover:bg-purple-700"
-        >
+        <Button onClick={startCall}>
           <Phone className="h-4 w-4 mr-2" />
           Голосовой чат
         </Button>
@@ -241,10 +238,9 @@ export function VoiceChat({ sessionId, user }: VoiceChatProps) {
             variant="outline"
             size="icon"
             className={cn(
-              "border-gray-700",
               isMuted 
-                ? "bg-red-500/20 hover:bg-red-500/30 text-red-400 border-red-500/50" 
-                : "bg-gray-800 hover:bg-gray-700 text-white"
+                ? "bg-destructive/20 hover:bg-destructive/30 text-destructive border-destructive/50" 
+                : ""
             )}
             title={isMuted ? 'Включить микрофон' : 'Выключить микрофон'}
           >
@@ -253,8 +249,7 @@ export function VoiceChat({ sessionId, user }: VoiceChatProps) {
 
           <Button
             onClick={endCall}
-            variant="outline"
-            className="bg-red-500/20 hover:bg-red-500/30 text-red-400 border-red-500/50"
+            variant="destructive"
           >
             <PhoneOff className="h-4 w-4 mr-2" />
             Завершить
@@ -264,4 +259,3 @@ export function VoiceChat({ sessionId, user }: VoiceChatProps) {
     </div>
   );
 }
-

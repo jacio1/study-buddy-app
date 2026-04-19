@@ -4,12 +4,13 @@ import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   MessageCircle, Search, Clock, Loader2, BookOpen,
-  X, MoreVertical, Ban, XCircle,
+  MoreVertical, Ban, XCircle,
 } from 'lucide-react';
 import { supabase } from '@/src/lib/supabase';
 import { DirectConversation, DirectMessage, Profile, User } from '@/src/types/types';
 import { Header } from '@/src/components/layout/Header';
 import { cn } from '@/src/lib/utils';
+import { Input } from '@/src/components/ui/input';
 
 /** Dropdown menu for listing owner actions on a conversation */
 function ConvMenu({
@@ -41,20 +42,19 @@ function ConvMenu({
     <div ref={ref} className="relative flex-shrink-0" onClick={e => e.stopPropagation()}>
       <button
         onClick={() => setOpen(v => !v)}
-        className="p-1.5 rounded-lg text-gray-500 hover:text-white hover:bg-gray-700 transition-colors opacity-0 group-hover:opacity-100"
+        className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors opacity-0 group-hover:opacity-100"
       >
         <MoreVertical className="h-4 w-4" />
       </button>
 
       {open && (
         <div
-          className="absolute right-0 top-full mt-1 w-44 rounded-xl border shadow-xl z-20 overflow-hidden py-1"
-          style={{ backgroundColor: 'var(--app-surface)', borderColor: 'var(--app-border)' }}
+          className="absolute right-0 top-full mt-1 w-44 rounded-xl border border-border shadow-xl z-20 overflow-hidden py-1 bg-card"
         >
           {!isBlocked ? (
             <button
               onClick={() => { setOpen(false); onBlock(); }}
-              className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors text-left"
+              className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-destructive hover:bg-destructive/10 transition-colors text-left"
             >
               <Ban className="h-4 w-4" />
               Заблокировать
@@ -62,7 +62,7 @@ function ConvMenu({
           ) : (
             <button
               onClick={() => { setOpen(false); onUnblock(); }}
-              className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-emerald-400 hover:bg-emerald-500/10 transition-colors text-left"
+              className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-secondary hover:bg-secondary/10 transition-colors text-left"
             >
               <Ban className="h-4 w-4" />
               Разблокировать
@@ -70,7 +70,7 @@ function ConvMenu({
           )}
           <button
             onClick={() => { setOpen(false); onClose(); }}
-            className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-400 hover:text-white hover:bg-gray-700 transition-colors text-left"
+            className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors text-left"
           >
             <XCircle className="h-4 w-4" />
             Закрыть диалог
@@ -225,20 +225,20 @@ export default function MessagesPage() {
   const sessionBadge = (c: DirectConversation): { text: string; cls: string } | null => {
     const s = c.session?.status;
     if (!s) return null;
-    if (s === 'pending_confirmation') return { text: 'ожидает подтверждения', cls: 'text-amber-400 bg-amber-500/10 border-amber-500/20' };
-    if (s === 'active')               return { text: 'сессия активна',        cls: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' };
-    if (s === 'completed')            return { text: 'сессия завершена',       cls: 'text-gray-500 bg-gray-700/40 border-gray-600' };
+    if (s === 'pending_confirmation') return { text: 'ожидает подтверждения', cls: 'text-accent bg-accent/10 border-accent/20' };
+    if (s === 'active')               return { text: 'сессия активна',        cls: 'text-secondary bg-secondary/10 border-secondary/20' };
+    if (s === 'completed')            return { text: 'сессия завершена',       cls: 'text-muted-foreground bg-muted border-border' };
     return null;
   };
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--app-bg)' }}>
-      <Loader2 className="h-8 w-8 text-purple-500 animate-spin" />
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <Loader2 className="h-8 w-8 text-primary animate-spin" />
     </div>
   );
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'var(--app-bg)' }}>
+    <div className="min-h-screen bg-background">
       <Header user={user} profile={profile} />
 
       <main className="container mx-auto px-4 py-8">
@@ -246,39 +246,37 @@ export default function MessagesPage() {
           {/* Title */}
           <div className="flex items-center gap-3 mb-6">
             <div className="relative">
-              <MessageCircle className="h-6 w-6 text-purple-400" />
+              <MessageCircle className="h-6 w-6 text-primary" />
               {totalUnread > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-purple-600 text-white text-[10px] font-bold flex items-center justify-center">
+                <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">
                   {totalUnread > 9 ? '9+' : totalUnread}
                 </span>
               )}
             </div>
-            <h1 className="text-2xl font-bold text-white">Сообщения</h1>
+            <h1 className="text-2xl font-bold text-foreground">Сообщения</h1>
           </div>
 
           {/* Search */}
           <div className="relative mb-4">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <input
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
               type="text"
               placeholder="Поиск по имени или объявлению..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:border-purple-500 transition-colors"
-              style={{ backgroundColor: 'var(--app-card)', borderColor: 'var(--app-border)', color: 'var(--app-text)' }}
+              className="w-full pl-10"
             />
           </div>
 
           {/* List */}
-          <div className="rounded-2xl border overflow-hidden"
-            style={{ backgroundColor: 'var(--app-card)', borderColor: 'var(--app-border)' }}>
+          <div className="rounded-2xl border border-border overflow-hidden bg-card">
             {filtered.length === 0 ? (
               <div className="flex flex-col items-center py-20 text-center px-6">
-                <MessageCircle className="h-12 w-12 text-gray-700 mb-4" />
-                <p className="text-gray-400 font-medium mb-1">
+                <MessageCircle className="h-12 w-12 text-muted-foreground/30 mb-4" />
+                <p className="text-muted-foreground font-medium mb-1">
                   {search ? 'Ничего не найдено' : 'Нет сообщений'}
                 </p>
-                <p className="text-gray-600 text-sm">
+                <p className="text-muted-foreground/60 text-sm">
                   {search ? 'Попробуйте другой запрос' : 'Откройте объявление и нажмите «Написать»'}
                 </p>
               </div>
@@ -295,12 +293,11 @@ export default function MessagesPage() {
                     key={conv.id}
                     className={cn(
                       'group relative flex items-center gap-4 px-5 py-4 transition-colors',
-                      !isLast && 'border-b',
+                      !isLast && 'border-b border-border',
                       hasUnread
-                        ? 'bg-purple-500/5 hover:bg-purple-500/8'
-                        : 'hover:bg-purple-500/4',
+                        ? 'bg-primary/5 hover:bg-primary/8'
+                        : 'hover:bg-muted/50',
                     )}
-                    style={{ borderColor: 'var(--app-border)' }}
                   >
                     {/* Clickable area */}
                     <div
@@ -314,21 +311,20 @@ export default function MessagesPage() {
                             className={cn('w-12 h-12 rounded-2xl object-cover', isBlocked && 'grayscale opacity-60')} />
                         ) : (
                           <div className={cn(
-                            'w-12 h-12 rounded-2xl flex items-center justify-center text-white font-bold text-lg',
-                            isBlocked ? 'bg-gray-600' : 'bg-purple-600'
+                            'w-12 h-12 rounded-2xl flex items-center justify-center text-primary-foreground font-bold text-lg',
+                            isBlocked ? 'bg-muted' : 'bg-primary'
                           )}>
                             {conv.other_user?.full_name?.[0]?.toUpperCase() ?? '?'}
                           </div>
                         )}
                         {hasUnread && !isBlocked && (
-                          <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-purple-600 text-white text-[10px] font-bold flex items-center justify-center shadow-lg">
+                          <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center shadow-lg">
                             {conv.unread_count! > 9 ? '9+' : conv.unread_count}
                           </span>
                         )}
                         {/* Blocked indicator */}
                         {isBlocked && isOwner && (
-                          <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-red-600 border-2 flex items-center justify-center"
-                            style={{ borderColor: 'var(--app-card)' }}>
+                          <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-destructive border-2 border-card flex items-center justify-center">
                             <Ban className="h-2.5 w-2.5 text-white" />
                           </div>
                         )}
@@ -338,7 +334,7 @@ export default function MessagesPage() {
                       <div className="flex-1 min-w-0">
                         {conv.listing && (
                           <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                            <span className="flex items-center gap-1 text-[11px] text-purple-400 font-medium truncate max-w-[180px]">
+                            <span className="flex items-center gap-1 text-[11px] text-primary font-medium truncate max-w-[180px]">
                               <BookOpen className="h-3 w-3 flex-shrink-0" />
                               {conv.listing.title}
                             </span>
@@ -348,7 +344,7 @@ export default function MessagesPage() {
                               </span>
                             )}
                             {isBlocked && (
-                              <span className="flex-shrink-0 px-1.5 py-0.5 rounded-full text-[10px] font-medium border text-red-400 bg-red-500/10 border-red-500/20">
+                              <span className="flex-shrink-0 px-1.5 py-0.5 rounded-full text-[10px] font-medium border text-destructive bg-destructive/10 border-destructive/20">
                                 заблокирован
                               </span>
                             )}
@@ -356,16 +352,16 @@ export default function MessagesPage() {
                         )}
 
                         <div className="flex items-baseline justify-between gap-2">
-                          <span className={cn('text-sm font-semibold truncate', hasUnread ? 'text-white' : 'text-gray-200')}>
+                          <span className={cn('text-sm font-semibold truncate', hasUnread ? 'text-foreground' : 'text-muted-foreground')}>
                             {conv.other_user?.full_name ?? 'Пользователь'}
                           </span>
-                          <span className="text-[11px] text-gray-500 flex-shrink-0 flex items-center gap-1">
+                          <span className="text-[11px] text-muted-foreground flex-shrink-0 flex items-center gap-1">
                             <Clock className="h-3 w-3" />
                             {timeAgo(conv.last_message_at)}
                           </span>
                         </div>
 
-                        <p className={cn('text-sm truncate', hasUnread ? 'text-gray-300' : 'text-gray-500')}>
+                        <p className={cn('text-sm truncate', hasUnread ? 'text-foreground/80' : 'text-muted-foreground')}>
                           {conv.last_message
                             ? (conv.last_message.sender_id === user?.id ? 'Вы: ' : '') + conv.last_message.content
                             : 'Нет сообщений'}

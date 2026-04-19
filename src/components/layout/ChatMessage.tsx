@@ -13,12 +13,12 @@ interface ChatMessageProps {
 // Pick a relevant icon based on file extension
 function FileIcon({ name }: { name: string }) {
   const ext = name.split('.').pop()?.toLowerCase() ?? '';
-  if (['pdf'].includes(ext))                          return <FileText className="h-5 w-5 text-red-400" />;
-  if (['xls', 'xlsx', 'csv'].includes(ext))           return <FileSpreadsheet className="h-5 w-5 text-emerald-400" />;
+  if (['pdf'].includes(ext))                          return <FileText className="h-5 w-5 text-destructive" />;
+  if (['xls', 'xlsx', 'csv'].includes(ext))           return <FileSpreadsheet className="h-5 w-5 text-secondary" />;
   if (['js', 'ts', 'py', 'java', 'cpp', 'html', 'css', 'json'].includes(ext))
-                                                       return <FileCode className="h-5 w-5 text-blue-400" />;
-  if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext)) return <FileArchive className="h-5 w-5 text-amber-400" />;
-  return <File className="h-5 w-5 text-gray-400" />;
+                                                       return <FileCode className="h-5 w-5 text-primary" />;
+  if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext)) return <FileArchive className="h-5 w-5 text-accent" />;
+  return <File className="h-5 w-5 text-muted-foreground" />;
 }
 
 function formatBytes(bytes: number): string {
@@ -47,8 +47,8 @@ export function ChatMessage({ message, isOwnMessage }: ChatMessageProps) {
           'max-w-[72%] rounded-2xl overflow-hidden',
           imageOnly ? 'p-0.5' : 'px-4 py-3',
           isOwnMessage
-            ? 'bg-purple-600 text-white rounded-br-sm'
-            : 'bg-gray-800 text-gray-100 rounded-bl-sm'
+            ? 'bg-primary text-primary-foreground rounded-br-sm'
+            : 'bg-muted text-foreground rounded-bl-sm'
         )}>
           {/* Sender name */}
           {!isOwnMessage && (
@@ -81,13 +81,13 @@ export function ChatMessage({ message, isOwnMessage }: ChatMessageProps) {
               className={cn(
                 'flex items-center gap-3 px-3 py-2.5 rounded-xl border transition-colors mb-2',
                 isOwnMessage
-                  ? 'bg-purple-700/50 border-purple-500/30 hover:bg-purple-700/70'
-                  : 'bg-gray-700/50 border-gray-600/50 hover:bg-gray-700'
+                  ? 'bg-primary/20 border-primary/30 hover:bg-primary/30'
+                  : 'bg-background/50 border-border hover:bg-background'
               )}
             >
               <div className={cn(
-                'w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0',
-                isOwnMessage ? 'bg-purple-800/60' : 'bg-gray-800'
+                'w-9 h-9 rounded-lg flex items-center justify-center shrink-0',
+                isOwnMessage ? 'bg-primary/30' : 'bg-muted'
               )}>
                 <FileIcon name={message.file_name ?? ''} />
               </div>
@@ -96,18 +96,18 @@ export function ChatMessage({ message, isOwnMessage }: ChatMessageProps) {
                   {message.file_name ?? 'Файл'}
                 </p>
                 {message.file_size != null && (
-                  <p className={cn('text-xs mt-0.5', isOwnMessage ? 'text-purple-300' : 'text-gray-400')}>
+                  <p className={cn('text-xs mt-0.5', isOwnMessage ? 'text-primary-foreground/70' : 'text-muted-foreground')}>
                     {formatBytes(message.file_size)}
                   </p>
                 )}
               </div>
-              <Download className={cn('h-4 w-4 flex-shrink-0', isOwnMessage ? 'text-purple-300' : 'text-gray-400')} />
+              <Download className={cn('h-4 w-4 shrink-0', isOwnMessage ? 'text-primary-foreground/70' : 'text-muted-foreground')} />
             </a>
           )}
 
           {/* Text */}
           {hasText && (
-            <div className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+            <div className="text-sm leading-relaxed whitespace-pre-wrap wrap-break-word">
               {message.content}
             </div>
           )}
@@ -116,7 +116,7 @@ export function ChatMessage({ message, isOwnMessage }: ChatMessageProps) {
           <div className={cn(
             'text-[10px] mt-1 text-right',
             imageOnly && 'px-2 pb-1',
-            isOwnMessage ? 'text-purple-200' : 'text-gray-500'
+            isOwnMessage ? 'text-primary-foreground/60' : 'text-muted-foreground'
           )}>
             {new Date(message.created_at).toLocaleTimeString('ru-RU', {
               hour: '2-digit', minute: '2-digit',

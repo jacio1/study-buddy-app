@@ -5,6 +5,8 @@ import { Send, ImagePlus, Paperclip, X, Loader2, File } from 'lucide-react';
 import { supabase } from '@/src/lib/supabase';
 import { User } from '@/src/types/types';
 import { cn } from '@/src/lib/utils';
+import Image from 'next/image';
+import { Button } from '../ui/button';
 
 interface ChatInputProps {
   sessionId: string;
@@ -126,17 +128,19 @@ export function ChatInput({ sessionId, user }: ChatInputProps) {
   const canSend = (!!text.trim() || !!attachment) && !sending;
 
   return (
-    <div className="p-4 border-t border-gray-800 bg-gray-900">
+    <div className="p-4 border-t border-border bg-card">
       {/* Attachment preview */}
       {attachment && (
         <div className="mb-3 relative inline-flex items-start">
           {attachment.kind === 'image' ? (
             /* Image preview */
             <div className="relative">
-              <img
+              <Image
                 src={attachment.preview}
                 alt="preview"
-                className="h-28 rounded-xl object-cover border border-gray-700 block"
+                width={200}
+                height={112}
+                className="h-28 w-auto rounded-xl object-cover border border-border block"
               />
               <span className="absolute bottom-2 left-2 text-[10px] text-white/70 bg-black/50 px-1.5 py-0.5 rounded-md backdrop-blur-sm">
                 {formatBytes(attachment.file.size)}
@@ -144,15 +148,15 @@ export function ChatInput({ sessionId, user }: ChatInputProps) {
             </div>
           ) : (
             /* File preview card */
-            <div className="flex items-center gap-3 px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl">
-              <div className="w-9 h-9 rounded-lg bg-gray-700 flex items-center justify-center flex-shrink-0">
-                <File className="h-5 w-5 text-purple-400" />
+            <div className="flex items-center gap-3 px-4 py-3 bg-muted border border-border rounded-xl">
+              <div className="w-9 h-9 rounded-lg bg-background flex items-center justify-center shrink-0">
+                <File className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-white font-medium truncate max-w-[200px]">
+                <p className="text-sm text-foreground font-medium truncate max-w-50">
                   {attachment.file.name}
                 </p>
-                <p className="text-xs text-gray-400">{formatBytes(attachment.file.size)}</p>
+                <p className="text-xs text-muted-foreground">{formatBytes(attachment.file.size)}</p>
               </div>
             </div>
           )}
@@ -160,7 +164,7 @@ export function ChatInput({ sessionId, user }: ChatInputProps) {
           {/* Remove button */}
           <button
             onClick={clearAttachment}
-            className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-gray-800 border border-gray-600 text-gray-300 hover:text-white flex items-center justify-center transition-colors"
+            className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-muted border border-border text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors"
           >
             <X className="h-3.5 w-3.5" />
           </button>
@@ -170,34 +174,28 @@ export function ChatInput({ sessionId, user }: ChatInputProps) {
       {/* Input row */}
       <div className="flex items-end gap-2">
         {/* Image button */}
-        <button
+        <Button
           type="button"
+          variant={attachment?.kind === 'image' ? 'default' : 'outline'}
+          size="icon"
           onClick={() => imageInputRef.current?.click()}
           title="Прикрепить изображение"
-          className={cn(
-            'flex-shrink-0 p-2.5 rounded-xl border transition-all',
-            attachment?.kind === 'image'
-              ? 'bg-purple-600/20 border-purple-500/50 text-purple-300'
-              : 'bg-gray-800 border-gray-700 text-gray-400 hover:text-white hover:border-gray-600'
-          )}
+          className="shrink-0"
         >
           <ImagePlus className="h-4 w-4" />
-        </button>
+        </Button>
 
         {/* File button */}
-        <button
+        <Button
           type="button"
+          variant={attachment?.kind === 'file' ? 'default' : 'outline'}
+          size="icon"
           onClick={() => fileInputRef.current?.click()}
           title="Прикрепить файл"
-          className={cn(
-            'flex-shrink-0 p-2.5 rounded-xl border transition-all',
-            attachment?.kind === 'file'
-              ? 'bg-purple-600/20 border-purple-500/50 text-purple-300'
-              : 'bg-gray-800 border-gray-700 text-gray-400 hover:text-white hover:border-gray-600'
-          )}
+          className="shrink-0"
         >
           <Paperclip className="h-4 w-4" />
-        </button>
+        </Button>
 
         {/* Textarea */}
         <div className="flex-1">
@@ -213,28 +211,24 @@ export function ChatInput({ sessionId, user }: ChatInputProps) {
                 ? 'Добавьте подпись… (Enter — отправить)'
                 : 'Напишите сообщение… (Ctrl+V — вставить картинку)'
             }
-            className="w-full resize-none bg-gray-800 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-purple-500 transition-colors leading-relaxed"
+            className="w-full resize-none bg-muted border border-border rounded-xl px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors leading-relaxed"
             style={{ maxHeight: '120px', overflowY: 'auto' }}
           />
         </div>
 
         {/* Send button */}
-        <button
+        <Button
           type="button"
           onClick={handleSend}
           disabled={!canSend}
-          className={cn(
-            'flex-shrink-0 p-2.5 rounded-xl border transition-all',
-            canSend
-              ? 'bg-purple-600 hover:bg-purple-700 border-purple-600 text-white'
-              : 'bg-gray-800 border-gray-700 text-gray-600 cursor-not-allowed'
-          )}
+          size="icon"
+          className="shrink-0"
         >
           {sending
             ? <Loader2 className="h-4 w-4 animate-spin" />
             : <Send className="h-4 w-4" />
           }
-        </button>
+        </Button>
       </div>
 
       {/* Hidden inputs */}
@@ -245,7 +239,7 @@ export function ChatInput({ sessionId, user }: ChatInputProps) {
         onChange={(e) => { const f = e.target.files?.[0]; if (f) applyFile(f); }}
         className="hidden" />
 
-      <p className="text-[10px] text-gray-600 mt-2">
+      <p className="text-[10px] text-muted-foreground mt-2">
         Enter — отправить · Shift+Enter — перенос · Ctrl+V — вставить картинку
       </p>
     </div>

@@ -22,13 +22,13 @@ function FilterSection({ title, children, defaultOpen = true }: {
 }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="border-b pb-4" style={{ borderColor: 'var(--app-border)' }}>
+    <div className="border-b border-border pb-4">
       <button onClick={() => setOpen(v => !v)}
         className="flex items-center justify-between w-full text-left mb-3">
-        <span className="text-xs font-semibold text-gray-500 uppercase tracking-widest">{title}</span>
+        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">{title}</span>
         {open
-          ? <ChevronUp className="h-3.5 w-3.5 text-gray-600" />
-          : <ChevronDown className="h-3.5 w-3.5 text-gray-600" />
+          ? <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" />
+          : <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
         }
       </button>
       {open && <div>{children}</div>}
@@ -139,8 +139,8 @@ export default function HomePage() {
   };
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--app-bg)' }}>
-      <div className="text-white">Загрузка...</div>
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="text-foreground">Загрузка...</div>
     </div>
   );
 
@@ -149,11 +149,10 @@ export default function HomePage() {
     <div className="space-y-4">
       <FilterSection title="Поиск по предмету">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
           <input type="text" placeholder="Python, Английский..."
             value={subjectSearch} onChange={e => setSubjectSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 rounded-lg border text-sm focus:outline-none focus:border-purple-500 transition-colors"
-            style={{ backgroundColor: 'var(--app-input)', borderColor: 'var(--app-border)', color: 'var(--app-text)' }}
+            className="w-full pl-9 pr-3 py-2 rounded-lg border border-input bg-background text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:border-primary transition-colors"
           />
         </div>
       </FilterSection>
@@ -164,8 +163,8 @@ export default function HomePage() {
             <button key={cat.id} onClick={() => setSelectedCategories(p => toggleArr(p, cat.id))}
               className={cn('w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all text-left border',
                 selectedCategories.includes(cat.id)
-                  ? 'bg-purple-600/20 text-purple-300 border-purple-500/40'
-                  : 'text-gray-400 hover:text-white border-transparent hover:bg-gray-800'
+                  ? 'bg-primary/20 text-primary border-primary/40'
+                  : 'text-muted-foreground hover:text-foreground border-transparent hover:bg-muted'
               )}>
               {cat.label}
               {selectedCategories.includes(cat.id) && <X className="h-3 w-3 opacity-60" />}
@@ -180,8 +179,8 @@ export default function HomePage() {
             <button key={lvl.id} onClick={() => setSelectedLevels(p => toggleArr(p, lvl.id))}
               className={cn('w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all border text-left',
                 selectedLevels.includes(lvl.id)
-                  ? 'bg-gray-800 border-gray-600 text-white'
-                  : 'border-transparent text-gray-400 hover:text-white hover:bg-gray-800'
+                  ? 'bg-muted border-border text-foreground'
+                  : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted'
               )}>
               <span className={cn('w-2 h-2 rounded-full', {
                 'bg-emerald-400': lvl.id === 'beginner',
@@ -203,10 +202,9 @@ export default function HomePage() {
             <button key={val} onClick={() => setFormatFilter(val)}
               className={cn('flex flex-col items-center gap-1 py-2.5 px-1 rounded-lg text-xs font-medium border transition-all',
                 formatFilter === val
-                  ? 'bg-purple-600/20 border-purple-500/50 text-purple-300'
-                  : 'border-gray-700 text-gray-400 hover:text-white hover:border-gray-600'
-              )}
-              style={formatFilter !== val ? { backgroundColor: 'var(--app-input)' } : {}}>
+                  ? 'bg-primary/20 border-primary/50 text-primary'
+                  : 'border-border text-muted-foreground hover:text-foreground hover:border-border bg-card'
+              )}>
               <span className="text-base">{icon}</span>{label}
             </button>
           ))}
@@ -217,8 +215,7 @@ export default function HomePage() {
         <div className="relative mb-2">
           <input type="text" placeholder="Москва, Берлин..." value={cityFilter}
             onChange={e => setCityFilter(e.target.value)}
-            className="w-full pl-3 pr-3 py-2 rounded-lg border text-sm focus:outline-none focus:border-purple-500 transition-colors"
-            style={{ backgroundColor: 'var(--app-input)', borderColor: 'var(--app-border)', color: 'var(--app-text)' }}
+            className="w-full pl-3 pr-3 py-2 rounded-lg border border-input bg-background text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:border-primary transition-colors"
           />
         </div>
         {availableCities.length > 0 && (
@@ -227,8 +224,8 @@ export default function HomePage() {
               <button key={c} onClick={() => setCityFilter(p => p === c ? '' : c)}
                 className={cn('px-2.5 py-1 rounded-full text-xs border transition-all',
                   cityFilter === c
-                    ? 'bg-purple-600/20 border-purple-500/40 text-purple-300'
-                    : 'border-gray-700 text-gray-500 hover:text-gray-300'
+                    ? 'bg-primary/20 border-primary/40 text-primary'
+                    : 'border-border text-muted-foreground hover:text-foreground'
                 )}>
                 {c}
               </button>
@@ -243,8 +240,8 @@ export default function HomePage() {
             <button key={opt} onClick={() => setSelectedSchedules(p => toggleArr(p, opt))}
               className={cn('w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm border transition-all text-left',
                 selectedSchedules.includes(opt)
-                  ? 'bg-blue-500/10 border-blue-500/30 text-blue-300'
-                  : 'border-transparent text-gray-400 hover:text-white hover:bg-gray-800'
+                  ? 'bg-secondary/10 border-secondary/30 text-secondary'
+                  : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted'
               )}>
               {opt}
               {selectedSchedules.includes(opt) && <X className="h-3 w-3 opacity-60" />}
@@ -258,8 +255,8 @@ export default function HomePage() {
           <button key={val} onClick={() => setSortBy(val)}
             className={cn('w-full text-left px-3 py-2 rounded-lg text-sm border transition-all mb-1',
               sortBy === val
-                ? 'bg-gray-800 border-gray-600 text-white'
-                : 'border-transparent text-gray-400 hover:text-white hover:bg-gray-800'
+                ? 'bg-muted border-border text-foreground'
+                : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted'
             )}>
             {label}
           </button>
@@ -270,13 +267,12 @@ export default function HomePage() {
         <button onClick={() => setOnlyMine(v => !v)}
           className={cn('w-full flex items-center justify-between px-3 py-2.5 rounded-lg border text-sm font-medium transition-all',
             onlyMine
-              ? 'bg-purple-600/15 border-purple-500/40 text-purple-300'
-              : 'border-gray-700 text-gray-400 hover:text-white'
-          )}
-          style={!onlyMine ? { backgroundColor: 'var(--app-input)' } : {}}>
+              ? 'bg-primary/15 border-primary/40 text-primary'
+              : 'border-border text-muted-foreground hover:text-foreground bg-card'
+          )}>
           Только мои объявления
           <div className={cn('relative w-9 h-5 rounded-full border transition-colors',
-            onlyMine ? 'bg-purple-600 border-purple-600' : 'bg-gray-700 border-gray-600')}>
+            onlyMine ? 'bg-primary border-primary' : 'bg-muted border-border')}>
             <span className={cn('absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform',
               onlyMine && 'translate-x-4')} />
           </div>
@@ -286,7 +282,7 @@ export default function HomePage() {
   );
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'var(--app-bg)' }}>
+    <div className="min-h-screen bg-background">
       <Header user={user} profile={profile} />
 
       <main className="container mx-auto px-4 py-8">
@@ -295,10 +291,9 @@ export default function HomePage() {
         {activeSessions.length > 0 && (
           <section className="mb-10">
             <div className="flex items-center gap-3 mb-5">
-              <Flame className="h-5 w-5 text-purple-400" />
-              <h2 className="text-xl font-bold text-white">Мои активные сессии</h2>
-              <span className="px-2.5 py-0.5 rounded-full text-sm font-medium"
-                style={{ backgroundColor: 'var(--app-input)', color: 'var(--app-text-muted)' }}>
+              <Flame className="h-5 w-5 text-primary" />
+              <h2 className="text-xl font-bold text-foreground">Мои активные сессии</h2>
+              <span className="px-2.5 py-0.5 rounded-full text-sm font-medium bg-muted text-muted-foreground">
                 {activeSessions.length}
               </span>
             </div>
@@ -311,12 +306,11 @@ export default function HomePage() {
         {/* ── Listings section ── */}
         <div className="flex items-center gap-3 mb-6 flex-wrap">
           <div className="flex items-center gap-3">
-            <BookOpen className="h-5 w-5 text-purple-400" />
-            <h2 className="text-xl font-bold text-white">
+            <BookOpen className="h-5 w-5 text-primary" />
+            <h2 className="text-xl font-bold text-foreground">
               {searchQuery ? `«${searchQuery}»` : 'Все объявления'}
             </h2>
-            <span className="px-2.5 py-0.5 rounded-full text-sm"
-              style={{ backgroundColor: 'var(--app-input)', color: 'var(--app-text-muted)' }}>
+            <span className="px-2.5 py-0.5 rounded-full text-sm bg-muted text-muted-foreground">
               {filteredListings.length}
             </span>
           </div>
@@ -327,26 +321,26 @@ export default function HomePage() {
               {selectedCategories.map(id => {
                 const cat = CATEGORIES.find(c => c.id === id);
                 return cat ? (
-                  <span key={id} className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-purple-500/10 border border-purple-500/30 text-purple-300">
+                  <span key={id} className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-primary/10 border border-primary/30 text-primary">
                     {cat.label}
                     <button onClick={() => setSelectedCategories(p => p.filter(v => v !== id))}><X className="h-3 w-3" /></button>
                   </span>
                 ) : null;
               })}
               {formatFilter !== 'all' && (
-                <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-800 border border-gray-700 text-gray-300">
+                <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-muted border border-border text-foreground">
                   {formatFilter === 'online' ? '💻 Онлайн' : '🤝 Офлайн'}
                   <button onClick={() => setFormatFilter('all')}><X className="h-3 w-3" /></button>
                 </span>
               )}
               {cityFilter && (
-                <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-800 border border-gray-700 text-gray-300">
+                <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-muted border border-border text-foreground">
                   📍 {cityFilter}
                   <button onClick={() => setCityFilter('')}><X className="h-3 w-3" /></button>
                 </span>
               )}
               <button onClick={resetFilters}
-                className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs text-gray-500 hover:text-red-400 transition-colors">
+                className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs text-muted-foreground hover:text-destructive transition-colors">
                 <X className="h-3 w-3" /> Сбросить
               </button>
             </div>
@@ -356,14 +350,13 @@ export default function HomePage() {
           <button onClick={() => setMobileSidebarOpen(true)}
             className={cn('lg:hidden flex items-center gap-2 px-3.5 py-1.5 rounded-lg border text-sm font-medium ml-auto',
               activeFilterCount > 0
-                ? 'border-purple-500/50 bg-purple-600/10 text-purple-300'
-                : 'border-gray-700 text-gray-400'
-            )}
-            style={activeFilterCount === 0 ? { backgroundColor: 'var(--app-input)' } : {}}>
+                ? 'border-primary/50 bg-primary/10 text-primary'
+                : 'border-border text-muted-foreground bg-card'
+            )}>
             <SlidersHorizontal className="h-4 w-4" />
             Фильтры
             {activeFilterCount > 0 && (
-              <span className="w-5 h-5 rounded-full bg-purple-600 text-white text-xs flex items-center justify-center font-bold">
+              <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center font-bold">
                 {activeFilterCount}
               </span>
             )}
@@ -373,16 +366,15 @@ export default function HomePage() {
         {/* ── Sidebar + Grid layout ── */}
         <div className="flex gap-6 items-start">
           {/* Desktop sidebar */}
-          <aside className="hidden lg:block w-64 flex-shrink-0 sticky top-20 rounded-xl border p-5 space-y-4"
-            style={{ backgroundColor: 'var(--app-card)', borderColor: 'var(--app-border)' }}>
+          <aside className="hidden lg:block w-64 flex-shrink-0 sticky top-20 rounded-xl border border-border p-5 space-y-4 bg-card">
             <div className="flex items-center justify-between mb-1">
-              <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-                <SlidersHorizontal className="h-4 w-4 text-purple-400" />
+              <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <SlidersHorizontal className="h-4 w-4 text-primary" />
                 Фильтры
               </h3>
               {activeFilterCount > 0 && (
                 <button onClick={resetFilters}
-                  className="text-xs text-gray-500 hover:text-red-400 transition-colors flex items-center gap-1">
+                  className="text-xs text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1">
                   <X className="h-3 w-3" /> Сбросить
                 </button>
               )}
@@ -395,10 +387,10 @@ export default function HomePage() {
             {filteredListings.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-24 text-center">
                 <div className="text-5xl mb-4">🔍</div>
-                <p className="text-gray-400 text-lg mb-2">Ничего не найдено</p>
+                <p className="text-muted-foreground text-lg mb-2">Ничего не найдено</p>
                 {activeFilterCount > 0 && (
                   <button onClick={resetFilters}
-                    className="text-sm text-purple-400 hover:text-purple-300 underline underline-offset-4">
+                    className="text-sm text-primary hover:text-primary/80 underline underline-offset-4">
                     Сбросить фильтры
                   </button>
                 )}
@@ -420,27 +412,26 @@ export default function HomePage() {
         <>
           <div className="fixed inset-0 bg-black/60 z-40 lg:hidden"
             onClick={() => setMobileSidebarOpen(false)} />
-          <div className="fixed inset-y-0 left-0 w-80 max-w-[90vw] z-50 overflow-y-auto p-5 lg:hidden border-r"
-            style={{ backgroundColor: 'var(--app-surface)', borderColor: 'var(--app-border)' }}>
+          <div className="fixed inset-y-0 left-0 w-80 max-w-[90vw] z-50 overflow-y-auto p-5 lg:hidden border-r border-border bg-card">
             <div className="flex items-center justify-between mb-5">
-              <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-                <SlidersHorizontal className="h-4 w-4 text-purple-400" />
+              <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <SlidersHorizontal className="h-4 w-4 text-primary" />
                 Фильтры
               </h3>
               <div className="flex items-center gap-3">
                 {activeFilterCount > 0 && (
-                  <button onClick={resetFilters} className="text-xs text-gray-500 hover:text-red-400">Сбросить</button>
+                  <button onClick={resetFilters} className="text-xs text-muted-foreground hover:text-destructive">Сбросить</button>
                 )}
                 <button onClick={() => setMobileSidebarOpen(false)}
-                  className="p-1.5 rounded-lg hover:bg-gray-800 text-gray-400">
+                  className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground">
                   <X className="h-4 w-4" />
                 </button>
               </div>
             </div>
             <SidebarContent />
-            <div className="mt-6 pt-4 border-t" style={{ borderColor: 'var(--app-border)' }}>
+            <div className="mt-6 pt-4 border-t border-border">
               <button onClick={() => setMobileSidebarOpen(false)}
-                className="w-full py-2.5 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors">
+                className="w-full py-2.5 bg-primary hover:bg-primary/80 text-primary-foreground text-sm font-medium rounded-lg transition-colors">
                 Показать {filteredListings.length} объявлений
               </button>
             </div>

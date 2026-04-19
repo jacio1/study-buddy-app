@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { Clock, User, Trash2, MapPin, Wifi, Users } from 'lucide-react';
 import { StudyListing } from '@/src/types/types';
 import { supabase } from '@/src/lib/supabase';
+import { cn } from '@/src/lib/utils';
 
 interface ListingCardProps {
   listing: StudyListing;
@@ -44,16 +45,16 @@ export function ListingCard({ listing, currentUserId, onDeleted }: ListingCardPr
   return (
     <div
       onClick={() => router.push(`/listings/${listing.id}`)}
-      className="relative bg-gray-900 rounded-xl p-5 border border-gray-800 hover:border-purple-500/50 transition-all duration-200 cursor-pointer group hover:shadow-xl hover:shadow-purple-500/8 hover:-translate-y-0.5"
+      className="relative bg-card rounded-xl p-5 border border-border hover:border-primary/50 transition-all duration-200 cursor-pointer group hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-0.5"
     >
       {isOwner && (
         <div className="absolute top-3 right-3 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-          <span className="text-[10px] font-medium text-purple-400 bg-purple-500/10 border border-purple-500/20 px-2 py-0.5 rounded-full">
+          <span className="text-[10px] font-medium text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-full">
             Моё
           </span>
           <button
             onClick={handleDelete}
-            className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 transition-colors"
+            className="p-1.5 rounded-lg bg-destructive/10 hover:bg-destructive/20 text-destructive border border-destructive/20 transition-colors"
             title="Удалить"
           >
             <Trash2 className="h-3.5 w-3.5" />
@@ -61,22 +62,25 @@ export function ListingCard({ listing, currentUserId, onDeleted }: ListingCardPr
         </div>
       )}
 
-      <h3 className="text-sm font-semibold text-white group-hover:text-purple-300 transition-colors line-clamp-2 leading-snug mb-2.5 pr-12">
+      <h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug mb-2.5 pr-12">
         {listing.title}
       </h3>
 
       <div className="flex items-center gap-2 flex-wrap mb-3">
-        <span className="text-purple-400 font-medium text-xs">{listing.subject}</span>
-        <span className={`px-2 py-0.5 rounded-full text-[11px] font-medium border ${levelColors[listing.level] ?? 'text-gray-400 bg-gray-800 border-gray-700'}`}>
+        <span className="text-primary font-medium text-xs">{listing.subject}</span>
+        <span className={cn(
+          'px-2 py-0.5 rounded-full text-[11px] font-medium border',
+          levelColors[listing.level] ?? 'text-muted-foreground bg-muted border-border'
+        )}>
           {levelLabels[listing.level]}
         </span>
       </div>
 
-      <p className="text-gray-400 text-xs line-clamp-2 leading-relaxed mb-4">
+      <p className="text-muted-foreground text-xs line-clamp-2 leading-relaxed mb-4">
         {listing.description}
       </p>
 
-      <div className="flex items-center gap-3 flex-wrap text-[11px] text-gray-500 pt-3 border-t border-gray-800">
+      <div className="flex items-center gap-3 flex-wrap text-[11px] text-muted-foreground pt-3 border-t border-border">
         <span className="flex items-center gap-1">
           {listing.format === 'online' ? <Wifi className="h-3 w-3" /> : <Users className="h-3 w-3" />}
           {formatLabel[listing.format ?? 'any']}
