@@ -214,34 +214,34 @@ function CustomChatInput({ sessionId, user, disabled }: { sessionId: string; use
 
   return (
     <div className="p-4 border-t border-border flex-shrink-0">
-      <div className="flex items-end gap-2">
+      <div className="flex items-center gap-2">
         {/* Иконки слева */}
-        <div className="flex items-center gap-1 flex-shrink-0">
+        <div className="flex items-center gap-1 flex-shrink-0 h-11">
           <button
             onClick={() => imageInputRef.current?.click()}
             disabled={disabled || uploading}
-            className="p-2 rounded-lg hover:bg-muted transition-colors disabled:opacity-50 text-muted-foreground hover:text-foreground"
+            className="h-11 w-11 rounded-lg hover:bg-muted transition-colors disabled:opacity-50 text-muted-foreground hover:text-foreground flex items-center justify-center"
           >
             <Image className="h-5 w-5" />
           </button>
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={disabled || uploading}
-            className="p-2 rounded-lg hover:bg-muted transition-colors disabled:opacity-50 text-muted-foreground hover:text-foreground"
+            className="h-11 w-11 rounded-lg hover:bg-muted transition-colors disabled:opacity-50 text-muted-foreground hover:text-foreground flex items-center justify-center"
           >
             <Paperclip className="h-5 w-5" />
           </button>
         </div>
 
         {/* Поле ввода */}
-        <div className="flex-1 relative">
+        <div className="flex-1">
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder={disabled ? "Чат недоступен" : "Напишите сообщение..."}
             disabled={disabled || uploading}
-            className="w-full px-4 py-2.5 rounded-xl resize-none text-sm min-h-[44px] max-h-32 bg-muted border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
+            className="w-full px-4 py-2.5 rounded-xl resize-none text-sm h-11 bg-muted border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
             rows={1}
           />
         </div>
@@ -251,7 +251,7 @@ function CustomChatInput({ sessionId, user, disabled }: { sessionId: string; use
           onClick={() => sendMessage()}
           disabled={!message.trim() || disabled || uploading}
           size="icon"
-          className="h-11 w-11 flex-shrink-0"
+          className="h-11 w-11 flex-shrink-0 mb-2"
         >
           {uploading ? (
             <Loader2 className="h-5 w-5 animate-spin" />
@@ -447,42 +447,18 @@ export default function SessionPage() {
       <Header user={user} profile={profile} />
 
       <main className="flex-1 container mx-auto px-2 sm:px-4 py-4 sm:py-6 flex flex-col max-w-7xl">
-        {/* Top bar */}
-        <div className="flex justify-between items-center gap-3 mb-4 sm:mb-5">
-          <div className="flex items-center gap-3 flex-1 min-w-0">
-            <Button variant="ghost" size="icon" onClick={() => router.push('/')}>
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            <div className="flex-1 min-w-0">
-              <h1 className="text-lg sm:text-xl font-bold text-foreground truncate">{session.study_listings?.title}</h1>
-              <p className="text-primary text-sm truncate">{session.study_listings?.subject}</p>
-            </div>
-          </div>
-
-          {/* Кнопка голосового чата справа */}
-          {isActive && (
-            <Button
-              variant="outline"
-              onClick={() => setIsVoiceEnabled(!isVoiceEnabled)}
-              className="gap-2"
-            >
-              {isVoiceEnabled ? <Mic className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
-              <span>Голосовой чат</span>
-            </Button>
-          )}
-          
-          {/* Mobile tools toggle */}
-          {!isArchived && (
+        {/* Mobile tools toggle - только для мобильной версии вверху */}
+        {!isArchived && (
+          <div className="flex justify-end mb-4 lg:hidden">
             <Button
               variant="outline"
               size="icon"
               onClick={() => setShowMobileTools(!showMobileTools)}
-              className="lg:hidden"
             >
               {showMobileTools ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Статус сессии (ожидает/активна) */}
         {isPending && (
@@ -520,9 +496,26 @@ export default function SessionPage() {
             
             {/* Левая колонка - Чат */}
             <div className="flex-1 flex flex-col min-h-0 border-b lg:border-b-0 lg:border-r border-border">
-              <div className="px-4 py-3 border-b border-border flex-shrink-0">
-                <h3 className="text-base font-semibold text-foreground">Чат</h3>
+              {/* Хедер чата с названием сессии и кнопкой голосового чата */}
+              <div className="px-4 py-3 border-b border-border flex-shrink-0 flex justify-between items-start gap-3">
+                <div className="flex-1 min-w-0">
+                  <h1 className="text-lg sm:text-xl font-bold text-foreground truncate">{session.study_listings?.title}</h1>
+                  <p className="text-primary text-sm truncate">{session.study_listings?.subject}</p>
+                </div>
+                {isActive && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsVoiceEnabled(!isVoiceEnabled)}
+                    className="gap-2 flex-shrink-0"
+                  >
+                    {isVoiceEnabled ? <Mic className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+                    <span className="hidden sm:inline">Голосовой чат</span>
+                  </Button>
+                )}
               </div>
+              
+              {/* Сообщения чата */}
               <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-1 hide-scrollbar">
                 {messages.length === 0 ? (
                   <div className="flex items-center justify-center h-full">
@@ -535,8 +528,10 @@ export default function SessionPage() {
                 ))}
                 <div ref={messagesEndRef} />
               </div>
+              
+              {/* Инпут чата */}
               {isActive
-                ? <ChatInput sessionId={sessionId} user={user} />
+                ? <CustomChatInput sessionId={sessionId} user={user} />
                 : <div className="px-4 py-3 border-t border-border text-center text-sm text-muted-foreground shrink-0">
                     Чат будет доступен после подтверждения сессии обоими участниками
                   </div>
@@ -546,11 +541,14 @@ export default function SessionPage() {
             {/* Правая колонка - Инструменты */}
             <div className="w-full lg:w-96 shrink-0 flex flex-col">
               <div className="flex-1 flex flex-col min-h-0">
+                {/* Заголовок инструментов */}
                 <div className="px-4 py-3 border-b border-border shrink-0">
-                  <h3 className="text-base font-semibold text-foreground">Инструменты</h3>
+                  <h3 className="text-base font-semibold text-foreground pb-6">Инструменты</h3>
                 </div>
-                <div className="flex-1 overflow-y-auto p-3">
-                  <div className="space-y-2">
+                
+                {/* Блок инструментов (занимает ~80% высоты) */}
+                <div className="flex-1 overflow-y-auto p-3" style={{ flex: '8' }}>
+                  <div className="space-y-2 ">
                     {toolTabs.map(tab => {
                       const Icon = tab.icon;
                       const isActiveTool = activeToolTab === tab.id;
@@ -563,7 +561,7 @@ export default function SessionPage() {
                             'flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all w-full',
                             isActiveTool && 'bg-primary/20 border border-primary/30',
                             (isActive || tab.id === 'participants')
-                              ? 'text-foreground hover:bg-muted'
+                              ? 'text-foreground hover:bg-primary cursor-pointer'
                               : 'text-muted-foreground/50 cursor-not-allowed opacity-50',
                             'bg-muted'
                           )}
@@ -579,7 +577,7 @@ export default function SessionPage() {
                   {activeToolTab && (
                     <div className="mt-4 pt-4 border-t border-border">
                       <div className="text-xs text-muted-foreground mb-3">Активный инструмент</div>
-                      <div className="max-h-96 overflow-y-auto">
+                      <div className="max-h-96 overflow-y-auto ">
                         {activeToolTab === 'notes' && isActive && (
                           <SharedNotes sessionId={sessionId} user={user} />
                         )}
@@ -601,22 +599,23 @@ export default function SessionPage() {
                     </div>
                   )}
                 </div>
-              </div>
 
-              {/* Кнопка завершить сессию под инструментами */}
-              {isActive && (
-                <div className="border-t border-border p-4 flex-shrink-0">
-                  <Button
-                    variant="destructive"
-                    onClick={handleEndSession}
-                    disabled={ending}
-                    className="w-full"
-                  >
-                    {ending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
-                    Завершить сессию
-                  </Button>
-                </div>
-              )}
+                {/* Кнопка завершить сессию внизу - с отдельной чертой сверху */}
+                {isActive && (
+                  <div className="pt-9 p-4 shrink-0 border-t border-border mt-auto">
+                    <Button
+                      variant="destructive"
+                      onClick={handleEndSession}
+                      disabled={ending}
+                      className="w-full"
+                    >
+                      {ending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Завершить сессию
+                    </Button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}

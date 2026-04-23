@@ -48,7 +48,6 @@ export default function LoginPage() {
         <h1
           className="text-foreground"
           style={{
-            fontFamily: "'Playfair Display', serif",
             fontSize: "2.5rem",
             marginBottom: "8px",
             textAlign: "center",

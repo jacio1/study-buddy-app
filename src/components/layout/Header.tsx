@@ -46,8 +46,8 @@ export function Header({ user, profile }: HeaderProps) {
   const [notifications,  setNotifications]  = useState<Notification[]>([]);
   const [unreadDMs,      setUnreadDMs]      = useState(0);
 
-  const profileRef = useRef<HTMLDivElement>(null);
-  const notifRef   = useRef<HTMLDivElement>(null);
+  const profileRef  = useRef<HTMLDivElement>(null);
+  const notifRef    = useRef<HTMLDivElement>(null);
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -70,7 +70,6 @@ export function Header({ user, profile }: HeaderProps) {
         filter: `user_id=eq.${user.id}`,
       }, async payload => {
         const notif = payload.new as Notification;
-        // Attach actor profile
         if (notif.actor_id) {
           const { data } = await supabase.from('profiles').select('*').eq('id', notif.actor_id).single();
           if (data) notif.actor = data;
@@ -139,47 +138,80 @@ export function Header({ user, profile }: HeaderProps) {
     if (searchQuery.trim()) router.push(`/?search=${encodeURIComponent(searchQuery)}`);
   };
 
+  const clearSearch = () => {
+    setSearchQuery('');
+  };
+
   if (!user) return null;
 
   const unreadNotifs = notifications.filter(n => !n.is_read).length;
   const isMessages   = pathname?.startsWith('/messages');
+  const isHome       = pathname === '/';
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border backdrop-blur bg-card/95">
       <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between gap-4">
+        <div className="flex h-20 items-center justify-between gap-4">
 
-          {/* Logo */}
-          <button onClick={() => router.push('/')}
-            className="text-2xl font-bold text-foreground hover:opacity-75 transition-opacity flex-shrink-0">
-            StudyMate
+          {/* Logo - кликабельный, ведет на главную */}
+          <button 
+            onClick={() => router.push('/')}
+            className="text-2xl font-bold text-foreground flex-shrink-0 relative group transition-all duration-300 hover:scale-105 cursor-pointer"
+          >
+            StudyBuddy
           </button>
 
-          {/* Search */}
-          <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-sm">
-            <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input type="text" placeholder="Поиск по предметам..." value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                className="w-full pl-9 bg-muted border-border text-foreground placeholder:text-muted-foreground focus:border-primary" />
-            </div>
-          </form>
+{/* Search - показывается только на главной */}
+{isHome && (
+  <form onSubmit={handleSearch} className="flex-1 mx-4">
+    <div className="flex items-center gap-0 group/search">
+      <div className="relative flex-1">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none z-10" />
+        <Input 
+          type="text" 
+          placeholder="Поиск по предметам..." 
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+          className="w-full h-12 pl-12 pr-10 bg-muted border border-r-0 border-border text-foreground placeholder:text-muted-foreground rounded-l-full rounded-r-none text-base focus:border-primary focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0" 
+        />
+        {searchQuery && (
+          <button 
+            type="button"
+            onClick={clearSearch}
+            className="absolute right-3 top-1/2 -translate-y-1/2 h-6 w-6 flex items-center justify-center rounded-full hover:bg-muted-foreground/20 transition-colors text-muted-foreground hover:text-foreground"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        )}
+      </div>
+      <Button 
+        type="submit" 
+        size="icon"
+        className="h-12 w-12 rounded-r-full rounded-l-none border border-l-0 border-border transition-colors flex-shrink-0 group-focus-within/search:border-primary"
+      >
+        <Search className="h-5 w-5" />
+      </Button>
+    </div>
+  </form>
+)}
 
           {/* Right */}
           <div className="flex items-center gap-2">
             <Button onClick={() => router.push('/listings/create')}
-              className="hidden sm:flex">
-              <Plus className="h-4 w-4 mr-2" />Создать
+              size="icon"
+              className="h-12 w-12 rounded-xl flex-shrink-0 sm:w-auto sm:px-4">
+              <Plus className="h-5 w-5 sm:mr-2" />
+              <span className="hidden sm:inline">Создать</span>
             </Button>
 
             {/* DMs */}
             <button onClick={() => router.push('/messages')} title="Сообщения"
-              className={cn('relative p-2.5 rounded-xl border transition-all',
+              className={cn('relative p-2.5 rounded-xl border transition-all h-12 w-12 flex items-center justify-center',
                 isMessages
                   ? 'bg-primary/20 border-primary/50 text-primary'
                   : 'border-border bg-card text-muted-foreground hover:text-foreground hover:border-primary/50'
               )}>
-              <MessageCircle className="h-4 w-4" />
+              <MessageCircle className="h-5 w-5" />
               {unreadDMs > 0 && (
                 <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center px-1 shadow-lg">
                   {unreadDMs > 9 ? '9+' : unreadDMs}
@@ -190,12 +222,12 @@ export function Header({ user, profile }: HeaderProps) {
             {/* Notifications bell */}
             <div className="relative" ref={notifRef}>
               <button onClick={() => { setNotifOpen(v => !v); setProfileOpen(false); }}
-                className={cn('relative p-2.5 rounded-xl border transition-all',
+                className={cn('relative p-2.5 rounded-xl border transition-all h-12 w-12 flex items-center justify-center',
                   notifOpen
                     ? 'bg-accent/15 border-accent/40 text-accent'
                     : 'border-border bg-card text-muted-foreground hover:text-foreground hover:border-primary/50'
                 )}>
-                <Bell className="h-4 w-4" />
+                <Bell className="h-5 w-5" />
                 {unreadNotifs > 0 && (
                   <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] rounded-full bg-accent text-accent-foreground text-[10px] font-bold flex items-center justify-center px-1 shadow-lg animate-pulse">
                     {unreadNotifs > 9 ? '9+' : unreadNotifs}
@@ -206,7 +238,6 @@ export function Header({ user, profile }: HeaderProps) {
               {/* Notifications dropdown */}
               {notifOpen && (
                 <div className="absolute right-0 top-full mt-2 w-80 rounded-2xl border border-border shadow-2xl shadow-black/40 overflow-hidden z-50 bg-card">
-                  {/* Header */}
                   <div className="flex items-center justify-between px-4 py-3 border-b border-border">
                     <span className="text-sm font-semibold text-foreground">Уведомления</span>
                     {unreadNotifs > 0 && (
@@ -218,7 +249,6 @@ export function Header({ user, profile }: HeaderProps) {
                     )}
                   </div>
 
-                  {/* List */}
                   <div className="max-h-80 overflow-y-auto">
                     {notifications.length === 0 ? (
                       <div className="flex flex-col items-center py-10 text-center px-4">
@@ -233,7 +263,6 @@ export function Header({ user, profile }: HeaderProps) {
                             'w-full text-left flex items-start gap-3 px-4 py-3 border-b border-border transition-colors hover:bg-muted/50',
                             !notif.is_read && 'bg-primary/5'
                           )}>
-                          {/* Icon or avatar */}
                           <div className="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-base bg-muted">
                             {notif.actor?.avatar_url
                               ? <img src={notif.actor.avatar_url} className="w-full h-full rounded-xl object-cover" alt="" />
@@ -261,20 +290,20 @@ export function Header({ user, profile }: HeaderProps) {
               )}
             </div>
 
-            {/* Theme */}
+            {/* Theme
             <button onClick={toggle}
-              className="p-2.5 rounded-xl border border-border bg-card text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all">
-              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </button>
+              className="p-2.5 rounded-xl border border-border bg-card text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all h-12 w-12 flex items-center justify-center">
+              {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </button> */}
 
             {/* Profile dropdown */}
             <div className="relative" ref={profileRef}>
               <button onClick={() => { setProfileOpen(v => !v); setNotifOpen(false); }}
-                className="flex items-center gap-2.5 pl-1 pr-2 py-1 rounded-xl border border-border hover:border-primary/50 transition-colors bg-muted">
+                className="flex items-center gap-2.5 pl-1.5 pr-3 py-1.5 h-12 rounded-xl border border-border hover:border-primary/50 transition-colors bg-muted">
                 {profile?.avatar_url
-                  ? <img src={profile.avatar_url} className="w-8 h-8 rounded-lg object-cover flex-shrink-0" alt="" />
-                  : <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground text-sm font-bold flex-shrink-0">
-                      {profile?.full_name?.[0]?.toUpperCase() ?? <UserIcon className="h-4 w-4" />}
+                  ? <img src={profile.avatar_url} className="w-9 h-9 rounded-lg object-cover flex-shrink-0" alt="" />
+                  : <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center text-primary-foreground text-sm font-bold flex-shrink-0">
+                      {profile?.full_name?.[0]?.toUpperCase() ?? <UserIcon className="h-5 w-5" />}
                     </div>
                 }
                 <span className="hidden sm:block text-sm font-medium text-foreground max-w-[120px] truncate">
@@ -320,16 +349,6 @@ export function Header({ user, profile }: HeaderProps) {
             </div>
           </div>
         </div>
-
-        {/* Mobile search */}
-        <form onSubmit={handleSearch} className="md:hidden pb-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input type="text" placeholder="Поиск по предметам..." value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              className="w-full pl-9 bg-muted border-border text-foreground placeholder:text-muted-foreground" />
-          </div>
-        </form>
       </div>
     </header>
   );
