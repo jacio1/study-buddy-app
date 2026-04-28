@@ -1,10 +1,11 @@
 import * as React from "react";
 import { cn } from "@/src/lib/utils";
 
-function Input({ className, type, ...props }: React.ComponentProps<"input">) {
+function Input({ className, autoComplete, type, ...props }: React.ComponentProps<"input">) {
   return (
     <input
       type={type}
+      autoComplete={autoComplete}
       data-slot="input"
       className={cn(
         "h-12 w-full min-w-0 rounded-lg border border-input bg-background px-2.5 py-1 transition-colors outline-none",

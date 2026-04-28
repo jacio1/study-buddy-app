@@ -37,10 +37,9 @@
   }
 }
 
-/* ─── Dark theme (default) ──────────────────────────────────────────────── */
+/* ─── Dark theme */
 :root,
 [data-theme="dark"] {
-  /* Основные цвета */
   --background: 222 47% 9%;          /* #0B1121 */
   --foreground: 210 40% 98%;         /* #F1F5F9 */
   --card: 217 33% 17%;              /* #1E293B */
@@ -48,32 +47,26 @@
   --popover: 217 33% 17%;
   --popover-foreground: 210 40% 98%;
   
-  /* Primary: #3B82F6 (более яркий синий для темной темы) */
   --primary: 217 91% 60%;           
   --primary-foreground: 210 40% 98%;
   
-  /* Secondary: #14B8A6 (Мятный) */
   --secondary: 172 80% 40%;          
   --secondary-foreground: 210 40% 98%;
   
   --muted: 217 33% 22%;             
   --muted-foreground: 215 20.2% 75.1%;
   
-  /* Accent: #F97316 (Оранжевый коллаб) */
   --accent: 24 95% 53%;              
   --accent-foreground: 210 40% 98%;
   
-  /* Destructive: #EF4444 (Красный) */
   --destructive: 0 84% 60%;          
   --destructive-foreground: 210 40% 98%;
   
-  /* 🔥 КЛЮЧЕВОЕ: input (фон) и border (граница) РАЗНЫЕ */
-  --border: 217 20% 35%;            /* #4A5468 — граница (ЗАМЕТНАЯ) */
+  --border: 217 20% 35%;            /* #4A5468 */
   
-  --ring: 217 91% 60%;              /* Primary */
+  --ring: 217 91% 60%;              
   --radius: 0.5rem;
 
-  /* App-specific tokens */
   --app-bg:          #0B1121;
   --app-surface:     #1E293B;
   --app-card:        #1E293B;
@@ -87,9 +80,8 @@
   --app-scrollbar:   #1E293B;
 }
 
-/* ─── Light theme ───────────────────────────────────────────────────────── */
+/* ─── Light theme */
 [data-theme="light"] {
-  /* Основные цвета */
   --background: 210 40% 98%;         /* #F8FAFC */
   --foreground: 222 47% 11%;         /* #0F172A */
   --card: 0 0% 100%;                /* #FFFFFF */
@@ -97,32 +89,27 @@
   --popover: 0 0% 100%;
   --popover-foreground: 222 47% 11%;
   
-  /* Primary: #2563EB (Умный синий) */
   --primary: 221 83% 53%;            
   --primary-foreground: 0 0% 100%;
   
-  /* Secondary: #0D9488 (Мятный) */
   --secondary: 173 80% 32%;          
   --secondary-foreground: 0 0% 100%;
   
   --muted: 210 40% 96.1%;           
   --muted-foreground: 215.4 16.3% 46.9%;
   
-  /* Accent: #EA580C (Оранжевый коллаб) */
   --accent: 20 90% 48%;              
   --accent-foreground: 0 0% 100%;
   
-  /* Destructive: #DC2626 (Красный) */
   --destructive: 0 72% 51%;          
   --destructive-foreground: 0 0% 100%;
   
-  --input: 0 0% 100%;               /* #FFFFFF — фон инпута */
-  --border: 214.3 31.8% 91.4%;      /* #E2E8F0 — граница */
+  --input: 0 0% 100%;               
+  --border: 214.3 31.8% 91.4%;      
   
-  --ring: 221 83% 53%;              /* Primary */
+  --ring: 221 83% 53%;              
   --radius: 0.5rem;
 
-  /* App-specific tokens — light values */
   --app-bg:          #F8FAFC;
   --app-surface:     #FFFFFF;
   --app-card:        #FFFFFF;
@@ -136,7 +123,6 @@
   --app-scrollbar:   #F1F5F9;
 }
 
-/* ─── Base styles ───────────────────────────────────────────────────────── */
 @layer base {
   * { 
     border-color: hsl(var(--border)); 
@@ -149,7 +135,6 @@
   }
 }
 
-/* ─── Scrollbar ─────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { 
   width: 4px; 
   height: 4px; 
@@ -168,19 +153,16 @@
   background: #1D4ED8; 
 }
 
-/* ─── Smooth transitions on theme switch ────────────────────────────────── */
 *, *::before, *::after {
   transition-property: background-color, border-color, color;
   transition-duration: 0.2s;
   transition-timing-function: ease;
 }
 
-/* But NOT transitions that conflict with animations */
 .animate-spin, .animate-pulse, [class*="animate-"] {
   transition: none;
 }
 
-/* ─── Animations ────────────────────────────────────────────────────────── */
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50%       { opacity: 0.5; }
@@ -194,3 +176,4 @@
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+

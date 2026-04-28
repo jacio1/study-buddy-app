@@ -59,13 +59,10 @@ export interface DirectConversation {
   listing_id: string | null;
   created_at: string;
   last_message_at: string;
-  /** Set by listing owner to close conversation (hides from their list) */
   closed_by: string | null;
   closed_at: string | null;
-  /** Set by listing owner to block the other user from sending */
   blocked_by: string | null;
   blocked_at: string | null;
-  // joined
   listing?: StudyListing;
   other_user?: Profile;
   last_message?: DirectMessage;
