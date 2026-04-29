@@ -29,5 +29,5 @@ export const SCHEDULE_OPTIONS = [
 export const FORMAT_OPTIONS = [
   { id: 'online',  icon: '💻', label: 'Онлайн'  },
   { id: 'offline', icon: '🤝', label: 'Офлайн'  },
-  { id: 'any',     icon: '🌐', label: 'Любой'   },
+  { id: 'all',     icon: '🌐', label: 'Любой'   },
 ] as const;
