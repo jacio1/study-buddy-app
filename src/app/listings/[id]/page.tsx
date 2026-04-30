@@ -10,6 +10,7 @@ import { Profile, StudyListing, User } from '@/src/types/types';
 import { supabase } from '@/src/lib/supabase';
 import { Header } from '@/src/components/layout/Header';
 import { Button } from '@/src/components/ui/button';
+import { Loader } from '@/src/components/Loader';
 
 const levelLabels: Record<string, string> = {
   beginner: 'Начинающий', intermediate: 'Средний', advanced: 'Продвинутый',
@@ -66,10 +67,7 @@ export default function ListingDetailPage() {
     router.push(`/messages/${convId}`);
   };
 
-  /**
-   * Предложить сессию — создаёт сессию со статусом pending_confirmation.
-   * Второй участник должен подтвердить на странице сессии.
-   */
+
   const handleProposeSession = async () => {
     if (!user || !listing) return;
     setLoading(true);
@@ -119,7 +117,7 @@ export default function ListingDetailPage() {
 
   if (!listing) return (
     <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-foreground">Загрузка...</div>
+      <Loader/>
     </div>
   );
 
