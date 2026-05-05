@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Save, Loader2 } from 'lucide-react';
+import { Save, Loader2, ArrowLeft } from 'lucide-react';
 import { User } from '@/src/types/types';
 import { supabase } from '@/src/lib/supabase';
 import { Button } from '../ui/button';
@@ -33,16 +33,19 @@ export function SharedNotes({ sessionId, user }: SharedNotesProps) {
   }, [sessionId]);
 
   const loadNotes = async () => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('session_notes')
       .select('*')
       .eq('session_id', sessionId)
-      .single();
+      .maybeSingle(); 
 
     if (data) {
       setNotes(data.content || '');
       setNoteId(data.id);
       setLastSaved(new Date(data.updated_at));
+    } else {
+      setNotes('');
+      setNoteId(null);
     }
   };
 
@@ -64,6 +67,22 @@ export function SharedNotes({ sessionId, user }: SharedNotesProps) {
           }
         }
       )
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'session_notes',
+          filter: `session_id=eq.${sessionId}`
+        },
+        (payload) => {
+          if (payload.new.updated_by !== user.id) {
+            setNotes(payload.new.content || '');
+            setNoteId(payload.new.id);
+            setLastSaved(new Date(payload.new.updated_at));
+          }
+        }
+      )
       .subscribe();
 
     return () => {
@@ -79,7 +98,11 @@ export function SharedNotes({ sessionId, user }: SharedNotesProps) {
         // Обновление существующих заметок
         await supabase
           .from('session_notes')
-          .update({ content: notes })
+          .update({ 
+            content: notes,
+            updated_by: user.id,
+            updated_at: new Date().toISOString()
+          })
           .eq('id', noteId);
       } else {
         // Создание новых заметок

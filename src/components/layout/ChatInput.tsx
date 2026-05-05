@@ -11,6 +11,7 @@ import { Button } from '../ui/button';
 interface ChatInputProps {
   sessionId: string;
   user: User;
+  disabled?: boolean;
 }
 
 type Attachment =
@@ -23,7 +24,7 @@ function formatBytes(b: number) {
   return `${(b / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-export function ChatInput({ sessionId, user }: ChatInputProps) {
+export function ChatInput({ sessionId, user, disabled }: ChatInputProps) {
   const [text, setText] = useState('');
   const [attachment, setAttachment] = useState<Attachment | null>(null);
   const [sending, setSending] = useState(false);
@@ -32,7 +33,6 @@ export function ChatInput({ sessionId, user }: ChatInputProps) {
   const fileInputRef  = useRef<HTMLInputElement>(null);
   const textareaRef   = useRef<HTMLTextAreaElement>(null);
 
-  // Auto-resize textarea
   useEffect(() => {
     const ta = textareaRef.current;
     if (!ta) return;
@@ -40,7 +40,6 @@ export function ChatInput({ sessionId, user }: ChatInputProps) {
     ta.style.height = Math.min(ta.scrollHeight, 120) + 'px';
   }, [text]);
 
-  // Cleanup object URL on unmount
   useEffect(() => () => {
     if (attachment?.kind === 'image') URL.revokeObjectURL(attachment.preview);
   }, [attachment]);
@@ -87,15 +86,19 @@ export function ChatInput({ sessionId, user }: ChatInputProps) {
   };
 
   const handleSend = async () => {
-    if (!text.trim() && !attachment) return;
+    if ((!text.trim() && !attachment) || sending) return;
     setSending(true);
 
     try {
       const payload: Record<string, unknown> = {
         session_id: sessionId,
         user_id:    user.id,
-        content:    text.trim(),
+        content:    text.trim() || null,
       };
+
+          // 👇 Добавьте эту проверку
+    console.log('Sending payload:', payload);
+    console.log('Attachment:', attachment);
 
       if (attachment?.kind === 'image') {
         payload.image_url = await uploadToStorage('chat-images', attachment.file, user.id);
@@ -109,6 +112,12 @@ export function ChatInput({ sessionId, user }: ChatInputProps) {
       if (!error) {
         setText('');
         clearAttachment();
+        if (textareaRef.current) {
+          textareaRef.current.style.height = 'auto';
+        }
+      } else {
+        console.error(error);
+        alert('Ошибка при отправке. Попробуйте ещё раз.');
       }
     } catch (err) {
       console.error(err);
@@ -125,15 +134,13 @@ export function ChatInput({ sessionId, user }: ChatInputProps) {
     }
   };
 
-  const canSend = (!!text.trim() || !!attachment) && !sending;
+  const canSend = (!!text.trim() || !!attachment) && !sending && !disabled;
 
   return (
-    <div className="p-4 border-t border-border bg-card">
-      {/* Attachment preview */}
+    <div className="p-4 border-t border-border shrink-0">
       {attachment && (
         <div className="mb-3 relative inline-flex items-start">
           {attachment.kind === 'image' ? (
-            /* Image preview */
             <div className="relative">
               <Image
                 src={attachment.preview}
@@ -147,7 +154,6 @@ export function ChatInput({ sessionId, user }: ChatInputProps) {
               </span>
             </div>
           ) : (
-            /* File preview card */
             <div className="flex items-center gap-3 px-4 py-3 bg-muted border border-border rounded-xl">
               <div className="w-9 h-9 rounded-lg bg-background flex items-center justify-center shrink-0">
                 <File className="h-5 w-5 text-primary" />
@@ -161,7 +167,6 @@ export function ChatInput({ sessionId, user }: ChatInputProps) {
             </div>
           )}
 
-          {/* Remove button */}
           <button
             onClick={clearAttachment}
             className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-muted border border-border text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors"
@@ -171,77 +176,81 @@ export function ChatInput({ sessionId, user }: ChatInputProps) {
         </div>
       )}
 
-      {/* Input row */}
-      <div className="flex items-end gap-2">
-        {/* Image button */}
-        <Button
-          type="button"
-          variant={attachment?.kind === 'image' ? 'default' : 'outline'}
-          size="icon"
-          onClick={() => imageInputRef.current?.click()}
-          title="Прикрепить изображение"
-          className="shrink-0"
-        >
-          <ImagePlus className="h-4 w-4" />
-        </Button>
+      <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 shrink-0 h-11">
+          <button
+            onClick={() => imageInputRef.current?.click()}
+            disabled={disabled || sending}
+            className={cn(
+              "h-11 w-11 rounded-lg hover:bg-muted transition-colors disabled:opacity-50 text-muted-foreground hover:text-foreground flex items-center justify-center",
+              attachment?.kind === 'image' && "bg-primary/20 text-primary"
+            )}
+          >
+            <ImagePlus className="h-5 w-5" />
+          </button>
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={disabled || sending}
+            className={cn(
+              "h-11 w-11 rounded-lg hover:bg-muted transition-colors disabled:opacity-50 text-muted-foreground hover:text-foreground flex items-center justify-center",
+              attachment?.kind === 'file' && "bg-primary/20 text-primary"
+            )}
+          >
+            <Paperclip className="h-5 w-5" />
+          </button>
+        </div>
 
-        {/* File button */}
-        <Button
-          type="button"
-          variant={attachment?.kind === 'file' ? 'default' : 'outline'}
-          size="icon"
-          onClick={() => fileInputRef.current?.click()}
-          title="Прикрепить файл"
-          className="shrink-0"
-        >
-          <Paperclip className="h-4 w-4" />
-        </Button>
-
-        {/* Textarea */}
         <div className="flex-1">
           <textarea
             ref={textareaRef}
-            rows={1}
             value={text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={handleKeyDown}
             onPaste={handlePaste}
-            placeholder={
-              attachment
-                ? 'Добавьте подпись… (Enter — отправить)'
-                : 'Напишите сообщение… (Ctrl+V — вставить картинку)'
-            }
-            className="w-full resize-none bg-muted border border-border rounded-xl px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors leading-relaxed"
+            placeholder={disabled ? "Чат недоступен" : (attachment ? "Добавьте подпись…" : "Напишите сообщение...")}
+            disabled={disabled || sending}
+            className="w-full px-4 rounded-xl resize-none text-sm h-11 bg-muted border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary leading-relaxed py-2"
             style={{ maxHeight: '120px', overflowY: 'auto' }}
+            rows={1}
           />
         </div>
 
-        {/* Send button */}
         <Button
-          type="button"
           onClick={handleSend}
           disabled={!canSend}
           size="icon"
-          className="shrink-0"
+          className="h-11 w-11 shrink-0"
         >
-          {sending
-            ? <Loader2 className="h-4 w-4 animate-spin" />
-            : <Send className="h-4 w-4" />
-          }
+          {sending ? (
+            <Loader2 className="h-5 w-5 animate-spin" />
+          ) : (
+            <Send className="h-5 w-5" />
+          )}
         </Button>
       </div>
 
       {/* Hidden inputs */}
-      <input ref={imageInputRef} type="file" accept="image/*"
-        onChange={(e) => { const f = e.target.files?.[0]; if (f) applyImage(f); }}
-        className="hidden" />
-      <input ref={fileInputRef} type="file" accept="*/*"
-        onChange={(e) => { const f = e.target.files?.[0]; if (f) applyFile(f); }}
-        className="hidden" />
-
-      <p className="text-[10px] text-muted-foreground mt-2">
-        Enter — отправить · Shift+Enter — перенос · Ctrl+V — вставить картинку
-      </p>
+      <input
+        ref={imageInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) applyImage(file);
+          e.target.value = '';
+        }}
+      />
+      <input
+        ref={fileInputRef}
+        type="file"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) applyFile(file);
+          e.target.value = '';
+        }}
+      />
     </div>
   );
 }
