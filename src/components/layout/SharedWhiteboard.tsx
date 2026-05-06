@@ -1,10 +1,9 @@
-// src/components/layout/SharedWhiteboard.tsx
 "use client";
 
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/src/lib/supabase";
 import { cn } from "@/src/lib/utils";
-import { Eraser, Pen, Trash2, Square, Circle, Undo2, Redo2 } from "lucide-react";
+import { Eraser, Pen, Trash2, Square, Circle, Undo2, Redo2, AlertCircle } from "lucide-react";
 import { Button } from "../ui/button";
 
 type Stroke = {
@@ -39,10 +38,11 @@ export function SharedWhiteboard({ sessionId, userId }: SharedWhiteboardProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
-  const [color, setColor] = useState("#3B82F6"); // primary цвет
+  const [color, setColor] = useState("#3B82F6");
   const [size, setSize] = useState(3);
   const [tool, setTool] = useState<"pen" | "eraser" | "rect" | "circle">("pen");
   const [isCanvasReady, setIsCanvasReady] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
   const currentStrokeRef = useRef<{ points: { x: number; y: number }[]; tool: "pen" | "eraser" } | null>(null);
   const currentShapeRef = useRef<{ startX: number; startY: number; endX: number; endY: number } | null>(null);
@@ -50,11 +50,38 @@ export function SharedWhiteboard({ sessionId, userId }: SharedWhiteboardProps) {
   const [strokes, setStrokes] = useState<(Stroke | ShapeStroke)[]>([]);
   const [redoStack, setRedoStack] = useState<(Stroke | ShapeStroke)[]>([]);
 
-  // Получаем текущий цвет фона для ластика
   const getBackgroundColor = () => {
     if (typeof window === 'undefined') return '#0B1121';
     const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
     return isDark ? '#0B1121' : '#F8FAFC';
+  };
+
+  // Функция для сохранения штриха с проверкой прав
+  const saveStroke = async (strokeData: Stroke | ShapeStroke | ClearEvent) => {
+    try {
+      const { error: insertError } = await supabase
+        .from("whiteboard_strokes")
+        .insert([
+          {
+            session_id: sessionId,
+            user_id: userId,
+            stroke_data: strokeData
+          }
+        ]);
+      
+      if (insertError) {
+        console.error("Error saving stroke:", insertError);
+        setError("Ошибка сохранения: " + insertError.message);
+        return false;
+      }
+      
+      setError(null);
+      return true;
+    } catch (err) {
+      console.error("Exception saving stroke:", err);
+      setError("Ошибка подключения к серверу");
+      return false;
+    }
   };
 
   // Подписка на штрихи других участников
@@ -74,7 +101,6 @@ export function SharedWhiteboard({ sessionId, userId }: SharedWhiteboardProps) {
           
           const newStroke = payload.new.stroke_data;
           
-          // Обработка события очистки
           if (newStroke.type === "clear") {
             setStrokes([]);
             setRedoStack([]);
@@ -330,13 +356,7 @@ export function SharedWhiteboard({ sessionId, userId }: SharedWhiteboardProps) {
       setStrokes(prev => [...prev, stroke]);
       setRedoStack([]);
       
-      await supabase.from("whiteboard_strokes").insert([
-        {
-          session_id: sessionId,
-          user_id: userId,
-          stroke_data: stroke
-        }
-      ]);
+      await saveStroke(stroke);
       
       currentStrokeRef.current = null;
     } 
@@ -355,13 +375,7 @@ export function SharedWhiteboard({ sessionId, userId }: SharedWhiteboardProps) {
       setStrokes(prev => [...prev, shape]);
       setRedoStack([]);
       
-      await supabase.from("whiteboard_strokes").insert([
-        {
-          session_id: sessionId,
-          user_id: userId,
-          stroke_data: shape
-        }
-      ]);
+      await saveStroke(shape);
       
       currentShapeRef.current = null;
     }
@@ -376,13 +390,7 @@ export function SharedWhiteboard({ sessionId, userId }: SharedWhiteboardProps) {
     setStrokes([]);
     setRedoStack([]);
     
-    await supabase.from("whiteboard_strokes").insert([
-      {
-        session_id: sessionId,
-        user_id: userId,
-        stroke_data: { type: "clear" }
-      }
-    ]);
+    await saveStroke({ type: "clear" });
   };
 
   const undo = () => {
@@ -401,6 +409,13 @@ export function SharedWhiteboard({ sessionId, userId }: SharedWhiteboardProps) {
 
   return (
     <div className="flex flex-col h-full gap-4">
+      {error && (
+        <div className="bg-destructive/10 border border-destructive text-destructive px-4 py-2 rounded-lg flex items-center gap-2 text-sm">
+          <AlertCircle className="w-4 h-4" />
+          <span>{error}</span>
+        </div>
+      )}
+      
       <div className="flex gap-2 p-2 bg-muted rounded-lg flex-wrap items-center">
         <Button
           variant={tool === "pen" ? "default" : "ghost"}

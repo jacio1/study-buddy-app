@@ -89,32 +89,6 @@ export default function MessagesPage() {
   const [loading,       setLoading]       = useState(true);
   const [search,        setSearch]        = useState('');
 
-  useEffect(() => {
-    let cleanup: (() => void) | undefined;
-    init().then(fn => { cleanup = fn; });
-    return () => cleanup?.();
-  }, []);
-
-  const init = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session?.user) { router.push('/auth'); return; }
-    const u = session.user as User;
-    setUser(u);
-    await Promise.all([loadProfile(u.id), loadConversations(u.id)]);
-    setLoading(false);
-
-    const channel = supabase.channel('dm-list')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'direct_messages' },
-        () => loadConversations(u.id))
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'study_sessions' },
-        () => loadConversations(u.id))
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'direct_conversations' },
-        () => loadConversations(u.id))
-      .subscribe();
-
-    return () => { supabase.removeChannel(channel); };
-  };
-
   const loadProfile = async (uid: string) => {
     const { data } = await supabase.from('profiles').select('*').eq('id', uid).single();
     if (data) setProfile(data);
@@ -163,6 +137,57 @@ export default function MessagesPage() {
 
     setConversations(enriched);
   };
+
+  const init = async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session?.user) { 
+    router.push('/auth'); 
+    return; 
+  }
+  const u = session.user as User;
+  setUser(u);
+  await Promise.all([loadProfile(u.id), loadConversations(u.id)]);
+  setLoading(false);
+
+  // СОЗДАЕМ КАНАЛ
+  const channel = supabase.channel('dm-list');
+  
+  // ДОБАВЛЯЕМ ВСЕ ОБРАБОТЧИКИ
+  channel
+    .on('postgres_changes', 
+      { event: '*', schema: 'public', table: 'direct_messages' },
+      () => loadConversations(u.id)
+    )
+    .on('postgres_changes', 
+      { event: '*', schema: 'public', table: 'study_sessions' },
+      () => loadConversations(u.id)
+    )
+    .on('postgres_changes', 
+      { event: '*', schema: 'public', table: 'direct_conversations' },
+      () => loadConversations(u.id)
+    );
+  
+  // ПОТОМ ПОДПИСЫВАЕМСЯ
+  channel.subscribe();
+
+  return () => { 
+    supabase.removeChannel(channel); 
+  };
+};
+
+  useEffect(() => {
+    let isMounted = true;
+    let cleanup: (() => void) | undefined;
+    
+    init().then(fn => { 
+      if (isMounted) cleanup = fn; 
+    });
+    
+    return () => {
+      isMounted = false;
+      cleanup?.();
+    };
+  }, []);
 
   /** Only listing owner can manage (block/close) a conversation */
   const isListingOwner = (conv: DirectConversation) =>

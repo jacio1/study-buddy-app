@@ -21,6 +21,7 @@ import {
   Users,
   VolumeX,
   ArrowLeft,
+  Palette,
 } from "lucide-react";
 import { Message, Profile, StudySession, User } from "@/src/types/types";
 import { supabase } from "@/src/lib/supabase";
@@ -32,10 +33,11 @@ import { SharedNotes } from "@/src/components/layout/SharedNotes";
 import { PomodoroTimer } from "@/src/components/layout/PomodoroTimer";
 import { TodoList } from "@/src/components/layout/TodoList";
 import { MediaGallery } from "@/src/components/layout/MediaGallery";
+import { SharedWhiteboard } from "@/src/components/layout/SharedWhiteboard";
 import { cn } from "@/src/lib/utils";
 import { ChatInput } from "@/src/components/layout/ChatInput";
 
-type ToolTab = "notes" | "pomodoro" | "todos" | "media" | "participants";
+type ToolTab = "notes" | "pomodoro" | "todos" | "media" | "whiteboard" | "participants";
 
 function formatBytes(b: number) {
   if (b < 1024) return `${b} B`;
@@ -467,6 +469,7 @@ export default function SessionPage() {
     { id: "todos", label: "Задачи", icon: ListChecks },
     { id: "pomodoro", label: "Помодоро", icon: Timer },
     { id: "media", label: "Медиа", icon: FolderOpen },
+    { id: "whiteboard", label: "Доска", icon: Palette },
     { id: "participants", label: "Участники", icon: Users },
   ];
 
@@ -550,10 +553,10 @@ export default function SessionPage() {
                   </p>
                 </div>
                 {isActive && (
-  <div className="flex gap-2">
-    <VoiceChat sessionId={sessionId} user={user} />
-  </div>
-)}
+                  <div className="flex gap-2">
+                    <VoiceChat sessionId={sessionId} user={user} />
+                  </div>
+                )}
               </div>
 
               {/* Сообщения чата */}
@@ -613,6 +616,7 @@ export default function SessionPage() {
                           {activeToolTab === "todos" && "Список задач"}
                           {activeToolTab === "pomodoro" && "Таймер Pomodoro"}
                           {activeToolTab === "media" && "Медиафайлы"}
+                          {activeToolTab === "whiteboard" && "Совместная доска для рисования"}
                           {activeToolTab === "participants" && "Участники сессии"}
                         </p>
                       </div>
@@ -677,6 +681,9 @@ export default function SessionPage() {
                       )}
                       {activeToolTab === "media" && isActive && (
                         <MediaGallery sessionId={sessionId} />
+                      )}
+                      {activeToolTab === "whiteboard" && isActive && (
+                        <SharedWhiteboard sessionId={sessionId} user={user} />
                       )}
                       {activeToolTab === "participants" && (
                         <ParticipantsPanel session={session} userId={user.id} />
