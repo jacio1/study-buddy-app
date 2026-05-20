@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, Suspense } from 'react';
+import { useRouter } from 'next/navigation'; // Добавьте useRouter
 import { useSearchParams } from 'next/navigation';
 import { Header } from '@/src/components/layout/Header';
 import { useStudyData } from '@/src/hooks/useStudyData';
@@ -30,6 +31,7 @@ function SearchParamsHandler() {
 }
 
 export default function HomePage() {
+  const router = useRouter(); // Добавьте это
   const { user, loading: authLoading } = useAuth();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   
@@ -45,6 +47,12 @@ export default function HomePage() {
 
   const isLoading = authLoading || dataLoading;
 
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.replace('/login'); // Используйте replace, чтобы не сохранять историю
+    }
+  }, [isLoading, user, router]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center">
@@ -54,6 +62,10 @@ export default function HomePage() {
         </p>
       </div>
     );
+  }
+
+  if (!user) {
+    return null;
   }
 
   return (
