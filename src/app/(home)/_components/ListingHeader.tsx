@@ -3,7 +3,7 @@ import { cn } from '@/src/lib/utils';
 import { SortControls } from './SortControls';
 
 interface ListingHeaderProps {
-  searchQuery: string;
+  searchQuery: string; 
   totalCount: number;
   activeFilterCount: number;
   onOpenFilters: () => void;

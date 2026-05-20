@@ -261,7 +261,7 @@ export default function DirectChatPage() {
     <div className="min-h-screen flex flex-col bg-background">
       <Header user={user!} profile={profile} />
 
-      <main className="flex-1 container mx-auto px-2 sm:px-4 py-4 sm:py-6 flex flex-col max-w-5xl">
+      <main className="mb-20 flex-1 container mx-auto px-2 sm:px-4 py-4 sm:py-6 flex flex-col max-w-5xl">
         {/* Top bar */}
         <div className="flex items-center gap-3 mb-4 sm:mb-5">
           <Button

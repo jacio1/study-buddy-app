@@ -266,7 +266,7 @@ export default function MessagesPage() {
     <div className="min-h-screen bg-background">
       <Header user={user} profile={profile} />
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 mb-20">
         <div className="max-w-2xl mx-auto">
           {/* Title */}
           <div className="flex items-center gap-3 mb-6">

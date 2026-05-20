@@ -140,7 +140,7 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-background">
       <Header user={user} profile={profile} />
 
-      <main className="container mx-auto px-4 py-8 max-w-3xl">
+      <main className="mb-20 container mx-auto px-4 py-8 max-w-3xl">
         <Button variant="ghost" onClick={() => router.push('/')} className="mb-8 group">
           <ArrowLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" />
           На главную

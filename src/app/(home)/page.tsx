@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Header } from '@/src/components/layout/Header';
 import { useStudyData } from '@/src/hooks/useStudyData';
@@ -9,18 +9,16 @@ import { useFilters } from '@/src/store/filteredStore';
 import { useAuth } from '@/src/hooks/useAuth';
 import { ActiveSessions } from './_components/ActiveSessions';
 import { ListingHeader } from './_components/ListingHeader';
-import { ActiveFilters } from './_components/filters/ActiveFilters';
 import { FiltersSidebar } from './_components/FiltersSidebar';
 import { ListingsGrid } from './_components/ListingsGrid';
 import { MobileFiltersDrawer } from './_components/MobileFiltersDrawer';
 import { Loader } from '@/src/components/Loader';
+import { ActiveFilters } from './_components/filters/ActiveFilters';
 
-export default function HomePage() {
+function SearchParamsHandler() {
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get('search') || '';
-  const { user, loading: authLoading } = useAuth();
   const { setSubjectSearch } = useFilters();
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (searchQuery) {
@@ -28,6 +26,15 @@ export default function HomePage() {
     }
   }, [searchQuery, setSubjectSearch]);
 
+  return null;
+}
+
+export default function HomePage() {
+  const { user, loading: authLoading } = useAuth();
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  
+  const searchQueryFromStore = useFilters((state) => state.subjectSearch);
+  
   const { listings, activeSessions, profile, loading: dataLoading, handleDeleted } = useStudyData(user);
   const filteredListings = useFilteredListings(listings, user?.id);
   
@@ -38,26 +45,30 @@ export default function HomePage() {
 
   const isLoading = authLoading || dataLoading;
 
-if (isLoading) {
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center ">
-      <Loader size="xl" />
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center">
+        <Loader size="xl" />
         <p className="text-sm text-muted-foreground mt-6">
           Пожалуйста, подождите...
         </p>
-    </div>
-  );
-}
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
       <Header user={user} profile={profile} />
 
-      <main className="container mx-auto px-4 py-8">
+      <Suspense fallback={null}>
+        <SearchParamsHandler />
+      </Suspense>
+
+      <main className="container mx-auto px-4 py-8 mb-20">
         <ActiveSessions sessions={activeSessions} />
 
         <ListingHeader
-          searchQuery={searchQuery}
+          searchQuery={searchQueryFromStore}
           totalCount={filteredListings.length}
           activeFilterCount={activeFilterCount}
           onOpenFilters={() => setMobileSidebarOpen(true)}

@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/src/lib/supabase";
-import { cn } from "@/src/lib/utils";
 import { Eraser, Pen, Trash2, Square, Circle, Undo2, Redo2, AlertCircle } from "lucide-react";
 import { Button } from "../ui/button";
 

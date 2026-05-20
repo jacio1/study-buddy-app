@@ -62,12 +62,12 @@ export function ListingCard({ listing, currentUserId, onDeleted }: ListingCardPr
         </div>
       )}
 
-      <h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug mb-2.5 pr-12">
+      <h3 className="text-xl font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug mb-2.5 pr-12">
         {listing.title}
       </h3>
 
       <div className="flex items-center gap-2 flex-wrap mb-3">
-        <span className="text-primary font-medium text-xs">{listing.subject}</span>
+        <span className="text-primary font-medium text-lg">{listing.subject}</span>
         <span className={cn(
           'px-2 py-0.5 rounded-full text-[11px] font-medium border',
           levelColors[listing.level] ?? 'text-muted-foreground bg-muted border-border'
@@ -76,11 +76,11 @@ export function ListingCard({ listing, currentUserId, onDeleted }: ListingCardPr
         </span>
       </div>
 
-      <p className="text-muted-foreground text-xs line-clamp-2 leading-relaxed mb-4">
+      <p className="text-foreground text-lg line-clamp-2 leading-relaxed mb-4">
         {listing.description}
       </p>
 
-      <div className="flex items-center gap-3 flex-wrap text-[11px] text-muted-foreground pt-3 border-t border-border">
+      <div className="flex items-center gap-3 flex-wrap text-[14px] text-foreground pt-3 border-t border-border">
         <span className="flex items-center gap-1">
           {listing.format === 'online' ? <Wifi className="h-3 w-3" /> : <Users className="h-3 w-3" />}
           {formatLabel[listing.format ?? 'any']}

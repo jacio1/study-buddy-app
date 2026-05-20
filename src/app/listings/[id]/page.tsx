@@ -127,7 +127,7 @@ export default function ListingDetailPage() {
     <div className="min-h-screen bg-background">
       <Header user={user} profile={profile} />
 
-      <main className="container mx-auto px-4 py-8 max-w-3xl">
+      <main className="container mx-auto px-4 py-8 max-w-3xl mb-20">
         <Button variant="ghost" onClick={() => router.push('/')} className="mb-6">
           <ArrowLeft className="h-4 w-4 mr-2" /> К объявлениям
         </Button>
