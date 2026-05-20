@@ -32,16 +32,10 @@ function SearchParamsHandler() {
 
 export default function HomePage() {
   const router = useRouter();
-  const { user, loading: authLoading } = useAuth();
-  const { setSubjectSearch } = useFilters();
+  const { user, initialLoading } = useAuth(); // Используем initialLoading
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   
-  // Добавьте эти console.log для диагностики
-  console.log('HomePage - user:', user);
-  console.log('HomePage - authLoading:', authLoading);
-  
   const searchQueryFromStore = useFilters((state) => state.subjectSearch);
-  
   const { listings, activeSessions, profile, loading: dataLoading, handleDeleted } = useStudyData(user);
   const filteredListings = useFilteredListings(listings, user?.id);
   
@@ -50,36 +44,30 @@ export default function HomePage() {
       .filter(Boolean).length
   );
 
-  const isLoading = authLoading || dataLoading;
-  
-  console.log('HomePage - isLoading:', isLoading);
-
+  // Редирект только после полной загрузки
   useEffect(() => {
-    console.log('HomePage - useEffect for redirect:', { isLoading, user });
-    if (!isLoading && !user) {
-      console.log('HomePage - redirecting to /login');
+    if (!initialLoading && !dataLoading && !user) {
+      console.log('Redirecting to login');
       router.replace('/login');
     }
-  }, [isLoading, user, router]);
+  }, [initialLoading, dataLoading, user, router]);
 
-  if (isLoading) {
-    console.log('HomePage - showing loader');
+  // Показываем лоадер пока идет загрузка
+  if (initialLoading || dataLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center">
         <Loader size="xl" />
         <p className="text-sm text-muted-foreground mt-6">
-          Пожалуйста, подождите...
+          {initialLoading ? 'Проверка авторизации...' : 'Загрузка данных...'}
         </p>
       </div>
     );
   }
 
   if (!user) {
-    console.log('HomePage - no user, returning null');
     return null;
   }
 
-  console.log('HomePage - rendering main content');
   return (
     <div className="min-h-screen bg-background">
       <Header user={user} profile={profile} />
