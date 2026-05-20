@@ -7,8 +7,7 @@ export function useStudyData(user: User | null) {
   const [activeSessions, setActiveSessions] = useState<StudySession[]>([]);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
-    const [hasLoaded, setHasLoaded] = useState(false);
-
+  const [hasLoaded, setHasLoaded] = useState(false);
 
   const loadProfile = async (userId: string) => {
     const { data } = await supabase
@@ -28,7 +27,7 @@ export function useStudyData(user: User | null) {
     if (data) setListings(data);
   };
 
-    const loadActiveSessions = async (userId: string) => {
+  const loadActiveSessions = async (userId: string) => {
     const { data } = await supabase
       .from("study_sessions")
       .select("*, study_listings(*)")
@@ -38,9 +37,15 @@ export function useStudyData(user: User | null) {
     if (data) setActiveSessions(data);
   };
 
+  useEffect(() => {
+    // 👇 ВАЖНО: Если нет пользователя, завершаем загрузку и выходим
+    if (!user) {
+      setLoading(false);
+      setHasLoaded(false); // Сбрасываем флаг, чтобы при логине загрузилось
+      return;
+    }
 
-   useEffect(() => {
-    if (!user || hasLoaded) return;
+    if (hasLoaded) return;
 
     const loadData = async () => {
       setLoading(true);

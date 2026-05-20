@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, Suspense } from 'react';
-import { useRouter } from 'next/navigation'; // Добавьте useRouter
+import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 import { Header } from '@/src/components/layout/Header';
 import { useStudyData } from '@/src/hooks/useStudyData';
@@ -31,9 +31,14 @@ function SearchParamsHandler() {
 }
 
 export default function HomePage() {
-  const router = useRouter(); // Добавьте это
+  const router = useRouter();
   const { user, loading: authLoading } = useAuth();
+  const { setSubjectSearch } = useFilters();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  
+  // Добавьте эти console.log для диагностики
+  console.log('HomePage - user:', user);
+  console.log('HomePage - authLoading:', authLoading);
   
   const searchQueryFromStore = useFilters((state) => state.subjectSearch);
   
@@ -46,14 +51,19 @@ export default function HomePage() {
   );
 
   const isLoading = authLoading || dataLoading;
+  
+  console.log('HomePage - isLoading:', isLoading);
 
   useEffect(() => {
+    console.log('HomePage - useEffect for redirect:', { isLoading, user });
     if (!isLoading && !user) {
-      router.replace('/login'); // Используйте replace, чтобы не сохранять историю
+      console.log('HomePage - redirecting to /login');
+      router.replace('/login');
     }
   }, [isLoading, user, router]);
 
   if (isLoading) {
+    console.log('HomePage - showing loader');
     return (
       <div className="min-h-screen flex flex-col items-center justify-center">
         <Loader size="xl" />
@@ -65,9 +75,11 @@ export default function HomePage() {
   }
 
   if (!user) {
+    console.log('HomePage - no user, returning null');
     return null;
   }
 
+  console.log('HomePage - rendering main content');
   return (
     <div className="min-h-screen bg-background">
       <Header user={user} profile={profile} />
