@@ -180,7 +180,7 @@ export default function ListingDetailPage() {
           {/* Description */}
           <div className="mb-8">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Описание</p>
-            <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{listing.description}</p>
+            <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap wrap-break-word">{listing.description}</p>
           </div>
 
           {/* Actions */}

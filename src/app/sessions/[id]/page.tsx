@@ -37,7 +37,13 @@ import { SharedWhiteboard } from "@/src/components/layout/SharedWhiteboard";
 import { cn } from "@/src/lib/utils";
 import { ChatInput } from "@/src/components/layout/ChatInput";
 
-type ToolTab = "notes" | "pomodoro" | "todos" | "media" | "whiteboard" | "participants";
+type ToolTab =
+  | "notes"
+  | "pomodoro"
+  | "todos"
+  | "media"
+  | "whiteboard"
+  | "participants";
 
 function formatBytes(b: number) {
   if (b < 1024) return `${b} B`;
@@ -191,7 +197,7 @@ function ArchiveView({ sessionId }: { sessionId: string }) {
                 "max-w-[72%] rounded-2xl overflow-hidden px-4 py-2.5",
                 isOwn
                   ? "bg-primary/70 text-primary-foreground rounded-br-sm"
-                  : "bg-muted text-foreground rounded-bl-sm"
+                  : "bg-muted text-foreground rounded-bl-sm",
               )}
             >
               {!isOwn && (
@@ -236,7 +242,7 @@ function ArchiveView({ sessionId }: { sessionId: string }) {
                   "text-[10px] mt-1",
                   isOwn
                     ? "text-primary-foreground/60 text-right"
-                    : "text-muted-foreground"
+                    : "text-muted-foreground",
                 )}
               >
                 {new Date(msg.created_at).toLocaleTimeString("ru-RU", {
@@ -345,7 +351,7 @@ function MobileToolsModal({
         className="fixed inset-0 bg-black/50 z-50 lg:hidden"
         onClick={onClose}
       />
-      
+
       {/* Modal */}
       <div className="fixed bottom-0 left-0 right-0 bg-card rounded-t-2xl shadow-xl z-50 lg:hidden animate-in slide-in-from-bottom-2 duration-300">
         <div className="flex items-center justify-between p-4 border-b border-border">
@@ -357,7 +363,7 @@ function MobileToolsModal({
             <X className="h-5 w-5" />
           </button>
         </div>
-        
+
         <div className="p-4 max-h-[60vh] overflow-y-auto">
           <div className="space-y-2">
             {toolTabs.map((tab) => {
@@ -375,7 +381,7 @@ function MobileToolsModal({
                     isActive || tab.id === "participants"
                       ? "text-foreground hover:bg-primary/10 active:bg-primary/20 cursor-pointer"
                       : "text-muted-foreground/50 cursor-not-allowed opacity-50",
-                    "bg-muted"
+                    "bg-muted",
                   )}
                 >
                   <Icon className="h-5 w-5 text-muted-foreground" />
@@ -448,12 +454,12 @@ export default function SessionPage() {
             ...cur,
             { ...payload.new, profiles: prof } as Message,
           ]);
-        }
+        },
       )
       .on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "study_sessions" },
-        (payload) => setSession(payload.new as StudySession)
+        (payload) => setSession(payload.new as StudySession),
       )
       .subscribe();
     return () => {
@@ -574,10 +580,11 @@ export default function SessionPage() {
     <div className="min-h-screen flex flex-col bg-background">
       <Header user={user} profile={profile} />
 
-      <main className=" mb-20 flex-1 container mx-auto px-2 sm:px-4 py-4 sm:py-6 flex flex-col max-w-7xl">
+      {/* Основной контейнер - занимает всю оставшуюся высоту */}
+      <main className="flex-1 container mx-auto px-2 sm:px-4 py-4 sm:py-6 flex flex-col max-w-7xl min-h-0 ">
         {/* Статус сессии (ожидает/активна) */}
         {isPending && (
-          <div className="mb-4 rounded-xl overflow-hidden border border-border">
+          <div className="mb-4 rounded-xl overflow-hidden border border-border flex-shrink-0">
             <div className="px-4 py-3 flex items-center gap-2 bg-accent/5">
               <Clock className="h-4 w-4 text-accent flex-shrink-0" />
               <p className="text-sm text-accent/80">
@@ -589,7 +596,7 @@ export default function SessionPage() {
 
         {/* Confirmation banner для приглашения */}
         {isPending && session.initiated_by !== user.id && (
-          <div className="mb-4 rounded-xl overflow-hidden border border-border">
+          <div className="mb-4 rounded-xl overflow-hidden border border-border flex-shrink-0">
             <ConfirmBanner
               session={session}
               userId={user.id}
@@ -599,9 +606,9 @@ export default function SessionPage() {
           </div>
         )}
 
-        {/* Main content */}
+        {/* Контейнер чата и инструментов - занимает всю оставшуюся высоту */}
         {isArchived ? (
-          <div className="flex-1 rounded-xl border border-border overflow-hidden flex flex-col bg-card">
+          <div className="flex-1 rounded-xl border border-border overflow-hidden flex flex-col bg-card min-h-0">
             <div className="px-5 py-3 border-b border-border flex items-center gap-2 flex-shrink-0">
               <Archive className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm font-medium text-muted-foreground">
@@ -615,14 +622,19 @@ export default function SessionPage() {
                   : ""}
               </span>
             </div>
-            <ArchiveView sessionId={sessionId} />
+            <div className="flex-1 overflow-y-auto min-h-0">
+              <ArchiveView sessionId={sessionId} />
+            </div>
           </div>
         ) : (
-          /* Двухколоночный макет: Чат + Инструменты (десктоп) или только чат с модалкой (мобилка) */
-          <div className="flex-1 rounded-xl border border-border overflow-hidden flex flex-col lg:flex-row bg-card">
-            {/* Левая колонка - Чат (всегда видна) */}
-            <div className="flex-1 flex flex-col min-h-0">
-              {/* Хедер чата с названием сессии и кнопками */}
+          /* Двухколоночный макет - занимает всю доступную высоту */
+          <div className={cn(
+  "flex-1 rounded-xl border border-border overflow-hidden flex flex-col lg:flex-row bg-card min-h-0",
+  "max-h-[calc(100vh-140px)] lg:max-h-[calc(100vh-120px)]"
+)}>
+            {/* Левая колонка - Чат */}
+            <div className="flex-1 flex flex-col min-h-0 lg:min-h-0">
+              {/* Хедер чата */}
               <div className="px-4 py-3 border-b border-border flex-shrink-0 flex justify-between items-start gap-3">
                 <div className="flex-1 min-w-0">
                   <h1 className="text-lg sm:text-xl font-bold text-foreground truncate">
@@ -636,7 +648,6 @@ export default function SessionPage() {
                   {isActive && (
                     <>
                       <VoiceChat sessionId={sessionId} user={user} />
-                      {/* Кнопка инструментов для мобилки */}
                       <Button
                         variant="outline"
                         size="icon"
@@ -650,8 +661,8 @@ export default function SessionPage() {
                 </div>
               </div>
 
-              {/* Сообщения чата */}
-              <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-1 hide-scrollbar">
+              {/* Сообщения чата - скроллятся */}
+              <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-1 min-h-0">
                 {messages.length === 0 ? (
                   <div className="flex items-center justify-center h-full">
                     <p className="text-muted-foreground text-sm text-center">
@@ -683,11 +694,11 @@ export default function SessionPage() {
               )}
             </div>
 
-            {/* Правая колонка - Инструменты (только для десктопа) */}
+            {/* Правая колонка - Инструменты (десктоп) */}
             {isDesktop && (
-              <div className="w-full lg:w-96 shrink-0 flex flex-col border-l border-border">
+              <div className="w-full lg:w-96 shrink-0 flex flex-col border-l border-border min-h-0">
                 <div className="flex-1 flex flex-col min-h-0">
-                  {/* Заголовок инструментов с навигацией */}
+                  {/* Заголовок инструментов */}
                   <div className="px-4 py-3 border-b border-border shrink-0">
                     {activeToolTab ? (
                       <div className="flex items-center gap-3">
@@ -721,8 +732,8 @@ export default function SessionPage() {
                     )}
                   </div>
 
-                  {/* Блок инструментов */}
-                  <div className="flex-1 overflow-y-auto p-3">
+                  {/* Контент инструментов - скроллится */}
+                  <div className="flex-1 overflow-y-auto p-3 min-h-0">
                     {!activeToolTab ? (
                       <div className="space-y-2">
                         {toolTabs.map((tab) => {
@@ -737,7 +748,7 @@ export default function SessionPage() {
                                 isActive || tab.id === "participants"
                                   ? "text-foreground hover:bg-primary/10 active:bg-primary/20 cursor-pointer"
                                   : "text-muted-foreground/50 cursor-not-allowed opacity-50",
-                                "bg-muted"
+                                "bg-muted",
                               )}
                             >
                               <Icon className="h-5 w-5 text-muted-foreground" />
@@ -765,7 +776,10 @@ export default function SessionPage() {
                           <MediaGallery sessionId={sessionId} />
                         )}
                         {activeToolTab === "whiteboard" && isActive && (
-                          <SharedWhiteboard sessionId={sessionId} userId={user.id} />
+                          <SharedWhiteboard
+                            sessionId={sessionId}
+                            userId={user.id}
+                          />
                         )}
                         {activeToolTab === "participants" && (
                           <ParticipantsPanel
@@ -777,9 +791,9 @@ export default function SessionPage() {
                     )}
                   </div>
 
-                  {/* Кнопка завершить сессию внизу */}
+                  {/* Кнопка завершить сессию */}
                   {isActive && !activeToolTab && (
-                    <div className="pt-9 p-4 shrink-0 border-t border-border mt-auto">
+                    <div className="p-4 shrink-0 border-t border-border">
                       <Button
                         variant="destructive"
                         onClick={handleEndSession}
@@ -800,7 +814,6 @@ export default function SessionPage() {
           </div>
         )}
       </main>
-
       {/* Мобильное модальное окно инструментов */}
       <MobileToolsModal
         isOpen={isMobileToolsOpen}
@@ -822,14 +835,16 @@ export default function SessionPage() {
               </button>
               <div>
                 <h3 className="text-base font-semibold text-foreground">
-                  {toolTabs.find((tab) => tab.id === activeToolTab)?.label || ""}
+                  {toolTabs.find((tab) => tab.id === activeToolTab)?.label ||
+                    ""}
                 </h3>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   {activeToolTab === "notes" && "Общие заметки"}
                   {activeToolTab === "todos" && "Список задач"}
                   {activeToolTab === "pomodoro" && "Таймер Pomodoro"}
                   {activeToolTab === "media" && "Медиафайлы"}
-                  {activeToolTab === "whiteboard" && "Совместная доска для рисования"}
+                  {activeToolTab === "whiteboard" &&
+                    "Совместная доска для рисования"}
                   {activeToolTab === "participants" && "Участники сессии"}
                 </p>
               </div>

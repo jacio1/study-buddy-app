@@ -23,7 +23,7 @@ export function AuthMessage({ message , type = "error" }: AuthMessageProps) {
           : "1px solid hsl(var(--destructive) / 0.3)",
       }}
     >
-      Ошибка при авторизации: {message}
+       {message}
     </div>
   );
 }

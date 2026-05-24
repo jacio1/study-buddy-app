@@ -149,10 +149,8 @@ export default function MessagesPage() {
   await Promise.all([loadProfile(u.id), loadConversations(u.id)]);
   setLoading(false);
 
-  // СОЗДАЕМ КАНАЛ
   const channel = supabase.channel('dm-list');
   
-  // ДОБАВЛЯЕМ ВСЕ ОБРАБОТЧИКИ
   channel
     .on('postgres_changes', 
       { event: '*', schema: 'public', table: 'direct_messages' },
@@ -167,7 +165,6 @@ export default function MessagesPage() {
       () => loadConversations(u.id)
     );
   
-  // ПОТОМ ПОДПИСЫВАЕМСЯ
   channel.subscribe();
 
   return () => { 

@@ -96,7 +96,6 @@ export function ChatInput({ sessionId, user, disabled }: ChatInputProps) {
         content:    text.trim() || null,
       };
 
-          // 👇 Добавьте эту проверку
     console.log('Sending payload:', payload);
     console.log('Attachment:', attachment);
 
@@ -209,7 +208,7 @@ export function ChatInput({ sessionId, user, disabled }: ChatInputProps) {
             onPaste={handlePaste}
             placeholder={disabled ? "Чат недоступен" : (attachment ? "Добавьте подпись…" : "Напишите сообщение...")}
             disabled={disabled || sending}
-            className="w-full px-4 rounded-xl resize-none text-sm h-11 bg-muted border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary leading-relaxed py-2"
+            className="w-full px-4 rounded-xl resize-none text-base h-11 bg-muted border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary leading-relaxed py-2"
             style={{ maxHeight: '120px', overflowY: 'auto' }}
             rows={1}
           />

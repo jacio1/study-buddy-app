@@ -129,10 +129,17 @@
   }
 
   body {
-    background-color: var(--app-bg);
+    background-color: var(--app-surface);
     color: var(--app-text);
     transition: background-color 0.25s ease, color 0.25s ease;
   }
+
+  @media (max-width: 768px) {
+    body{
+      background-color: var(--app-bg)
+    }
+  };
+  
 }
 
 ::-webkit-scrollbar { 
