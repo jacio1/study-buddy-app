@@ -31,6 +31,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "src/app/documents/userAgreement/page.tsx"  ],
   "exclude": ["node_modules"]
 }

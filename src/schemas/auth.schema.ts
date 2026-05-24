@@ -15,6 +15,10 @@ export const registerSchema = z.object({
     .string()
     .min(6, "Пароль должен содержать минимум 6 символов")
     .max(20, "Пароль не должен превышать 20 символов"),
+  agreedToTerms: z.boolean().refine((val) => val === true, {
+    message:
+      "Необходимо принять Пользовательское соглашение и Политику конфиденциальности",
+  }),
 });
 
 export type LoginFormData = z.infer<typeof loginSchema>;

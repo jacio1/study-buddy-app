@@ -1,16 +1,17 @@
-"use client";
+'use client'
 
-import { useState } from "react";
 import Link from "next/link";
+import { AuthMessage } from "../_components/AuthMessage";
+import { AgreementCheckbox } from "../_components/AgreementCheckbox";
+import { PasswordInput } from "../_components/PasswordInput";
+import { FormInput } from "../_components/FormInput";
+import { AuthForm } from "../_components/AuthForm";
+import { AuthCard } from "../_components/AuthCard";
+import { useAuth } from "@/src/hooks/useAuth";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { registerSchema, RegisterFormData } from "@/src/schemas/auth.schema";
-import { useAuth } from "../../../hooks/useAuth";
-import { AuthCard } from "../_components/AuthCard";
-import { AuthForm } from "../_components/AuthForm";
-import { FormInput } from "../_components/FormInput";
-import { PasswordInput } from "../_components/PasswordInput";
-import { AuthMessage } from "../_components/AuthMessage";
+import { RegisterFormData, registerSchema } from "@/src/schemas/auth.schema";
 
 export default function RegisterPage() {
   const {
@@ -25,16 +26,17 @@ export default function RegisterPage() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<RegisterFormData>({
+  } = useForm<RegisterFormData & { agreedToTerms?: boolean }>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       username: "",
       email: "",
       password: "",
+      agreedToTerms: false,
     },
   });
 
-  const onSubmit = async (data: RegisterFormData) => {
+  const onSubmit = async (data: RegisterFormData & { agreedToTerms: boolean }) => {
     clearServerError();
     setSuccessMessage(null);
 
@@ -78,6 +80,11 @@ export default function RegisterPage() {
           placeholder="Введите пароль"
           required
           showHint
+        />
+        
+        <AgreementCheckbox 
+          register={register} 
+          error={errors.agreedToTerms}
         />
       </AuthForm>
 
