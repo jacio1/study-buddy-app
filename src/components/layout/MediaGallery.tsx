@@ -1,48 +1,86 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { supabase } from '@/src/lib/supabase';
-import { Message } from '@/src/types/types';
+import { useEffect, useState } from "react";
+import { supabase } from "@/src/lib/supabase";
+import { Message } from "@/src/types/types";
 import {
-  Image as ImageIcon, FileText, FileSpreadsheet, FileCode,
-  FileArchive, File, Download, X, Loader2, FolderOpen,
-} from 'lucide-react';
-import { cn } from '@/src/lib/utils';
+  Image as ImageIcon,
+  FileText,
+  FileSpreadsheet,
+  FileCode,
+  FileArchive,
+  File,
+  Download,
+  X,
+  Loader2,
+  FolderOpen,
+} from "lucide-react";
+import { cn } from "@/src/lib/utils";
 
 interface MediaGalleryProps {
   sessionId: string;
 }
 
-type MediaTab = 'images' | 'files';
+type MediaTab = "images" | "files";
 
 function formatBytes(b: number) {
-  if (b < 1024)        return `${b} B`;
+  if (b < 1024) return `${b} B`;
   if (b < 1024 * 1024) return `${(b / 1024).toFixed(1)} KB`;
   return `${(b / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 function FileTypeIcon({ name }: { name: string }) {
-  const ext = name.split('.').pop()?.toLowerCase() ?? '';
-  if (ext === 'pdf')                                             return <FileText        className="h-6 w-6 text-destructive"     />;
-  if (['xls','xlsx','csv'].includes(ext))                        return <FileSpreadsheet className="h-6 w-6 text-secondary" />;
-  if (['js','ts','py','java','cpp','html','css','json','go','rs'].includes(ext))
-                                                                 return <FileCode        className="h-6 w-6 text-primary"    />;
-  if (['zip','rar','7z','tar','gz'].includes(ext))               return <FileArchive     className="h-6 w-6 text-accent"   />;
+  const ext = name.split(".").pop()?.toLowerCase() ?? "";
+  if (ext === "pdf") return <FileText className="h-6 w-6 text-destructive" />;
+  if (["xls", "xlsx", "csv"].includes(ext))
+    return <FileSpreadsheet className="h-6 w-6 text-secondary" />;
+  if (
+    [
+      "js",
+      "ts",
+      "py",
+      "java",
+      "cpp",
+      "html",
+      "css",
+      "json",
+      "go",
+      "rs",
+    ].includes(ext)
+  )
+    return <FileCode className="h-6 w-6 text-primary" />;
+  if (["zip", "rar", "7z", "tar", "gz"].includes(ext))
+    return <FileArchive className="h-6 w-6 text-accent" />;
   return <File className="h-6 w-6 text-muted-foreground" />;
 }
 
 function extColor(name: string): string {
-  const ext = name.split('.').pop()?.toLowerCase() ?? '';
-  if (ext === 'pdf')                              return 'bg-destructive/10 border-destructive/20';
-  if (['xls','xlsx','csv'].includes(ext))         return 'bg-secondary/10 border-secondary/20';
-  if (['zip','rar','7z','tar','gz'].includes(ext))return 'bg-accent/10 border-accent/20';
-  if (['js','ts','py','html','css','json','go','rs','java','cpp'].includes(ext))
-                                                  return 'bg-primary/10 border-primary/20';
-  return 'bg-muted border-border';
+  const ext = name.split(".").pop()?.toLowerCase() ?? "";
+  if (ext === "pdf") return "bg-destructive/10 border-destructive/20";
+  if (["xls", "xlsx", "csv"].includes(ext))
+    return "bg-secondary/10 border-secondary/20";
+  if (["zip", "rar", "7z", "tar", "gz"].includes(ext))
+    return "bg-accent/10 border-accent/20";
+  if (
+    [
+      "js",
+      "ts",
+      "py",
+      "html",
+      "css",
+      "json",
+      "go",
+      "rs",
+      "java",
+      "cpp",
+    ].includes(ext)
+  )
+    return "bg-primary/10 border-primary/20";
+  return "bg-muted border-border";
 }
 
 export function MediaGallery({ sessionId }: MediaGalleryProps) {
-  const [tab, setTab] = useState<MediaTab>('images');
+  const [tab, setTab] = useState<MediaTab>("images");
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const [lightbox, setLightbox] = useState<string | null>(null);
@@ -53,49 +91,55 @@ export function MediaGallery({ sessionId }: MediaGalleryProps) {
     // Real-time: add new media messages as they arrive
     const channel = supabase
       .channel(`media-${sessionId}`)
-      .on('postgres_changes', {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'session_messages',
-        filter: `session_id=eq.${sessionId}`,
-      }, (payload) => {
-        const msg = payload.new as Message;
-        if (msg.image_url || msg.file_url) {
-          setMessages((prev) => [msg, ...prev]);
-        }
-      })
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "session_messages",
+          filter: `session_id=eq.${sessionId}`,
+        },
+        (payload) => {
+          const msg = payload.new as Message;
+          if (msg.image_url || msg.file_url) {
+            setMessages((prev) => [msg, ...prev]);
+          }
+        },
+      )
       .subscribe();
 
-    return () => { supabase.removeChannel(channel); };
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [sessionId]);
 
   const loadMedia = async () => {
     setLoading(true);
     const { data } = await supabase
-      .from('session_messages')
-      .select('*, profiles(*)')
-      .eq('session_id', sessionId)
-      .or('image_url.not.is.null,file_url.not.is.null')
-      .order('created_at', { ascending: false });
+      .from("session_messages")
+      .select("*, profiles(*)")
+      .eq("session_id", sessionId)
+      .or("image_url.not.is.null,file_url.not.is.null")
+      .order("created_at", { ascending: false });
 
     if (data) setMessages(data as Message[]);
     setLoading(false);
   };
 
   const images = messages.filter((m) => m.image_url);
-  const files  = messages.filter((m) => m.file_url);
+  const files = messages.filter((m) => m.file_url);
 
   return (
     <div className="flex flex-col h-full">
       {/* Tab switcher */}
       <div className="flex gap-2 mb-5">
         <button
-          onClick={() => setTab('images')}
+          onClick={() => setTab("images")}
           className={cn(
-            'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border transition-all',
-            tab === 'images'
-              ? 'bg-primary/20 border-primary/40 text-primary'
-              : 'bg-muted border-border text-muted-foreground hover:text-foreground hover:border-primary/50'
+            "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border transition-all",
+            tab === "images"
+              ? "bg-primary/20 border-primary/40 text-primary"
+              : "bg-muted border-border text-muted-foreground hover:text-foreground hover:border-primary/50",
           )}
         >
           <ImageIcon className="h-4 w-4" />
@@ -108,12 +152,12 @@ export function MediaGallery({ sessionId }: MediaGalleryProps) {
         </button>
 
         <button
-          onClick={() => setTab('files')}
+          onClick={() => setTab("files")}
           className={cn(
-            'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border transition-all',
-            tab === 'files'
-              ? 'bg-primary/20 border-primary/40 text-primary'
-              : 'bg-muted border-border text-muted-foreground hover:text-foreground hover:border-primary/50'
+            "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border transition-all",
+            tab === "files"
+              ? "bg-primary/20 border-primary/40 text-primary"
+              : "bg-muted border-border text-muted-foreground hover:text-foreground hover:border-primary/50",
           )}
         >
           <FolderOpen className="h-4 w-4" />
@@ -131,10 +175,13 @@ export function MediaGallery({ sessionId }: MediaGalleryProps) {
         <div className="flex-1 flex items-center justify-center">
           <Loader2 className="h-6 w-6 text-primary animate-spin" />
         </div>
-
-      ) : tab === 'images' ? (
+      ) : tab === "images" ? (
         images.length === 0 ? (
-          <Empty icon={<ImageIcon className="h-10 w-10" />} text="Нет изображений" sub="Отправьте картинку в чате" />
+          <Empty
+            icon={<ImageIcon className="h-10 w-10" />}
+            text="Нет изображений"
+            sub="Отправьте картинку в чате"
+          />
         ) : (
           <div className="flex-1 overflow-y-auto">
             <div className="grid grid-cols-2 gap-2">
@@ -151,9 +198,16 @@ export function MediaGallery({ sessionId }: MediaGalleryProps) {
                   />
                   {/* Overlay with meta */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-2.5">
-                    <p className="text-[10px] text-white/80 truncate">{msg.profiles?.full_name}</p>
+                    <p className="text-[10px] text-white/80 truncate">
+                      {msg.profiles?.full_name}
+                    </p>
                     <p className="text-[10px] text-white/60">
-                      {new Date(msg.created_at).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                      {new Date(msg.created_at).toLocaleDateString("ru-RU", {
+                        day: "numeric",
+                        month: "short",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
                     </p>
                   </div>
                 </button>
@@ -161,52 +215,60 @@ export function MediaGallery({ sessionId }: MediaGalleryProps) {
             </div>
           </div>
         )
-
+      ) : files.length === 0 ? (
+        <Empty
+          icon={<FolderOpen className="h-10 w-10" />}
+          text="Нет файлов"
+          sub="Прикрепите файл через скрепку в чате"
+        />
       ) : (
-        files.length === 0 ? (
-          <Empty icon={<FolderOpen className="h-10 w-10" />} text="Нет файлов" sub="Прикрепите файл через скрепку в чате" />
-        ) : (
-          <div className="flex-1 overflow-y-auto space-y-2">
-            {files.map((msg) => (
-              <a
-                key={msg.id}
-                href={msg.file_url!}
-                target="_blank"
-                rel="noopener noreferrer"
-                download={msg.file_name ?? true}
-                className={cn(
-                  'flex items-center gap-3 px-4 py-3 rounded-xl border transition-all hover:-translate-y-0.5 hover:shadow-lg',
-                  extColor(msg.file_name ?? '')
-                )}
-              >
-                {/* Icon */}
-                <div className="w-11 h-11 rounded-lg bg-muted flex items-center justify-center flex-shrink-0 border border-border">
-                  <FileTypeIcon name={msg.file_name ?? ''} />
-                </div>
+        <div className="flex-1 overflow-y-auto space-y-2">
+          {files.map((msg) => (
+            <a
+              key={msg.id}
+              href={msg.file_url!}
+              target="_blank"
+              rel="noopener noreferrer"
+              download={msg.file_name ?? true}
+              className={cn(
+                "flex items-center gap-3 px-4 py-3 rounded-xl border transition-all hover:-translate-y-0.5 hover:shadow-lg",
+                extColor(msg.file_name ?? ""),
+              )}
+            >
+              {/* Icon */}
+              <div className="w-11 h-11 rounded-lg bg-muted flex items-center justify-center shrink-0 border border-border">
+                <FileTypeIcon name={msg.file_name ?? ""} />
+              </div>
 
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-foreground font-medium truncate leading-tight">
-                    {msg.file_name ?? 'Файл'}
-                  </p>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    {msg.file_size != null && (
-                      <span className="text-xs text-muted-foreground">{formatBytes(msg.file_size)}</span>
-                    )}
-                    <span className="text-xs text-muted-foreground/40">·</span>
-                    <span className="text-xs text-muted-foreground truncate">{msg.profiles?.full_name}</span>
-                    <span className="text-xs text-muted-foreground/40">·</span>
+              {/* Info */}
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-foreground font-medium truncate leading-tight">
+                  {msg.file_name ?? "Файл"}
+                </p>
+                <div className="flex items-center gap-2 mt-0.5">
+                  {msg.file_size != null && (
                     <span className="text-xs text-muted-foreground">
-                      {new Date(msg.created_at).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })}
+                      {formatBytes(msg.file_size)}
                     </span>
-                  </div>
+                  )}
+                  <span className="text-xs text-muted-foreground/40">·</span>
+                  <span className="text-xs text-muted-foreground truncate">
+                    {msg.profiles?.full_name}
+                  </span>
+                  <span className="text-xs text-muted-foreground/40">·</span>
+                  <span className="text-xs text-muted-foreground">
+                    {new Date(msg.created_at).toLocaleDateString("ru-RU", {
+                      day: "numeric",
+                      month: "short",
+                    })}
+                  </span>
                 </div>
+              </div>
 
-                <Download className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-              </a>
-            ))}
-          </div>
-        )
+              <Download className="h-4 w-4 text-muted-foreground shrink-0" />
+            </a>
+          ))}
+        </div>
       )}
 
       {/* Lightbox */}
@@ -243,7 +305,15 @@ export function MediaGallery({ sessionId }: MediaGalleryProps) {
   );
 }
 
-function Empty({ icon, text, sub }: { icon: React.ReactNode; text: string; sub: string }) {
+function Empty({
+  icon,
+  text,
+  sub,
+}: {
+  icon: React.ReactNode;
+  text: string;
+  sub: string;
+}) {
   return (
     <div className="flex-1 flex flex-col items-center justify-center text-center py-12">
       <div className="text-muted-foreground/30 mb-3">{icon}</div>

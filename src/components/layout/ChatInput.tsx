@@ -33,12 +33,6 @@ export function ChatInput({ sessionId, user, disabled }: ChatInputProps) {
   const fileInputRef  = useRef<HTMLInputElement>(null);
   const textareaRef   = useRef<HTMLTextAreaElement>(null);
 
-  useEffect(() => {
-    const ta = textareaRef.current;
-    if (!ta) return;
-    ta.style.height = 'auto';
-    ta.style.height = Math.min(ta.scrollHeight, 120) + 'px';
-  }, [text]);
 
   useEffect(() => () => {
     if (attachment?.kind === 'image') URL.revokeObjectURL(attachment.preview);
@@ -178,16 +172,6 @@ export function ChatInput({ sessionId, user, disabled }: ChatInputProps) {
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-1 shrink-0 h-11">
           <button
-            onClick={() => imageInputRef.current?.click()}
-            disabled={disabled || sending}
-            className={cn(
-              "h-11 w-11 rounded-lg hover:bg-muted transition-colors disabled:opacity-50 text-muted-foreground hover:text-foreground flex items-center justify-center",
-              attachment?.kind === 'image' && "bg-primary/20 text-primary"
-            )}
-          >
-            <ImagePlus className="h-5 w-5" />
-          </button>
-          <button
             onClick={() => fileInputRef.current?.click()}
             disabled={disabled || sending}
             className={cn(
@@ -199,7 +183,7 @@ export function ChatInput({ sessionId, user, disabled }: ChatInputProps) {
           </button>
         </div>
 
-        <div className="flex-1">
+        <div className="flex-1 h-11">
           <textarea
             ref={textareaRef}
             value={text}
@@ -208,8 +192,7 @@ export function ChatInput({ sessionId, user, disabled }: ChatInputProps) {
             onPaste={handlePaste}
             placeholder={disabled ? "Чат недоступен" : (attachment ? "Добавьте подпись…" : "Напишите сообщение...")}
             disabled={disabled || sending}
-            className="w-full px-4 rounded-xl resize-none text-base h-11 bg-muted border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary leading-relaxed py-2"
-            style={{ maxHeight: '120px', overflowY: 'auto' }}
+            className="w-full h-full px-4 rounded-xl resize-none text-base bg-muted border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary leading-relaxed py-2"
             rows={1}
           />
         </div>

@@ -178,7 +178,7 @@ export function Header({ user, profile }: HeaderProps) {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    router.push("/auth");
+    router.push("/login");
   };
 
   const handleSearch = (e: React.FormEvent) => {
@@ -240,7 +240,7 @@ export function Header({ user, profile }: HeaderProps) {
             {/* Logo - кликабельный, ведет на главную */}
             <button
               onClick={() => router.push("/")}
-              className="text-2xl font-bold text-foreground flex-shrink-0 relative group transition-all duration-300 hover:scale-105 cursor-pointer"
+              className="text-2xl font-bold text-foreground shrink-0 relative group transition-all duration-300 hover:scale-105 cursor-pointer"
             >
               StudyBuddy
             </button>
@@ -271,7 +271,7 @@ export function Header({ user, profile }: HeaderProps) {
                   <Button
                     type="submit"
                     size="icon"
-                    className="h-12 w-12 rounded-r-full rounded-l-none border border-l-0 border-border transition-colors flex-shrink-0 group-focus-within/search:border-primary"
+                    className="h-12 w-12 rounded-r-full rounded-l-none border border-l-0 border-border transition-colors shrink-0 group-focus-within/search:border-primary"
                   >
                     <Search className="h-5 w-5" />
                   </Button>
@@ -285,7 +285,7 @@ export function Header({ user, profile }: HeaderProps) {
                 <Button
                   onClick={() => router.push("/listings/create")}
                   size="icon"
-                  className="h-12 w-12 rounded-xl flex-shrink-0 sm:w-auto sm:px-4"
+                  className="h-12 w-12 rounded-xl shrink-0 sm:w-auto sm:px-4"
                 >
                   <Plus className="h-5 w-5 sm:mr-2" />
                   <span className="hidden sm:inline">Создать</span>
@@ -368,7 +368,7 @@ export function Header({ user, profile }: HeaderProps) {
                                 !notif.is_read && "bg-primary/5",
                               )}
                             >
-                              <div className="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-base bg-muted">
+                              <div className="shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-base bg-muted">
                                 {notif.actor?.avatar_url ? (
                                   <img
                                     src={notif.actor.avatar_url}
@@ -400,7 +400,7 @@ export function Header({ user, profile }: HeaderProps) {
                                 </p>
                               </div>
                               {!notif.is_read && (
-                                <div className="w-2 h-2 rounded-full bg-accent flex-shrink-0 mt-1.5" />
+                                <div className="w-2 h-2 rounded-full bg-accent shrink-0 mt-1.5" />
                               )}
                             </button>
                           ))
@@ -422,11 +422,11 @@ export function Header({ user, profile }: HeaderProps) {
                     {profile?.avatar_url ? (
                       <img
                         src={profile.avatar_url}
-                        className="w-9 h-9 rounded-lg object-cover flex-shrink-0"
+                        className="w-9 h-9 rounded-lg object-cover shrink-0"
                         alt=""
                       />
                     ) : (
-                      <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center text-primary-foreground text-sm font-bold flex-shrink-0">
+                      <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center text-primary-foreground text-sm font-bold shrink-0">
                         {profile?.full_name?.[0]?.toUpperCase() ?? (
                           <UserIcon className="h-5 w-5" />
                         )}
@@ -508,7 +508,8 @@ export function Header({ user, profile }: HeaderProps) {
                   <button
                     onClick={() => {
                       // Toggle search input visibility
-                      const searchInput = document.getElementById("mobile-search");
+                      const searchInput =
+                        document.getElementById("mobile-search");
                       if (searchInput) {
                         searchInput.classList.toggle("hidden");
                         searchInput.classList.toggle("flex");
@@ -623,149 +624,149 @@ export function Header({ user, profile }: HeaderProps) {
 
       {/* Mobile Bottom Navigation */}
       {isMobile && (
-  <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur border-t border-border safe-area-pb">
-    <div className="flex items-center justify-around px-2 py-2">
-      {navItems.map((item) => {
-        const Icon = item.icon;
-        const isActive = item.active;
+        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur border-t border-border safe-area-pb">
+          <div className="flex items-center justify-around px-2 py-2">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = item.active;
 
-        if (item.isNotification) {
-          return (
-            <div key={item.name} className="relative" ref={notifRef}>
-              <button
-                onClick={() => {
-                  setNotifOpen((v) => !v);
-                  setProfileOpen(false);
-                }}
-                className={cn(
-                  "flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 rounded-xl transition-all min-w-[60px]",
-                  notifOpen
-                    ? "text-accent"
-                    : isActive
-                    ? "text-primary"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                <div className="relative">
-                  <Icon className="h-5 w-5" />
-                  {unreadNotifs > 0 && (
-                    <span className="absolute -top-1 -right-1.5 min-w-[16px] h-[16px] rounded-full bg-accent text-accent-foreground text-[9px] font-bold flex items-center justify-center px-0.5">
-                      {unreadNotifs > 9 ? "9+" : unreadNotifs}
-                    </span>
-                  )}
-                </div>
-                <span className="text-[10px] font-medium">
-                  {item.name}
-                </span>
-              </button>
-
-              {/* Mobile notifications dropdown (opens as bottom sheet on mobile) */}
-              {notifOpen && (
-                <>
-                  <div
-                    className="fixed inset-0 bg-black/50 z-40"
-                    onClick={() => setNotifOpen(false)}
-                  />
-                  <div className="absolute bottom-full right-0 mb-2 w-80 rounded-2xl border border-border shadow-2xl shadow-black/40 overflow-hidden z-50 bg-card">
-                    <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-                      <span className="text-sm font-semibold text-foreground">
-                        Уведомления
+              if (item.isNotification) {
+                return (
+                  <div key={item.name} className="relative" ref={notifRef}>
+                    <button
+                      onClick={() => {
+                        setNotifOpen((v) => !v);
+                        setProfileOpen(false);
+                      }}
+                      className={cn(
+                        "flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 rounded-xl transition-all min-w-[60px]",
+                        notifOpen
+                          ? "text-accent"
+                          : isActive
+                            ? "text-primary"
+                            : "text-muted-foreground hover:text-foreground",
+                      )}
+                    >
+                      <div className="relative">
+                        <Icon className="h-5 w-5" />
+                        {unreadNotifs > 0 && (
+                          <span className="absolute -top-1 -right-1.5 min-w-[16px] h-[16px] rounded-full bg-accent text-accent-foreground text-[9px] font-bold flex items-center justify-center px-0.5">
+                            {unreadNotifs > 9 ? "9+" : unreadNotifs}
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-[10px] font-medium">
+                        {item.name}
                       </span>
-                      {unreadNotifs > 0 && (
-                        <button
-                          onClick={markAllRead}
-                          className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                          <CheckCheck className="h-3.5 w-3.5" />
-                          Прочитать все
-                        </button>
-                      )}
-                    </div>
+                    </button>
 
-                    <div className="max-h-80 overflow-y-auto">
-                      {notifications.length === 0 ? (
-                        <div className="flex flex-col items-center py-10 text-center px-4">
-                          <Bell className="h-8 w-8 text-muted-foreground/30 mb-3" />
-                          <p className="text-muted-foreground text-sm">
-                            Нет уведомлений
-                          </p>
-                        </div>
-                      ) : (
-                        notifications.map((notif) => (
-                          <button
-                            key={notif.id}
-                            onClick={() => handleNotifClick(notif)}
-                            className={cn(
-                              "w-full text-left flex items-start gap-3 px-4 py-3 border-b border-border transition-colors hover:bg-muted/50",
-                              !notif.is_read && "bg-primary/5",
-                            )}
-                          >
-                            <div className="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-base bg-muted">
-                              {notif.actor?.avatar_url ? (
-                                <img
-                                  src={notif.actor.avatar_url}
-                                  className="w-full h-full rounded-xl object-cover"
-                                  alt=""
-                                />
-                              ) : (
-                                <span>
-                                  {notifIcon[notif.type] ?? "🔔"}
-                                </span>
-                              )}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p
-                                className={cn(
-                                  "text-sm leading-snug",
-                                  notif.is_read
-                                    ? "text-muted-foreground"
-                                    : "text-foreground font-medium",
-                                )}
+                    {/* Mobile notifications dropdown (opens as bottom sheet on mobile) */}
+                    {notifOpen && (
+                      <>
+                        <div
+                          className="fixed inset-0 bg-black/50 z-40"
+                          onClick={() => setNotifOpen(false)}
+                        />
+                        <div className="absolute bottom-full right-0 mb-2 w-80 rounded-2xl border border-border shadow-2xl shadow-black/40 overflow-hidden z-50 bg-card">
+                          <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+                            <span className="text-sm font-semibold text-foreground">
+                              Уведомления
+                            </span>
+                            {unreadNotifs > 0 && (
+                              <button
+                                onClick={markAllRead}
+                                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
                               >
-                                {notif.title}
-                              </p>
-                              {notif.body && (
-                                <p className="text-xs text-muted-foreground mt-0.5 truncate">
-                                  {notif.body}
-                                </p>
-                              )}
-                              <p className="text-[10px] text-muted-foreground/60 mt-1">
-                                {timeAgo(notif.created_at)}
-                              </p>
-                            </div>
-                            {!notif.is_read && (
-                              <div className="w-2 h-2 rounded-full bg-accent flex-shrink-0 mt-1.5" />
+                                <CheckCheck className="h-3.5 w-3.5" />
+                                Прочитать все
+                              </button>
                             )}
-                          </button>
-                        ))
-                      )}
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-          );
-        }
+                          </div>
 
-        return (
-          <button
-            key={item.name}
-            onClick={() => router.push(item.href)}
-            className={cn(
-              "flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 rounded-xl transition-all min-w-[60px]",
-              isActive
-                ? "text-primary"
-                : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            <Icon className="h-5 w-5" />
-            <span className="text-[10px] font-medium">{item.name}</span>
-          </button>
-        );
-      })}
-    </div>
-  </nav>
-)}
+                          <div className="max-h-80 overflow-y-auto">
+                            {notifications.length === 0 ? (
+                              <div className="flex flex-col items-center py-10 text-center px-4">
+                                <Bell className="h-8 w-8 text-muted-foreground/30 mb-3" />
+                                <p className="text-muted-foreground text-sm">
+                                  Нет уведомлений
+                                </p>
+                              </div>
+                            ) : (
+                              notifications.map((notif) => (
+                                <button
+                                  key={notif.id}
+                                  onClick={() => handleNotifClick(notif)}
+                                  className={cn(
+                                    "w-full text-left flex items-start gap-3 px-4 py-3 border-b border-border transition-colors hover:bg-muted/50",
+                                    !notif.is_read && "bg-primary/5",
+                                  )}
+                                >
+                                  <div className="shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-base bg-muted">
+                                    {notif.actor?.avatar_url ? (
+                                      <img
+                                        src={notif.actor.avatar_url}
+                                        className="w-full h-full rounded-xl object-cover"
+                                        alt=""
+                                      />
+                                    ) : (
+                                      <span>
+                                        {notifIcon[notif.type] ?? "🔔"}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p
+                                      className={cn(
+                                        "text-sm leading-snug",
+                                        notif.is_read
+                                          ? "text-muted-foreground"
+                                          : "text-foreground font-medium",
+                                      )}
+                                    >
+                                      {notif.title}
+                                    </p>
+                                    {notif.body && (
+                                      <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                                        {notif.body}
+                                      </p>
+                                    )}
+                                    <p className="text-[10px] text-muted-foreground/60 mt-1">
+                                      {timeAgo(notif.created_at)}
+                                    </p>
+                                  </div>
+                                  {!notif.is_read && (
+                                    <div className="w-2 h-2 rounded-full bg-accent shrink-0 mt-1.5" />
+                                  )}
+                                </button>
+                              ))
+                            )}
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                );
+              }
+
+              return (
+                <button
+                  key={item.name}
+                  onClick={() => router.push(item.href)}
+                  className={cn(
+                    "flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 rounded-xl transition-all min-w-[60px]",
+                    isActive
+                      ? "text-primary"
+                      : "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  <Icon className="h-5 w-5" />
+                  <span className="text-[10px] font-medium">{item.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        </nav>
+      )}
     </>
   );
 }

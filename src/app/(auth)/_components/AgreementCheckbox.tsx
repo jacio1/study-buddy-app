@@ -10,7 +10,7 @@ interface RegisterFormData {
   username: string;
   email: string;
   password: string;
-  agreedToTerms?: boolean;
+  agreedToTerms: boolean;
 }
 
 interface AgreementCheckboxProps {

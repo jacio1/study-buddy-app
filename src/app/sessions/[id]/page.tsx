@@ -108,7 +108,7 @@ function ConfirmBanner({
   if (iInitiated)
     return (
       <div className="px-4 py-3 border-b border-border flex items-center gap-2 bg-accent/5">
-        <Clock className="h-4 w-4 text-accent flex-shrink-0" />
+        <Clock className="h-4 w-4 text-accent shrink-0" />
         <p className="text-sm text-accent/80">
           Ждём подтверждения от второго участника…
         </p>
@@ -118,12 +118,12 @@ function ConfirmBanner({
   return (
     <div className="px-4 py-3 border-b border-border flex items-center justify-between gap-4 bg-primary/5">
       <div className="flex items-center gap-2">
-        <CheckCircle className="h-4 w-4 text-primary flex-shrink-0" />
+        <CheckCircle className="h-4 w-4 text-primary shrink-0" />
         <p className="text-sm text-primary font-medium">
           Вас приглашают в совместную сессию
         </p>
       </div>
-      <div className="flex gap-2 flex-shrink-0">
+      <div className="flex gap-2 shrink-0">
         <Button onClick={accept} disabled={busy} size="sm">
           {busy ? (
             <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -220,7 +220,7 @@ function ArchiveView({ sessionId }: { sessionId: string }) {
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border mb-2 hover:opacity-80 transition-opacity bg-background/50"
                 >
-                  <File className="h-4 w-4 text-primary flex-shrink-0" />
+                  <File className="h-4 w-4 text-primary shrink-0" />
                   <span className="text-xs truncate flex-1">
                     {msg.file_name}
                   </span>
@@ -229,7 +229,7 @@ function ArchiveView({ sessionId }: { sessionId: string }) {
                       {formatBytes(msg.file_size)}
                     </span>
                   )}
-                  <Download className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                  <Download className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                 </a>
               )}
               {msg.content && (
@@ -416,6 +416,8 @@ export default function SessionPage() {
   const isMobile = typeof window !== "undefined" && window.innerWidth < 1024;
   const [isDesktop, setIsDesktop] = useState(true);
 
+  
+
   // Проверка на десктоп
   useEffect(() => {
     const checkDesktop = () => {
@@ -476,7 +478,7 @@ export default function SessionPage() {
       data: { session: auth },
     } = await supabase.auth.getSession();
     if (!auth?.user) {
-      router.push("/auth");
+      router.push("/login");
       return;
     }
     setUser(auth.user as User);
@@ -580,13 +582,11 @@ export default function SessionPage() {
     <div className="min-h-screen flex flex-col bg-background">
       <Header user={user} profile={profile} />
 
-      {/* Основной контейнер - занимает всю оставшуюся высоту */}
-      <main className="flex-1 container mx-auto px-2 sm:px-4 py-4 sm:py-6 flex flex-col max-w-7xl min-h-0 ">
-        {/* Статус сессии (ожидает/активна) */}
+      <main className=" flex-1 container mx-auto  py-4 sm:py-4 flex flex-col max-w-7xl min-h-0 ">
         {isPending && (
-          <div className="mb-4 rounded-xl overflow-hidden border border-border flex-shrink-0">
+          <div className="mb-4 rounded-xl overflow-hidden border border-border shrink-0">
             <div className="px-4 py-3 flex items-center gap-2 bg-accent/5">
-              <Clock className="h-4 w-4 text-accent flex-shrink-0" />
+              <Clock className="h-4 w-4 text-accent shrink-0" />
               <p className="text-sm text-accent/80">
                 Ожидание подтверждения сессии
               </p>
@@ -594,9 +594,8 @@ export default function SessionPage() {
           </div>
         )}
 
-        {/* Confirmation banner для приглашения */}
         {isPending && session.initiated_by !== user.id && (
-          <div className="mb-4 rounded-xl overflow-hidden border border-border flex-shrink-0">
+          <div className="mb-4 rounded-xl overflow-hidden border border-border shrink-0">
             <ConfirmBanner
               session={session}
               userId={user.id}
@@ -606,10 +605,9 @@ export default function SessionPage() {
           </div>
         )}
 
-        {/* Контейнер чата и инструментов - занимает всю оставшуюся высоту */}
         {isArchived ? (
           <div className="flex-1 rounded-xl border border-border overflow-hidden flex flex-col bg-card min-h-0">
-            <div className="px-5 py-3 border-b border-border flex items-center gap-2 flex-shrink-0">
+            <div className="px-5 py-3 border-b border-border flex items-center gap-2 shrink-0">
               <Archive className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm font-medium text-muted-foreground">
                 Архив сессии ·{" "}
@@ -628,14 +626,16 @@ export default function SessionPage() {
           </div>
         ) : (
           /* Двухколоночный макет - занимает всю доступную высоту */
-          <div className={cn(
-  "flex-1 rounded-xl border border-border overflow-hidden flex flex-col lg:flex-row bg-card min-h-0",
-  "max-h-[calc(100vh-140px)] lg:max-h-[calc(100vh-120px)]"
-)}>
+          <div
+            className={cn(
+              "flex-1 rounded-xl border border-border overflow-hidden flex flex-col lg:flex-row bg-card min-h-0",
+              "max-h-[calc(100vh-140px)] lg:max-h-[calc(100vh-120px)]",
+            )}
+          >
             {/* Левая колонка - Чат */}
             <div className="flex-1 flex flex-col min-h-0 lg:min-h-0">
               {/* Хедер чата */}
-              <div className="px-4 py-3 border-b border-border flex-shrink-0 flex justify-between items-start gap-3">
+              <div className="px-4 py-3 border-b border-border shrink-0 flex justify-between items-start gap-3">
                 <div className="flex-1 min-w-0">
                   <h1 className="text-lg sm:text-xl font-bold text-foreground truncate">
                     {session.study_listings?.title}
@@ -699,7 +699,7 @@ export default function SessionPage() {
               <div className="w-full lg:w-96 shrink-0 flex flex-col border-l border-border min-h-0">
                 <div className="flex-1 flex flex-col min-h-0">
                   {/* Заголовок инструментов */}
-                  <div className="px-4 py-3 border-b border-border shrink-0">
+                  <div className="px-4 py-3.75 h-18.25 border-b border-border shrink-0">
                     {activeToolTab ? (
                       <div className="flex items-center gap-3">
                         <button
@@ -793,12 +793,12 @@ export default function SessionPage() {
 
                   {/* Кнопка завершить сессию */}
                   {isActive && !activeToolTab && (
-                    <div className="p-4 shrink-0 border-t border-border">
+                    <div className="p-4 pt-3 shrink-0 border-t border-border">
                       <Button
                         variant="destructive"
                         onClick={handleEndSession}
                         disabled={ending}
-                        className="w-full"
+                        className="w-full h-12"
                       >
                         {ending && (
                           <Loader2 className="h-4 w-4 mr-2 animate-spin" />

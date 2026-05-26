@@ -4,7 +4,7 @@ import type { NextRequest } from 'next/server';
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
   
-  const publicPaths = ['/auth'];
+  const publicPaths = ['/login'];
   const isPublicPath = publicPaths.some(path => req.nextUrl.pathname.startsWith(path));
 
   if (isPublicPath) {
