@@ -54,7 +54,10 @@ export default function LoginPage() {
           placeholder="Введите пароль"
           required
         />
+        
       </AuthForm>
+
+      
 
       <div className="mt-6 text-center">
         <p className="text-muted-foreground">
@@ -69,6 +72,18 @@ export default function LoginPage() {
       </div>
 
       <AuthMessage message={serverError} />
+              <hr className='mt-2'/>
+        {/* Ссылка "Забыли пароль?" */}
+        <div className="text-center mt-2">
+          <Link
+            href="/reset-password"
+            className="text-sm text-primary hover:underline"
+          >
+            Забыли пароль?
+          </Link>
+        </div>
     </AuthCard>
+    
+    
   );
 }

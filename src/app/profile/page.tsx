@@ -311,7 +311,7 @@ export default function ProfilePage() {
 
         {/* Profile card */}
         <div className="rounded-2xl border border-border p-8 mb-5 bg-card">
-          <div className="flex items-start justify-between mb-8">
+          <div className="flex items-start justify-between mb-8 flex-wrap gap-8">
             <div className="flex items-center gap-5">
               {/* Avatar */}
               <div className="relative group/avatar">

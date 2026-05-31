@@ -88,6 +88,7 @@ export default function CreateListingPage() {
                 value={formData.title}
                 onChange={(e) => set('title', e.target.value)}
                 required
+                maxLength={50}
               />
             </div>
 

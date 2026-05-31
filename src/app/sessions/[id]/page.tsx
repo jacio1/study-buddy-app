@@ -36,6 +36,7 @@ import { MediaGallery } from "@/src/components/layout/MediaGallery";
 import { SharedWhiteboard } from "@/src/components/layout/SharedWhiteboard";
 import { cn } from "@/src/lib/utils";
 import { ChatInput } from "@/src/components/layout/ChatInput";
+import { SessionMobile } from "../_components/SessionMobile";
 
 type ToolTab =
   | "notes"
@@ -413,7 +414,6 @@ export default function SessionPage() {
   const [isVoiceEnabled, setIsVoiceEnabled] = useState(true);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const isMobile = typeof window !== "undefined" && window.innerWidth < 1024;
   const [isDesktop, setIsDesktop] = useState(true);
 
   
@@ -511,7 +511,8 @@ export default function SessionPage() {
 
   const handleEndSession = async () => {
     if (!user || !session) return;
-    if (!confirm("Завершить сессию? Она перейдёт в архив.")) return;
+    // На десктопе используем браузерный confirm, на мобиле - bottom sheet в SessionMobile
+    if (isDesktop && !confirm("Завершить сессию? Она перейдёт в архив.")) return;
     setEnding(true);
 
     const { data, error } = await supabase
@@ -578,6 +579,22 @@ export default function SessionPage() {
     { id: "participants", label: "Участники", icon: Users },
   ];
 
+  // ── Мобильный рендер ─────────────────────────────────────────────────────
+  if (!isDesktop) {
+    return (
+      <SessionMobile
+        session={session}
+        user={user}
+        profile={profile}
+        messages={messages}
+        messagesEndRef={messagesEndRef}
+        onEndSession={handleEndSession}
+        ending={ending}
+        onUpdateSession={setSession}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header user={user} profile={profile} />
@@ -643,6 +660,7 @@ export default function SessionPage() {
                   <p className="text-primary text-sm truncate">
                     {session.study_listings?.subject}
                   </p>
+                  
                 </div>
                 <div className="flex gap-2">
                   {isActive && (

@@ -107,7 +107,7 @@ export function ChatMessage({ message, isOwnMessage }: ChatMessageProps) {
 
           {/* Text */}
           {hasText && (
-            <div className="text-sm leading-relaxed wrap-break-word">
+            <div className="text-sm leading-relaxed wrap-anywhere">
               {message.content}
             </div>
           )}
