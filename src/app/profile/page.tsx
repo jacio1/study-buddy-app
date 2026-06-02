@@ -15,6 +15,8 @@ import {
   Clock,
   Check,
   Archive,
+  Moon,
+  Sun,
 } from "lucide-react";
 import { supabase } from "@/src/lib/supabase";
 import { Profile, StudyListing, StudySession, User } from "@/src/types/types";
@@ -22,6 +24,7 @@ import { Header } from "@/src/components/layout/Header";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { cn } from "@/src/lib/utils";
+import { useTheme } from "@/src/context/ThemeContext";
 
 const levelLabels: Record<string, string> = {
   beginner: "Начинающий",
@@ -38,6 +41,7 @@ type ProfileTab = "listings" | "history";
 
 export default function ProfilePage() {
   const router = useRouter();
+  const { theme, toggle: toggleTheme } = useTheme(); // Получаем тему и функцию переключения
 
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -269,9 +273,6 @@ export default function ProfilePage() {
         user_id: user?.id,
       });
 
-      // Если RPC функции нет, используем admin API (нужны права админа)
-      // Альтернатива: просто выходим и просим пользователя написать в поддержку
-
       if (authError) {
         console.error("Error deleting auth user:", authError);
         alert(
@@ -300,14 +301,36 @@ export default function ProfilePage() {
       <Header user={user} profile={profile} />
 
       <main className="mb-20 container mx-auto px-4 py-8 max-w-3xl">
-        <Button
-          variant="ghost"
-          onClick={() => router.push("/")}
-          className="mb-8 group"
-        >
-          <ArrowLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" />
-          На главную
-        </Button>
+        <div className="flex items-center justify-between mb-8">
+          <Button
+            variant="ghost"
+            onClick={() => router.push("/")}
+            className="group"
+          >
+            <ArrowLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" />
+            На главную
+          </Button>
+
+          {/* Theme Toggle Button */}
+          <Button
+            variant="outline"
+            onClick={toggleTheme}
+            className="gap-2"
+            aria-label="Переключить тему"
+          >
+            {theme === "dark" ? (
+              <>
+                <Sun className="h-4 w-4" />
+                Светлая тема
+              </>
+            ) : (
+              <>
+                <Moon className="h-4 w-4" />
+                Тёмная тема
+              </>
+            )}
+          </Button>
+        </div>
 
         {/* Profile card */}
         <div className="rounded-2xl border border-border p-8 mb-5 bg-card">
@@ -632,6 +655,7 @@ export default function ProfilePage() {
             )}
           </div>
         )}
+        
         <div className="mt-4 pt-4 border-t border-border">
           <button
             onClick={handleDeleteAccount}
