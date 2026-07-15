@@ -17,6 +17,7 @@ import { supabase } from "@/src/lib/supabase";
 import { Header } from "@/src/components/layout/Header";
 import { Button } from "@/src/components/ui/button";
 import { Loader } from "@/src/components/Loader";
+import Image from "next/image";
 
 const levelLabels: Record<string, string> = {
   beginner: "Начинающий",
@@ -72,7 +73,6 @@ export default function ListingDetailPage() {
     else router.push("/");
   };
 
-  /** Find or create a direct_conversation tied to this listing */
   const getOrCreateConv = async (
     uid: string,
     otherId: string,
@@ -106,7 +106,6 @@ export default function ListingDetailPage() {
     if (!user || !listing) return;
     setLoading(true);
 
-    // Check if session already exists for this listing and user pair
     const { data: existing } = await supabase
       .from("study_sessions")
       .select("*")
@@ -116,19 +115,17 @@ export default function ListingDetailPage() {
       .single();
 
     if (existing) {
-      // Session exists — go to it
       router.push(`/sessions/${existing.id}`);
       return;
     }
 
-    // Create new session with pending_confirmation
     const { data: newSess, error } = await supabase
       .from("study_sessions")
       .insert([
         {
           listing_id: listing.id,
-          creator_id: listing.user_id, // listing owner = creator
-          partner_id: user.id, // current user = partner (the one proposing)
+          creator_id: listing.user_id, 
+          partner_id: user.id, 
           initiated_by: user.id,
           status: "pending_confirmation",
         },
@@ -140,7 +137,6 @@ export default function ListingDetailPage() {
 
     if (!error && newSess) {
       setProposed(true);
-      // Also send a notification to the listing owner
       await supabase.from("notifications").insert([
         {
           user_id: listing.user_id,
@@ -177,7 +173,6 @@ export default function ListingDetailPage() {
         </Button>
 
         <div className="rounded-2xl p-8 border border-border bg-card">
-          {/* Title */}
           <div className="flex justify-between items-start mb-6 gap-4">
             <h1 className="text-2xl font-bold text-foreground leading-snug flex-1">
               {listing.title}
@@ -187,10 +182,9 @@ export default function ListingDetailPage() {
             </span>
           </div>
 
-          {/* Author */}
           <div className="flex items-center gap-4 pb-6 mb-6 border-b border-border">
             {listing.profiles?.avatar_url ? (
-              <img
+              <Image
                 src={listing.profiles.avatar_url}
                 className="w-12 h-12 rounded-2xl object-cover"
                 alt=""
@@ -215,7 +209,6 @@ export default function ListingDetailPage() {
             </div>
           </div>
 
-          {/* Details */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-6">
             <Info label="Предмет" icon={<BookOpen className="h-4 w-4" />}>
               <span className="text-primary font-semibold text-lg">
@@ -237,7 +230,6 @@ export default function ListingDetailPage() {
             </Info>
           </div>
 
-          {/* Description */}
           <div className="mb-8">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
               Описание
@@ -247,11 +239,9 @@ export default function ListingDetailPage() {
             </p>
           </div>
 
-          {/* Actions */}
           {!isMyListing ? (
             <>
               {proposed ? (
-                /* Success state after proposing */
                 <div className="rounded-xl p-5 text-center border border-secondary/20 bg-secondary/5">
                   <p className="text-secondary font-semibold mb-1">
                     ✅ Предложение отправлено!
@@ -269,7 +259,6 @@ export default function ListingDetailPage() {
                 </div>
               ) : (
                 <div className="flex flex-col sm:flex-row gap-3">
-                  {/* Primary: Write message */}
                   <Button
                     onClick={handleMessage}
                     disabled={loading}
@@ -279,7 +268,6 @@ export default function ListingDetailPage() {
                     Написать сообщение
                   </Button>
 
-                  {/* Secondary: Propose session */}
                   <Button
                     onClick={handleProposeSession}
                     disabled={loading}

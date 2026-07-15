@@ -24,7 +24,6 @@ export function VoiceChat({ sessionId, user }: VoiceChatProps) {
   const voiceChannelRef = useRef<any>(null);
 
   useEffect(() => {
-    // Voice chat signaling channel
     const voiceChannel = supabase.channel(`voice-${sessionId}`);
     voiceChannelRef.current = voiceChannel;
 
@@ -207,7 +206,6 @@ export function VoiceChat({ sessionId, user }: VoiceChatProps) {
 
   return (
     <div className="flex items-center gap-2">
-      {/* Call status indicator */}
       {callStatus !== 'idle' && (
         <div className={cn(
           "px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2",
@@ -225,7 +223,6 @@ export function VoiceChat({ sessionId, user }: VoiceChatProps) {
         </div>
       )}
 
-      {/* Controls */}
       {!isInCall ? (
         <Button onClick={startCall}>
           <Phone className="h-4 w-4 mr-2" />

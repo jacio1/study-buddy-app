@@ -15,6 +15,7 @@ import {
 import { cn } from "@/src/lib/utils";
 import { Header } from "@/src/components/layout/Header";
 import { Button } from "@/src/components/ui/button";
+import Image from "next/image";
 
 function timeLabel(d: string) {
   return new Date(d).toLocaleTimeString("ru-RU", {
@@ -313,7 +314,7 @@ export default function DirectChatPage() {
             <div className="w-8 mr-2 shrink-0 flex items-end">
               {isFirst &&
                 (otherUser?.avatar_url ? (
-                  <img
+                  <Image
                     src={otherUser.avatar_url}
                     className="w-8 h-8 rounded-full object-cover"
                     alt=""
@@ -333,7 +334,7 @@ export default function DirectChatPage() {
             )}
             <div
               className={cn(
-                "px-4 py-2.5 rounded-2xl text-sm leading-relaxed break-words",
+                "px-4 py-2.5 rounded-2xl text-sm leading-relaxed wrap-break-word",
                 isOwn
                   ? "bg-primary text-primary-foreground rounded-br-sm"
                   : "bg-muted text-foreground rounded-bl-sm",
@@ -357,7 +358,7 @@ export default function DirectChatPage() {
             <div className="w-8 ml-2 shrink-0 flex items-end">
               {isFirst &&
                 (profile?.avatar_url ? (
-                  <img
+                  <Image
                     src={profile.avatar_url}
                     className="w-8 h-8 rounded-full object-cover"
                     alt=""
@@ -390,7 +391,6 @@ export default function DirectChatPage() {
       <Header user={user!} profile={profile} />
 
       <main className="mb-20 flex-1 container mx-auto px-2 sm:px-4 py-4 sm:py-6 flex flex-col max-w-5xl">
-        {/* Top bar */}
         <div className="flex items-center gap-3 mb-4 sm:mb-5">
           <Button
             variant="ghost"
@@ -403,7 +403,7 @@ export default function DirectChatPage() {
 
           <div className="flex items-center gap-3 flex-1 min-w-0">
             {otherUser?.avatar_url ? (
-              <img
+              <Image
                 src={otherUser.avatar_url}
                 alt="avatar"
                 className={cn(
@@ -452,7 +452,6 @@ export default function DirectChatPage() {
             </div>
           </div>
 
-          {/* Session button */}
           <div className="shrink-0">
             {listing && !session && (
               <Button
@@ -492,14 +491,11 @@ export default function DirectChatPage() {
           </div>
         </div>
 
-        {/* Chat container */}
         <div className="flex-1 rounded-xl border border-border overflow-hidden flex flex-col bg-card">
-          {/* Chat header */}
           <div className="px-4 py-3 border-b border-border shrink-0">
             <h3 className="text-base font-semibold text-foreground">💬 Чат</h3>
           </div>
 
-          {/* Messages area */}
           <div className="flex-1 overflow-y-auto p-4 sm:p-5">
             {messages.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-center">
@@ -517,7 +513,6 @@ export default function DirectChatPage() {
             )}
           </div>
 
-          {/* Input area */}
           {isCurrentUserBlocked ? (
             <div className="p-4 border-t border-border shrink-0">
               <div className="flex flex-col items-center gap-2 text-center py-4">
@@ -549,7 +544,7 @@ export default function DirectChatPage() {
                     onChange={(e) => setText(e.target.value)}
                     onKeyDown={handleKeyDown}
                     placeholder="Напишите сообщение..."
-                    className="w-full px-4 py-3 pr-4 rounded-xl resize-none text-sm min-h-[48px] max-h-32 bg-muted border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
+                    className="w-full px-4 py-3 pr-4 rounded-xl resize-none text-sm min-h-12 max-h-32 bg-muted border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
                   />
                 </div>
                 <Button

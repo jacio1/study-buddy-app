@@ -7,12 +7,10 @@ export function useStudyData(user: User | null) {
   const [activeSessions, setActiveSessions] = useState<StudySession[]>([]);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
-  const hasLoadedRef = useRef<string | undefined>(undefined); // Исправлено: передано начальное значение
+  const hasLoadedRef = useRef<string | undefined>(undefined); 
 
   useEffect(() => {
-    // Если нет пользователя
     if (!user) {
-      // Используем setTimeout для избежания синхронного setState
       const timer = setTimeout(() => {
         setLoading(false);
       }, 0);
@@ -20,7 +18,6 @@ export function useStudyData(user: User | null) {
       return () => clearTimeout(timer);
     }
 
-    // Если уже загружали данные для этого пользователя
     if (hasLoadedRef.current === user.id) {
       const timer = setTimeout(() => {
         setLoading(false);
@@ -28,7 +25,6 @@ export function useStudyData(user: User | null) {
       return () => clearTimeout(timer);
     }
 
-    // Запоминаем ID пользователя
     hasLoadedRef.current = user.id;
 
     const loadData = async () => {
@@ -61,7 +57,7 @@ export function useStudyData(user: User | null) {
     };
 
     loadData();
-  }, [user?.id]); // Зависим только от ID пользователя
+  }, [user?.id]); 
 
   const handleDeleted = (id: string) => {
     setListings((prev) => prev.filter((l) => l.id !== id));

@@ -80,7 +80,6 @@ export default function CreateListingPage() {
           <p className="text-muted-foreground text-sm mb-8">Расскажите, кого и для чего ищете</p>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Title */}
             <div className="space-y-2">
               <Label className="text-foreground text-sm">Название объявления</Label>
               <Input
@@ -92,7 +91,6 @@ export default function CreateListingPage() {
               />
             </div>
 
-            {/* Category */}
             <div className="space-y-2">
               <Label className="text-foreground text-sm">Категория</Label>
               <div className="grid grid-cols-2 gap-2">
@@ -114,7 +112,6 @@ export default function CreateListingPage() {
               </div>
             </div>
 
-            {/* Subject */}
             <div className="space-y-2">
               <Label className="text-foreground text-sm">Конкретный предмет / тема</Label>
               <Input
@@ -125,7 +122,6 @@ export default function CreateListingPage() {
               />
             </div>
 
-            {/* Level */}
             <div className="space-y-2">
               <Label className="text-foreground text-sm">Ваш уровень</Label>
               <div className="grid grid-cols-3 gap-2">
@@ -152,7 +148,6 @@ export default function CreateListingPage() {
               </div>
             </div>
 
-            {/* Format */}
             <div className="space-y-2">
               <Label className="text-foreground text-sm">Формат занятий</Label>
               <div className="grid grid-cols-3 gap-2">
@@ -179,7 +174,6 @@ export default function CreateListingPage() {
               </div>
             </div>
 
-            {/* City (shown always, optional) */}
             <div className="space-y-2">
               <Label className="text-foreground text-sm flex items-center gap-2">
                 <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
@@ -196,7 +190,6 @@ export default function CreateListingPage() {
               </p>
             </div>
 
-            {/* Description */}
             <div className="space-y-2">
               <Label className="text-foreground text-sm">Описание</Label>
               <Textarea
@@ -209,7 +202,6 @@ export default function CreateListingPage() {
               />
             </div>
 
-            {/* Schedule */}
             <div className="space-y-2">
               <Label className="text-foreground text-sm">Расписание / доступность</Label>
               <Input

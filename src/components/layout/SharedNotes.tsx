@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Save, Loader2, ArrowLeft } from 'lucide-react';
+import { Save, Loader2 } from 'lucide-react';
 import { User } from '@/src/types/types';
 import { supabase } from '@/src/lib/supabase';
 import { Button } from '../ui/button';
@@ -12,13 +12,6 @@ interface SharedNotesProps {
   user: User;
 }
 
-interface SessionNote {
-  id: string;
-  session_id: string;
-  content: string;
-  updated_at: string;
-  updated_by: string;
-}
 
 export function SharedNotes({ sessionId, user }: SharedNotesProps) {
   const [notes, setNotes] = useState('');
@@ -33,7 +26,7 @@ export function SharedNotes({ sessionId, user }: SharedNotesProps) {
   }, [sessionId]);
 
   const loadNotes = async () => {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('session_notes')
       .select('*')
       .eq('session_id', sessionId)
@@ -95,7 +88,6 @@ export function SharedNotes({ sessionId, user }: SharedNotesProps) {
 
     try {
       if (noteId) {
-        // Обновление существующих заметок
         await supabase
           .from('session_notes')
           .update({ 
@@ -105,7 +97,6 @@ export function SharedNotes({ sessionId, user }: SharedNotesProps) {
           })
           .eq('id', noteId);
       } else {
-        // Создание новых заметок
         const { data } = await supabase
           .from('session_notes')
           .insert([{

@@ -32,7 +32,7 @@ function SearchParamsHandler() {
 
 export default function HomePage() {
   const router = useRouter();
-  const { user, initialLoading } = useAuth(); // Используем initialLoading
+  const { user, initialLoading } = useAuth(); 
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   
   const searchQueryFromStore = useFilters((state) => state.subjectSearch);
@@ -44,7 +44,6 @@ export default function HomePage() {
       .filter(Boolean).length
   );
 
-  // Редирект только после полной загрузки
   useEffect(() => {
     if (!initialLoading && !dataLoading && !user) {
       console.log('Redirecting to login');
@@ -52,7 +51,6 @@ export default function HomePage() {
     }
   }, [initialLoading, dataLoading, user, router]);
 
-  // Показываем лоадер пока идет загрузка
   if (initialLoading || dataLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center">

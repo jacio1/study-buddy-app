@@ -47,7 +47,6 @@ function formatBytes(b: number) {
   return `${(b / 1_048_576).toFixed(1)} MB`;
 }
 
-// ─── Participants Panel ───────────────────────────────────────────────────────
 
 function ParticipantsPanel({
   session,
@@ -107,7 +106,6 @@ function ParticipantsPanel({
   );
 }
 
-// ─── Tool Slide-over Panel ────────────────────────────────────────────────────
 
 function ToolPanel({
   activeTab,
@@ -135,7 +133,6 @@ function ToolPanel({
 
   return (
     <div className="fixed inset-0 bg-background z-50 flex flex-col animate-in slide-in-from-right duration-250">
-      {/* Header */}
       <div className="flex items-center gap-3 px-4 py-3 border-b border-border bg-card shrink-0 safe-area-top">
         <button
           onClick={onClose}
@@ -151,7 +148,6 @@ function ToolPanel({
         </div>
       </div>
 
-      {/* Content */}
       <div className="flex-1 overflow-y-auto">
         {activeTab === "notes" && (
           <SharedNotes sessionId={sessionId} user={user} />
@@ -176,7 +172,6 @@ function ToolPanel({
   );
 }
 
-// ─── Main SessionMobile ───────────────────────────────────────────────────────
 
 interface SessionMobileProps {
   session: StudySession;
@@ -217,7 +212,6 @@ export function SessionMobile({
     { id: "participants", icon: Users, label: "Участники" },
   ];
 
-  // ── Confirm banner actions ──────────────────────────────────────────────────
   const acceptSession = async () => {
     setBusy(true);
     const { data, error } = await supabase
@@ -254,7 +248,6 @@ export function SessionMobile({
     setBusy(false);
   };
 
-  // ── Archive messages ────────────────────────────────────────────────────────
   const [archiveMessages, setArchiveMessages] = useState<Message[]>([]);
   const [archiveLoading, setArchiveLoading] = useState(false);
 
@@ -274,12 +267,10 @@ export function SessionMobile({
 
   return (
     <div className="fixed inset-0 flex flex-col bg-background">
-      {/* ── Top bar ──────────────────────────────────────────────────────────── */}
       <div
         className="shrink-0 px-4 pt-safe pb-3 border-b border-border bg-card flex items-center gap-3"
         style={{ paddingTop: "max(12px, env(safe-area-inset-top))" }}
       >
-        {/* Кнопка "Назад" с кружком и стрелочкой */}
         <Link
           href="/"
           className="flex items-center justify-center w-8 h-8 rounded-full bg-muted hover:bg-muted/80 transition-colors active:scale-95 shrink-0"
@@ -330,7 +321,6 @@ export function SessionMobile({
         </div>
       </div>
 
-      {/* ── Pending banner ───────────────────────────────────────────────────── */}
       {isPending && (
         <div className="shrink-0 px-4 py-3 border-b border-border bg-accent/5">
           {session.initiated_by === user.id ? (
@@ -483,7 +473,6 @@ export function SessionMobile({
         <div ref={messagesEndRef} />
       </div>
 
-      {/* ── Chat input ───────────────────────────────────────────────────────── */}
       {isActive && <ChatInput sessionId={sessionId} user={user} />}
 
       {!isActive && !isArchived && (
@@ -495,7 +484,6 @@ export function SessionMobile({
         </div>
       )}
 
-      {/* ── Bottom tool bar (active sessions only) ───────────────────────────── */}
       {isActive && (
         <div
           className="shrink-0 border-t border-border bg-card"
@@ -532,7 +520,6 @@ export function SessionMobile({
         </div>
       )}
 
-      {/* ── Tool slide-over ───────────────────────────────────────────────────── */}
       {activeToolTab && (
         <ToolPanel
           activeTab={activeToolTab}
@@ -543,7 +530,6 @@ export function SessionMobile({
         />
       )}
 
-      {/* ── End session confirm sheet ─────────────────────────────────────────── */}
       {showEndConfirm && (
         <>
           <div

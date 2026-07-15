@@ -17,7 +17,6 @@ const ThemeContext = createContext<ThemeContextValue>({
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>('dark');
 
-  // On mount, read from localStorage or system preference
   useEffect(() => {
     const stored = localStorage.getItem('sm-theme') as Theme | null;
     const preferred = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';

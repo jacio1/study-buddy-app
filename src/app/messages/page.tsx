@@ -22,11 +22,10 @@ import {
 import { Header } from "@/src/components/layout/Header";
 import { cn } from "@/src/lib/utils";
 import { Input } from "@/src/components/ui/input";
+import Image from "next/image";
 
-/** Dropdown menu for listing owner actions on a conversation */
 function ConvMenu({
   conv,
-  userId,
   onClose,
   onBlock,
   onUnblock,
@@ -230,7 +229,6 @@ export default function MessagesPage() {
     };
   }, []);
 
-  /** Only listing owner can manage (block/close) a conversation */
   const isListingOwner = (conv: DirectConversation) =>
     !!conv.listing && conv.listing.user_id === user?.id;
 
@@ -348,7 +346,6 @@ export default function MessagesPage() {
 
       <main className="container mx-auto px-4 py-8 mb-20">
         <div className="max-w-2xl mx-auto">
-          {/* Title */}
           <div className="flex items-center gap-3 mb-6">
             <div className="relative">
               <MessageCircle className="h-6 w-6 text-primary" />
@@ -361,7 +358,6 @@ export default function MessagesPage() {
             <h1 className="text-2xl font-bold text-foreground">Сообщения</h1>
           </div>
 
-          {/* Search */}
           <div className="relative mb-4">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -373,7 +369,6 @@ export default function MessagesPage() {
             />
           </div>
 
-          {/* List */}
           <div className="rounded-2xl border border-border overflow-hidden bg-card">
             {filtered.length === 0 ? (
               <div className="flex flex-col items-center py-20 text-center px-6">
@@ -406,15 +401,13 @@ export default function MessagesPage() {
                         : "hover:bg-muted/50",
                     )}
                   >
-                    {/* Clickable area */}
                     <div
                       className="flex items-center gap-4 flex-1 min-w-0 cursor-pointer"
                       onClick={() => router.push(`/messages/${conv.id}`)}
                     >
-                      {/* Avatar */}
                       <div className="relative shrink-0">
                         {conv.other_user?.avatar_url ? (
-                          <img
+                          <Image
                             src={conv.other_user.avatar_url}
                             alt="avatar"
                             className={cn(
@@ -438,7 +431,6 @@ export default function MessagesPage() {
                             {conv.unread_count! > 9 ? "9+" : conv.unread_count}
                           </span>
                         )}
-                        {/* Blocked indicator */}
                         {isBlocked && isOwner && (
                           <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-destructive border-2 border-card flex items-center justify-center">
                             <Ban className="h-2.5 w-2.5 text-white" />
@@ -446,11 +438,10 @@ export default function MessagesPage() {
                         )}
                       </div>
 
-                      {/* Content */}
                       <div className="flex-1 min-w-0">
                         {conv.listing && (
                           <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                            <span className="flex items-center gap-1 text-[11px] text-primary font-medium truncate max-w-[180px]">
+                            <span className="flex items-center gap-1 text-[11px] text-primary font-medium truncate max-w-45">
                               <BookOpen className="h-3 w-3 shrink-0" />
                               {conv.listing.title}
                             </span>
@@ -506,7 +497,6 @@ export default function MessagesPage() {
                       </div>
                     </div>
 
-                    {/* Actions menu — listing owner only */}
                     {isOwner && (
                       <ConvMenu
                         conv={conv}

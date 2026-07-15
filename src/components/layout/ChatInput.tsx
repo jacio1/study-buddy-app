@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { Send, ImagePlus, Paperclip, X, Loader2, File } from 'lucide-react';
+import { Send, Paperclip, X, Loader2, File } from 'lucide-react';
 import { supabase } from '@/src/lib/supabase';
 import { User } from '@/src/types/types';
 import { cn } from '@/src/lib/utils';
@@ -57,7 +57,6 @@ export function ChatInput({ sessionId, user, disabled }: ChatInputProps) {
     if (fileInputRef.current)  fileInputRef.current.value  = '';
   };
 
-  // Ctrl+V paste
   const handlePaste = useCallback((e: React.ClipboardEvent) => {
     const imgItem = Array.from(e.clipboardData.items).find((i) => i.type.startsWith('image/'));
     if (imgItem) {
@@ -211,7 +210,6 @@ export function ChatInput({ sessionId, user, disabled }: ChatInputProps) {
         </Button>
       </div>
 
-      {/* Hidden inputs */}
       <input
         ref={imageInputRef}
         type="file"

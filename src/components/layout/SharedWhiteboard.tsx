@@ -55,7 +55,6 @@ export function SharedWhiteboard({ sessionId, userId }: SharedWhiteboardProps) {
     return isDark ? '#0B1121' : '#F8FAFC';
   };
 
-  // Функция для сохранения штриха с проверкой прав
   const saveStroke = async (strokeData: Stroke | ShapeStroke | ClearEvent) => {
     try {
       const { error: insertError } = await supabase
@@ -83,7 +82,6 @@ export function SharedWhiteboard({ sessionId, userId }: SharedWhiteboardProps) {
     }
   };
 
-  // Подписка на штрихи других участников
   useEffect(() => {
     const channel = supabase
       .channel(`whiteboard-${sessionId}`)
@@ -122,7 +120,6 @@ export function SharedWhiteboard({ sessionId, userId }: SharedWhiteboardProps) {
     };
   }, [sessionId, userId, isCanvasReady]);
 
-  // Инициализация canvas
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -178,7 +175,6 @@ export function SharedWhiteboard({ sessionId, userId }: SharedWhiteboardProps) {
     };
   }, [color, size, isCanvasReady]);
 
-  // Отрисовка всех штрихов
   useEffect(() => {
     if (!isCanvasReady || !ctxRef.current) return;
     

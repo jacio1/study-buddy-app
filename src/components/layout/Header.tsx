@@ -18,8 +18,8 @@ import { supabase } from "@/src/lib/supabase";
 import { Notification, Profile, User } from "@/src/types/types";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { useTheme } from "@/src/context/ThemeContext";
 import { cn } from "@/src/lib/utils";
+import Image from "next/image";
 
 interface HeaderProps {
   user: User | null;
@@ -46,7 +46,6 @@ const notifIcon: Record<string, string> = {
 export function Header({ user, profile }: HeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const { theme, toggle } = useTheme();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [profileOpen, setProfileOpen] = useState(false);
@@ -58,7 +57,6 @@ export function Header({ user, profile }: HeaderProps) {
   const profileRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
 
-  // Detect mobile screen size
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -68,7 +66,6 @@ export function Header({ user, profile }: HeaderProps) {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Close dropdowns on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (profileRef.current && !profileRef.current.contains(e.target as Node))
@@ -237,7 +234,6 @@ export function Header({ user, profile }: HeaderProps) {
       <header className="sticky top-0 z-50 w-full border-b border-border backdrop-blur bg-card/95 hidden md:block">
         <div className="container mx-auto px-4">
           <div className="flex h-20 items-center justify-between gap-4">
-            {/* Logo - кликабельный, ведет на главную */}
             <button
               onClick={() => router.push("/")}
               className="text-2xl font-bold text-foreground shrink-0 relative group transition-all duration-300 hover:scale-105 cursor-pointer"
@@ -245,7 +241,6 @@ export function Header({ user, profile }: HeaderProps) {
               StudyBuddy
             </button>
 
-            {/* Search - показывается только на главной (десктоп) */}
             {!isMobile && isHome && (
               <form onSubmit={handleSearch} className="flex-1 mx-4">
                 <div className="flex items-center gap-0 group/search">
@@ -279,7 +274,6 @@ export function Header({ user, profile }: HeaderProps) {
               </form>
             )}
 
-            {/* Desktop Right buttons */}
             {!isMobile && (
               <div className="flex items-center gap-2">
                 <Button
@@ -291,7 +285,6 @@ export function Header({ user, profile }: HeaderProps) {
                   <span className="hidden sm:inline">Создать</span>
                 </Button>
 
-                {/* DMs */}
                 <button
                   onClick={() => router.push("/messages")}
                   title="Сообщения"
@@ -304,13 +297,12 @@ export function Header({ user, profile }: HeaderProps) {
                 >
                   <MessageCircle className="h-5 w-5" />
                   {unreadDMs > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center px-1 shadow-lg">
+                    <span className="absolute -top-1.5 -right-1.5 min-w-4.5 h-4.5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center px-1 shadow-lg">
                       {unreadDMs > 9 ? "9+" : unreadDMs}
                     </span>
                   )}
                 </button>
 
-                {/* Notifications bell */}
                 <div className="relative" ref={notifRef}>
                   <button
                     onClick={() => {
@@ -326,13 +318,12 @@ export function Header({ user, profile }: HeaderProps) {
                   >
                     <Bell className="h-5 w-5" />
                     {unreadNotifs > 0 && (
-                      <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] rounded-full bg-accent text-accent-foreground text-[10px] font-bold flex items-center justify-center px-1 shadow-lg animate-pulse">
+                      <span className="absolute -top-1.5 -right-1.5 min-w-4.5 h-4.5 rounded-full bg-accent text-accent-foreground text-[10px] font-bold flex items-center justify-center px-1 shadow-lg animate-pulse">
                         {unreadNotifs > 9 ? "9+" : unreadNotifs}
                       </span>
                     )}
                   </button>
 
-                  {/* Notifications dropdown */}
                   {notifOpen && (
                     <div className="absolute right-0 top-full mt-2 w-80 rounded-2xl border border-border shadow-2xl shadow-black/40 overflow-hidden z-50 bg-card">
                       <div className="flex items-center justify-between px-4 py-3 border-b border-border">
@@ -370,7 +361,7 @@ export function Header({ user, profile }: HeaderProps) {
                             >
                               <div className="shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-base bg-muted">
                                 {notif.actor?.avatar_url ? (
-                                  <img
+                                  <Image
                                     src={notif.actor.avatar_url}
                                     className="w-full h-full rounded-xl object-cover"
                                     alt=""
@@ -410,7 +401,6 @@ export function Header({ user, profile }: HeaderProps) {
                   )}
                 </div>
 
-                {/* Profile dropdown */}
                 <div className="relative" ref={profileRef}>
                   <button
                     onClick={() => {
@@ -420,7 +410,7 @@ export function Header({ user, profile }: HeaderProps) {
                     className="flex items-center gap-2.5 pl-1.5 pr-3 py-1.5 h-12 rounded-xl border border-border hover:border-primary/50 transition-colors bg-muted"
                   >
                     {profile?.avatar_url ? (
-                      <img
+                      <Image
                         src={profile.avatar_url}
                         className="w-9 h-9 rounded-lg object-cover shrink-0"
                         alt=""
@@ -432,7 +422,7 @@ export function Header({ user, profile }: HeaderProps) {
                         )}
                       </div>
                     )}
-                    <span className="hidden sm:block text-sm font-medium text-foreground max-w-[120px] truncate">
+                    <span className="hidden sm:block text-sm font-medium text-foreground max-w-30 truncate">
                       {profile?.full_name || user.email}
                     </span>
                     <ChevronDown
@@ -501,13 +491,11 @@ export function Header({ user, profile }: HeaderProps) {
               </div>
             )}
 
-            {/* Mobile search button and profile avatar */}
             {isMobile && (
               <div className="flex items-center gap-2">
                 {isHome && (
                   <button
                     onClick={() => {
-                      // Toggle search input visibility
                       const searchInput =
                         document.getElementById("mobile-search");
                       if (searchInput) {
@@ -529,7 +517,7 @@ export function Header({ user, profile }: HeaderProps) {
                     className="flex items-center justify-center h-12 w-12 rounded-xl border border-border hover:border-primary/50 transition-colors bg-muted"
                   >
                     {profile?.avatar_url ? (
-                      <img
+                      <Image
                         src={profile.avatar_url}
                         className="w-9 h-9 rounded-lg object-cover"
                         alt=""
@@ -593,7 +581,6 @@ export function Header({ user, profile }: HeaderProps) {
             )}
           </div>
 
-          {/* Mobile search input */}
           {isMobile && isHome && (
             <div id="mobile-search" className="hidden pb-3 mt-1">
               <form onSubmit={handleSearch} className="w-full">
@@ -622,7 +609,6 @@ export function Header({ user, profile }: HeaderProps) {
         </div>
       </header>
 
-      {/* Mobile Bottom Navigation */}
       {isMobile && (
         <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur border-t border-border safe-area-pb">
           <div className="flex items-center justify-around px-2 py-2">
@@ -639,7 +625,7 @@ export function Header({ user, profile }: HeaderProps) {
                         setProfileOpen(false);
                       }}
                       className={cn(
-                        "flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 rounded-xl transition-all min-w-[60px]",
+                        "flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 rounded-xl transition-all min-w-15",
                         notifOpen
                           ? "text-accent"
                           : isActive
@@ -650,7 +636,7 @@ export function Header({ user, profile }: HeaderProps) {
                       <div className="relative">
                         <Icon className="h-5 w-5" />
                         {unreadNotifs > 0 && (
-                          <span className="absolute -top-1 -right-1.5 min-w-[16px] h-[16px] rounded-full bg-accent text-accent-foreground text-[9px] font-bold flex items-center justify-center px-0.5">
+                          <span className="absolute -top-1 -right-1.5 min-w-4 h-4 rounded-full bg-accent text-accent-foreground text-[9px] font-bold flex items-center justify-center px-0.5">
                             {unreadNotifs > 9 ? "9+" : unreadNotifs}
                           </span>
                         )}
@@ -660,7 +646,6 @@ export function Header({ user, profile }: HeaderProps) {
                       </span>
                     </button>
 
-                    {/* Mobile notifications dropdown (opens as bottom sheet on mobile) */}
                     {notifOpen && (
                       <>
                         <div
@@ -703,7 +688,7 @@ export function Header({ user, profile }: HeaderProps) {
                                 >
                                   <div className="shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-base bg-muted">
                                     {notif.actor?.avatar_url ? (
-                                      <img
+                                      <Image
                                         src={notif.actor.avatar_url}
                                         className="w-full h-full rounded-xl object-cover"
                                         alt=""
@@ -753,7 +738,7 @@ export function Header({ user, profile }: HeaderProps) {
                   key={item.name}
                   onClick={() => router.push(item.href)}
                   className={cn(
-                    "flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 rounded-xl transition-all min-w-[60px]",
+                    "flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 rounded-xl transition-all min-w-15",
                     isActive
                       ? "text-primary"
                       : "text-muted-foreground hover:text-foreground",

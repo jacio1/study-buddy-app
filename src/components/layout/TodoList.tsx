@@ -154,7 +154,6 @@ export function TodoList({ sessionId, user }: TodoListProps) {
       <div className="mb-4">
         <h3 className="text-lg font-semibold text-foreground mb-2">Список задач</h3>
         
-        {/* Progress bar */}
         {totalCount > 0 && (
           <div className="mb-4">
             <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
@@ -170,7 +169,6 @@ export function TodoList({ sessionId, user }: TodoListProps) {
           </div>
         )}
 
-        {/* Add todo form */}
         <form onSubmit={addTodo} className="flex gap-2">
           <Input
             type="text"
@@ -189,7 +187,6 @@ export function TodoList({ sessionId, user }: TodoListProps) {
         </form>
       </div>
 
-      {/* Todo list */}
       <div className="flex-1 overflow-y-auto space-y-2">
         {todos.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
@@ -248,7 +245,6 @@ export function TodoList({ sessionId, user }: TodoListProps) {
         )}
       </div>
 
-      {/* Stats */}
       {totalCount > 0 && (
         <div className="mt-4 pt-4 border-t border-border">
           <div className="flex items-center justify-between text-sm text-muted-foreground">

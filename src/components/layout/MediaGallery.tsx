@@ -16,6 +16,7 @@ import {
   FolderOpen,
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
+import Image from "next/image";
 
 interface MediaGalleryProps {
   sessionId: string;
@@ -88,7 +89,6 @@ export function MediaGallery({ sessionId }: MediaGalleryProps) {
   useEffect(() => {
     loadMedia();
 
-    // Real-time: add new media messages as they arrive
     const channel = supabase
       .channel(`media-${sessionId}`)
       .on(
@@ -131,7 +131,6 @@ export function MediaGallery({ sessionId }: MediaGalleryProps) {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Tab switcher */}
       <div className="flex gap-2 mb-5">
         <button
           onClick={() => setTab("images")}
@@ -170,7 +169,6 @@ export function MediaGallery({ sessionId }: MediaGalleryProps) {
         </button>
       </div>
 
-      {/* Content */}
       {loading ? (
         <div className="flex-1 flex items-center justify-center">
           <Loader2 className="h-6 w-6 text-primary animate-spin" />
@@ -191,13 +189,12 @@ export function MediaGallery({ sessionId }: MediaGalleryProps) {
                   onClick={() => setLightbox(msg.image_url!)}
                   className="group relative aspect-square rounded-xl overflow-hidden border border-border hover:border-primary/50 transition-all"
                 >
-                  <img
+                  <Image
                     src={msg.image_url!}
                     alt="media"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
-                  {/* Overlay with meta */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-2.5">
+                  <div className="absolute inset-0 bg-linear-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-2.5">
                     <p className="text-[10px] text-white/80 truncate">
                       {msg.profiles?.full_name}
                     </p>
@@ -235,12 +232,10 @@ export function MediaGallery({ sessionId }: MediaGalleryProps) {
                 extColor(msg.file_name ?? ""),
               )}
             >
-              {/* Icon */}
               <div className="w-11 h-11 rounded-lg bg-muted flex items-center justify-center shrink-0 border border-border">
                 <FileTypeIcon name={msg.file_name ?? ""} />
               </div>
 
-              {/* Info */}
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-foreground font-medium truncate leading-tight">
                   {msg.file_name ?? "Файл"}
@@ -271,7 +266,6 @@ export function MediaGallery({ sessionId }: MediaGalleryProps) {
         </div>
       )}
 
-      {/* Lightbox */}
       {lightbox && (
         <div
           className="fixed inset-0 z-50 bg-black/92 flex items-center justify-center p-4"
@@ -293,7 +287,7 @@ export function MediaGallery({ sessionId }: MediaGalleryProps) {
           >
             <Download className="h-5 w-5" />
           </a>
-          <img
+          <Image
             src={lightbox}
             alt="full"
             className="max-w-full max-h-full rounded-xl object-contain shadow-2xl"

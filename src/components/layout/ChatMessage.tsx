@@ -4,13 +4,13 @@ import { useState } from 'react';
 import { cn } from '@/src/lib/utils';
 import { Message } from '@/src/types/types';
 import { X, Download, FileText, FileSpreadsheet, FileCode, FileArchive, File } from 'lucide-react';
+import Image from 'next/image';
 
 interface ChatMessageProps {
   message: Message;
   isOwnMessage: boolean;
 }
 
-// Pick a relevant icon based on file extension
 function FileIcon({ name }: { name: string }) {
   const ext = name.split('.').pop()?.toLowerCase() ?? '';
   if (['pdf'].includes(ext))                          return <FileText className="h-5 w-5 text-destructive" />;
@@ -34,7 +34,6 @@ export function ChatMessage({ message, isOwnMessage }: ChatMessageProps) {
   const hasImage = !!message.image_url;
   const hasFile  = !!message.file_url;
 
-  // Bubble is transparent wrapper when image-only (no padding, image fills it)
   const imageOnly = hasImage && !hasText && !hasFile;
 
   return (
@@ -50,16 +49,14 @@ export function ChatMessage({ message, isOwnMessage }: ChatMessageProps) {
             ? 'bg-primary text-primary-foreground rounded-br-sm'
             : 'bg-muted text-foreground rounded-bl-sm'
         )}>
-          {/* Sender name */}
           {!isOwnMessage && (
             <div className={cn('text-xs font-semibold mb-1.5 opacity-75', imageOnly && 'px-3 pt-2.5')}>
               {message.profiles?.full_name}
             </div>
           )}
 
-          {/* Image */}
           {hasImage && (
-            <img
+            <Image
               src={message.image_url!}
               alt="attachment"
               onClick={() => setLightbox(true)}
@@ -70,7 +67,6 @@ export function ChatMessage({ message, isOwnMessage }: ChatMessageProps) {
             />
           )}
 
-          {/* File attachment card */}
           {hasFile && (
             <a
               href={message.file_url!}
@@ -105,14 +101,12 @@ export function ChatMessage({ message, isOwnMessage }: ChatMessageProps) {
             </a>
           )}
 
-          {/* Text */}
           {hasText && (
             <div className="text-sm leading-relaxed wrap-anywhere">
               {message.content}
             </div>
           )}
 
-          {/* Timestamp */}
           <div className={cn(
             'text-[10px] mt-1 text-right',
             imageOnly && 'px-2 pb-1',
@@ -125,7 +119,6 @@ export function ChatMessage({ message, isOwnMessage }: ChatMessageProps) {
         </div>
       </div>
 
-      {/* Lightbox */}
       {lightbox && (
         <div
           className="fixed inset-0 z-50 bg-black/92 flex items-center justify-center p-4"
@@ -147,7 +140,7 @@ export function ChatMessage({ message, isOwnMessage }: ChatMessageProps) {
           >
             <Download className="h-5 w-5" />
           </a>
-          <img
+          <Image
             src={message.image_url!}
             alt="preview"
             className="max-w-full max-h-full rounded-xl object-contain shadow-2xl"

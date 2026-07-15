@@ -17,9 +17,7 @@ import {
   File,
   Menu,
   X,
-  Mic,
   Users,
-  VolumeX,
   ArrowLeft,
   Palette,
 } from "lucide-react";
@@ -37,6 +35,7 @@ import { SharedWhiteboard } from "@/src/components/layout/SharedWhiteboard";
 import { cn } from "@/src/lib/utils";
 import { ChatInput } from "@/src/components/layout/ChatInput";
 import { SessionMobile } from "../_components/SessionMobile";
+import Image from "next/image";
 
 type ToolTab =
   | "notes"
@@ -52,7 +51,6 @@ function formatBytes(b: number) {
   return `${(b / 1_048_576).toFixed(1)} MB`;
 }
 
-// ─── Confirmation banner ──────────────────────────────────────────────────────
 
 function ConfirmBanner({
   session,
@@ -147,7 +145,6 @@ function ConfirmBanner({
   );
 }
 
-// ─── Archive view ─────────────────────────────────────────────────────────────
 
 function ArchiveView({ sessionId }: { sessionId: string }) {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -207,7 +204,7 @@ function ArchiveView({ sessionId }: { sessionId: string }) {
                 </p>
               )}
               {msg.image_url && (
-                <img
+                <Image
                   src={msg.image_url}
                   className="rounded-xl max-h-64 w-full object-cover mb-2 block"
                   alt=""
@@ -234,7 +231,7 @@ function ArchiveView({ sessionId }: { sessionId: string }) {
                 </a>
               )}
               {msg.content && (
-                <p className="text-sm leading-relaxed break-words whitespace-pre-wrap">
+                <p className="text-sm leading-relaxed wrap-break-word whitespace-pre-wrap">
                   {msg.content}
                 </p>
               )}
@@ -259,7 +256,6 @@ function ArchiveView({ sessionId }: { sessionId: string }) {
   );
 }
 
-// ─── Participants Panel ─────────────────────────────────────────────────────
 
 function ParticipantsPanel({
   session,
@@ -301,7 +297,7 @@ function ParticipantsPanel({
           key={participant.id}
           className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors"
         >
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground font-semibold">
+          <div className="w-10 h-10 rounded-full bg-linear-to-br from-primary to-accent flex items-center justify-center text-primary-foreground font-semibold">
             {participant.full_name?.[0]?.toUpperCase() || "?"}
           </div>
           <div className="flex-1 min-w-0">
@@ -321,7 +317,6 @@ function ParticipantsPanel({
   );
 }
 
-// ─── Mobile Tools Modal ─────────────────────────────────────────────────────
 
 function MobileToolsModal({
   isOpen,
@@ -347,13 +342,11 @@ function MobileToolsModal({
 
   return (
     <>
-      {/* Overlay */}
       <div
         className="fixed inset-0 bg-black/50 z-50 lg:hidden"
         onClick={onClose}
       />
 
-      {/* Modal */}
       <div className="fixed bottom-0 left-0 right-0 bg-card rounded-t-2xl shadow-xl z-50 lg:hidden animate-in slide-in-from-bottom-2 duration-300">
         <div className="flex items-center justify-between p-4 border-b border-border">
           <h3 className="text-lg font-semibold text-foreground">Инструменты</h3>
@@ -397,7 +390,6 @@ function MobileToolsModal({
   );
 }
 
-// ─── Main ─────────────────────────────────────────────────────────────────────
 
 export default function SessionPage() {
   const router = useRouter();
@@ -411,14 +403,12 @@ export default function SessionPage() {
   const [activeToolTab, setActiveToolTab] = useState<ToolTab | null>(null);
   const [ending, setEnding] = useState(false);
   const [isMobileToolsOpen, setIsMobileToolsOpen] = useState(false);
-  const [isVoiceEnabled, setIsVoiceEnabled] = useState(true);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isDesktop, setIsDesktop] = useState(true);
 
   
 
-  // Проверка на десктоп
   useEffect(() => {
     const checkDesktop = () => {
       setIsDesktop(window.innerWidth >= 1024);
@@ -511,7 +501,6 @@ export default function SessionPage() {
 
   const handleEndSession = async () => {
     if (!user || !session) return;
-    // На десктопе используем браузерный confirm, на мобиле - bottom sheet в SessionMobile
     if (isDesktop && !confirm("Завершить сессию? Она перейдёт в архив.")) return;
     setEnding(true);
 
@@ -548,7 +537,6 @@ export default function SessionPage() {
 
   const handleToolSelect = (tool: ToolTab) => {
     if (activeToolTab === tool) {
-      // Дважды нажали на тот же инструмент - закрываем
       setActiveToolTab(null);
     } else {
       setActiveToolTab(tool);
@@ -579,7 +567,6 @@ export default function SessionPage() {
     { id: "participants", label: "Участники", icon: Users },
   ];
 
-  // ── Мобильный рендер ─────────────────────────────────────────────────────
   if (!isDesktop) {
     return (
       <SessionMobile
@@ -642,16 +629,13 @@ export default function SessionPage() {
             </div>
           </div>
         ) : (
-          /* Двухколоночный макет - занимает всю доступную высоту */
           <div
             className={cn(
               "flex-1 rounded-xl border border-border overflow-hidden flex flex-col lg:flex-row bg-card min-h-0",
               "max-h-[calc(100vh-140px)] lg:max-h-[calc(100vh-120px)]",
             )}
           >
-            {/* Левая колонка - Чат */}
             <div className="flex-1 flex flex-col min-h-0 lg:min-h-0">
-              {/* Хедер чата */}
               <div className="px-4 py-3 border-b border-border shrink-0 flex justify-between items-start gap-3">
                 <div className="flex-1 min-w-0">
                   <h1 className="text-lg sm:text-xl font-bold text-foreground truncate">
@@ -679,7 +663,6 @@ export default function SessionPage() {
                 </div>
               </div>
 
-              {/* Сообщения чата - скроллятся */}
               <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-1 min-h-0">
                 {messages.length === 0 ? (
                   <div className="flex items-center justify-center h-full">
@@ -701,7 +684,6 @@ export default function SessionPage() {
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* Инпут чата */}
               {isActive ? (
                 <ChatInput sessionId={sessionId} user={user} />
               ) : (
@@ -712,11 +694,9 @@ export default function SessionPage() {
               )}
             </div>
 
-            {/* Правая колонка - Инструменты (десктоп) */}
             {isDesktop && (
               <div className="w-full lg:w-96 shrink-0 flex flex-col border-l border-border min-h-0">
                 <div className="flex-1 flex flex-col min-h-0">
-                  {/* Заголовок инструментов */}
                   <div className="px-4 py-3.75 h-18.25 border-b border-border shrink-0">
                     {activeToolTab ? (
                       <div className="flex items-center gap-3">
@@ -750,7 +730,6 @@ export default function SessionPage() {
                     )}
                   </div>
 
-                  {/* Контент инструментов - скроллится */}
                   <div className="flex-1 overflow-y-auto p-3 min-h-0">
                     {!activeToolTab ? (
                       <div className="space-y-2">
@@ -809,7 +788,6 @@ export default function SessionPage() {
                     )}
                   </div>
 
-                  {/* Кнопка завершить сессию */}
                   {isActive && !activeToolTab && (
                     <div className="p-4 pt-3 shrink-0 border-t border-border">
                       <Button
@@ -832,7 +810,6 @@ export default function SessionPage() {
           </div>
         )}
       </main>
-      {/* Мобильное модальное окно инструментов */}
       <MobileToolsModal
         isOpen={isMobileToolsOpen}
         onClose={() => setIsMobileToolsOpen(false)}
@@ -840,7 +817,6 @@ export default function SessionPage() {
         isActive={isActive}
       />
 
-      {/* Мобильный просмотр выбранного инструмента (поверх чата) */}
       {!isDesktop && activeToolTab && isActive && (
         <div className="fixed inset-0 bg-background z-50 lg:hidden animate-in slide-in-from-right-2 duration-200 flex flex-col">
           <div className="flex items-center justify-between p-4 border-b border-border bg-card">

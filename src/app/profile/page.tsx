@@ -25,6 +25,7 @@ import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { cn } from "@/src/lib/utils";
 import { useTheme } from "@/src/context/ThemeContext";
+import Image from "next/image";
 
 const levelLabels: Record<string, string> = {
   beginner: "Начинающий",
@@ -41,7 +42,7 @@ type ProfileTab = "listings" | "history";
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { theme, toggle: toggleTheme } = useTheme(); // Получаем тему и функцию переключения
+  const { theme, toggle: toggleTheme } = useTheme(); 
 
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -53,14 +54,12 @@ export default function ProfilePage() {
   const [tab, setTab] = useState<ProfileTab>("listings");
   const [loading, setLoading] = useState(true);
 
-  // Edit
   const [editing, setEditing] = useState(false);
   const [fullName, setFullName] = useState("");
   const [bio, setBio] = useState("");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  // Avatar
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarUploading, setAvatarUploading] = useState(false);
@@ -207,7 +206,6 @@ export default function ProfilePage() {
     : "";
 
   const handleDeleteAccount = async () => {
-    // Подтверждение с предупреждением
     const confirmed = confirm(
       "⚠️ ВНИМАНИЕ! Это действие НЕОБРАТИМО.\n\n" +
         "При удалении аккаунта будут безвозвратно удалены:\n" +
@@ -220,7 +218,6 @@ export default function ProfilePage() {
 
     if (!confirmed) return;
 
-    // Второе подтверждение с вводом текста
     const text = prompt(
       'Введите "УДАЛИТЬ" чтобы подтвердить удаление аккаунта:',
     );
@@ -232,7 +229,6 @@ export default function ProfilePage() {
     try {
       setLoading(true);
 
-      // 1. Удаляем все объявления пользователя
       const { error: listingsError } = await supabase
         .from("study_listings")
         .delete()
@@ -241,7 +237,6 @@ export default function ProfilePage() {
       if (listingsError)
         console.error("Error deleting listings:", listingsError);
 
-      // 2. Удаляем все сессии пользователя
       const { error: sessionsError } = await supabase
         .from("study_sessions")
         .delete()
@@ -250,7 +245,6 @@ export default function ProfilePage() {
       if (sessionsError)
         console.error("Error deleting sessions:", sessionsError);
 
-      // 3. Удаляем аватар из storage если есть
       if (profile?.avatar_url) {
         const avatarPath = profile.avatar_url.split("/").pop();
         if (avatarPath) {
@@ -260,7 +254,6 @@ export default function ProfilePage() {
         }
       }
 
-      // 4. Удаляем профиль
       const { error: profileError } = await supabase
         .from("profiles")
         .delete()
@@ -268,7 +261,6 @@ export default function ProfilePage() {
 
       if (profileError) console.error("Error deleting profile:", profileError);
 
-      // 5. Удаляем пользователя из auth (это самое важное)
       const { error: authError } = await supabase.rpc("delete_user", {
         user_id: user?.id,
       });
@@ -281,10 +273,8 @@ export default function ProfilePage() {
         return;
       }
 
-      // 6. Выходим из системы
       await supabase.auth.signOut();
 
-      // 7. Перенаправляем на главную
       router.push("/");
     } catch (error) {
       console.error("Error deleting account:", error);
@@ -311,7 +301,6 @@ export default function ProfilePage() {
             На главную
           </Button>
 
-          {/* Theme Toggle Button */}
           <Button
             variant="outline"
             onClick={toggleTheme}
@@ -332,15 +321,13 @@ export default function ProfilePage() {
           </Button>
         </div>
 
-        {/* Profile card */}
         <div className="rounded-2xl border border-border p-8 mb-5 bg-card">
           <div className="flex items-start justify-between mb-8 flex-wrap gap-8">
             <div className="flex items-center gap-5">
-              {/* Avatar */}
               <div className="relative group/avatar">
                 <div className="w-20 h-20 rounded-2xl overflow-hidden bg-primary flex items-center justify-center text-primary-foreground text-3xl font-bold ring-4 ring-primary/20">
                   {avatarSrc ? (
-                    <img
+                    <Image
                       src={avatarSrc}
                       alt="avatar"
                       className="w-full h-full object-cover"
@@ -425,7 +412,6 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Bio */}
           <div className="mb-8">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2.5">
               О себе
@@ -455,7 +441,6 @@ export default function ProfilePage() {
             )}
           </div>
 
-          {/* Stats */}
           <div className="grid grid-cols-3 gap-4">
             {[
               {
@@ -490,7 +475,6 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Tabs: Listings / History */}
         <div className="flex gap-2 mb-4">
           <button
             onClick={() => setTab("listings")}
@@ -528,7 +512,6 @@ export default function ProfilePage() {
           </button>
         </div>
 
-        {/* Listings tab */}
         {tab === "listings" && (
           <div className="rounded-2xl border border-border p-6 bg-card">
             <div className="flex items-center justify-between mb-5">
@@ -599,7 +582,6 @@ export default function ProfilePage() {
           </div>
         )}
 
-        {/* History tab */}
         {tab === "history" && (
           <div className="rounded-2xl border border-border p-6 bg-card">
             <h2 className="text-base font-bold text-foreground mb-5">

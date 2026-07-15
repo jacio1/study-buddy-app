@@ -73,7 +73,6 @@ export default function LoginPage() {
 
       <AuthMessage message={serverError} />
               <hr className='mt-2'/>
-        {/* Ссылка "Забыли пароль?" */}
         <div className="text-center mt-2">
           <Link
             href="/reset-password"
