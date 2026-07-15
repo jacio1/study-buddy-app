@@ -1,36 +1,115 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🤝 StudyBuddy - Информационная система совместного обучения
 
-## Getting Started
+## О проекте
 
-First, run the development server:
+**StudyBuddy** — это современное веб-приложение для совместного обучения, разработанное для борьбы с прокрастинацией и повышения вовлечённости студентов. Платформа объединяет в едином интерфейсе поиск напарников, real-time коммуникацию, интерактивные инструменты для продуктивных учебных сессий и архивирование результатов.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+**Проект доступен на хостинге vercel** - https://study-buddy-app-pink.vercel.app
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🎯 Цель проекта
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Разработка информационной системы совместного обучения, позволяющей пользователям находить напарников по объявлениям, вступать в коммуникацию, инициировать интерактивные сессии и использовать встроенные инструменты для повышения продуктивности.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📸 Скриншоты
 
-## Learn More
+### Главная страница
 
-To learn more about Next.js, take a look at the following resources:
+![Главная страница](/public/readme/main-page.png)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Чат с напарником
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+![Чат](/public/readme/chat.png)
 
-## Deploy on Vercel
+### Профиль пользователя
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+![Профиль](/public/readme/profile.png)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## ✨ Функциональные возможности
+
+### 1. Аутентификация и профиль
+
+- Регистрация и вход в систему
+- Заполнение профиля с указанием учебных интересов
+- Настройка личных данных и аватара
+
+### 2. Публикация и поиск объявлений
+
+- Создание объявлений с указанием предмета, цели и времени
+- Категоризация объявлений по учебным дисциплинам
+- Фильтрация и поиск подходящих напарников
+- Просмотр детальной информации объявления
+
+### 3. Предварительная коммуникация
+
+- Чат с автором объявления
+- Обсуждение деталей совместного обучения
+- Предложение совместной сессии
+
+### 4. Инициация и подтверждение сессии
+
+- Отправка приглашения на сессию
+- Подтверждение или отклонение приглашения
+- Автоматическое создание сессионной комнаты
+
+### 5. Сессионная комната с инструментами
+
+#### 5.1. Real-time Chat
+
+- Мгновенный обмен сообщениями
+- История чата в рамках сессии
+
+#### 5.2. Общие заметки
+
+- Создание и редактирование заметок
+- Синхронизация в реальном времени
+
+#### 5.3. To-Do лист
+
+- Создание и управление задачами на время сессии
+- Отметка о выполнении
+- Общий доступ для всех участников
+
+#### 5.4. Таймер Pomodoro
+
+- Синхронизированный таймер для всех участников
+- Настройка интервалов работы и отдыха
+- Визуальное отображение оставшегося времени
+
+#### 5.5. Общая доска для рисования (Whiteboard)
+
+- Совместное рисование в реальном времени
+- Инструменты: карандаш, линии, фигуры, текст
+- Очистка и экспорт доски
+
+#### 5.6. Обмен медиа и файлами
+
+- Отправка изображений и документов
+- Сохранение в общих вложениях
+- Поддержка drag-and-drop
+
+### 6. Завершение и архивирование
+
+- Завершение сессии одним из участников
+- Автоматическое сохранение всех материалов:
+  - История чата
+  - Заметки
+  - To-Do лист
+  - Вложения
+  - Итоговое состояние доски
+- Доступ к архиву для последующего просмотра
+
+## 🛠 Технологический стек
+
+### Frontend
+
+- **[Next.js](https://nextjs.org/)**
+- **[TypeScript](https://www.typescriptlang.org/)**
+- **[Tailwind CSS](https://tailwindcss.com/)**
+- **[Zustand](https://zustand-demo.pmnd.rs/)**
+- **React Hook Form**
+
+### Backend & Database
+
+- **[Supabase](https://supabase.com/)**
+- **PostgreSQL**
+- **Supabase Realtime**
